@@ -35,7 +35,7 @@ export type SlackMessage = z.infer<typeof SlackMessage>;
 
 export interface SlackServeConfig {
   id?: string;
-  token?: string;
+  token: string;
   channel: string;
   idempotencyCache?: Store<{ ts: string; channel: string }>;
   retryPolicy?: Partial<RetryPolicy>;
@@ -111,12 +111,15 @@ export function createSlackServe(config: SlackServeConfig): Serve<SlackMessage> 
       // 2. Derive client msg id
       const derivedMsgId = ctx.idempotencyKey
         ? deriveClientMsgId(ctx.idempotencyKey)
-        : (randomUUID() as string);
+        : randomUUID();
 
       // 3. Check idempotency cache
       if (config.idempotencyCache && ctx.idempotencyKey) {
         const cacheResult = await config.idempotencyCache.get(ctx.idempotencyKey, ctx);
-        if (cacheResult.data !== null && cacheResult.data !== undefined) {
+        if (cacheResult.error !== null) {
+          // Store read error — treat as cache miss and proceed with postMessage
+          // (don't fail the emit on a cache read error)
+        } else if (cacheResult.data !== null && cacheResult.data !== undefined) {
           const cached = cacheResult.data;
           return ok({
             id: cached.data.ts,
@@ -135,14 +138,7 @@ export function createSlackServe(config: SlackServeConfig): Serve<SlackMessage> 
           ...(msg.thread_ts !== undefined && { thread_ts: msg.thread_ts }),
           unfurl_links: msg.unfurl_links,
           unfurl_media: msg.unfurl_media,
-          ...(ctx.idempotencyKey
-            ? {
-                metadata: {
-                  event_type: 'slack_serve',
-                  event_payload: { client_msg_id: derivedMsgId },
-                },
-              }
-            : undefined),
+          ...(ctx.idempotencyKey ? { client_msg_id: derivedMsgId } : {}),
         });
 
         const ts = response.ts ?? derivedMsgId;
