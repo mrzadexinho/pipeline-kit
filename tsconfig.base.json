@@ -20,6 +20,6 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "types": []
+    "types": ["node"]
   }
 }
