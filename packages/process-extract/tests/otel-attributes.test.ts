@@ -84,6 +84,18 @@ describe('process-extract / otel span', () => {
       );
       expect(spanMock.end).toHaveBeenCalled();
       expect(spanMock.setStatus).toHaveBeenCalledWith({ code: SpanStatusCode.OK });
+      expect(spanMock.setAttribute).toHaveBeenCalledWith(
+        'gen_ai.usage.input_tokens',
+        expect.any(Number),
+      );
+      expect(spanMock.setAttribute).toHaveBeenCalledWith(
+        'gen_ai.usage.output_tokens',
+        expect.any(Number),
+      );
+      expect(spanMock.setAttribute).toHaveBeenCalledWith(
+        'gen_ai.response.finish_reasons',
+        expect.any(String),
+      );
     } finally {
       getTracerSpy.mockRestore();
     }

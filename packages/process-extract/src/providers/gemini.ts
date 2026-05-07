@@ -17,7 +17,14 @@ export async function callGemini(params: ProviderCallParams): Promise<ProviderRe
     };
   };
 
-  const genai = new GoogleGenerativeAI(params.apiKey ?? '');
+  const key = params.apiKey;
+  if (!key) {
+    throw Object.assign(
+      new Error('Gemini API key required (set GEMINI_API_KEY env var or pass apiKey in config)'),
+      { status: 401 },
+    );
+  }
+  const genai = new GoogleGenerativeAI(key);
   const modelInstance = genai.getGenerativeModel({
     model: params.model,
     generationConfig: {

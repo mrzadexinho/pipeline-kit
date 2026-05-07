@@ -54,6 +54,12 @@ function mapProviderError(e: unknown, provider: string): ProcessError {
 
   const msg = e.message;
   const status = (e as { status?: number }).status;
+  const code = (e as { code?: string }).code;
+
+  // Content filter (OpenAI null content)
+  if (code === 'content_filter') {
+    return { type: 'permanent', code: 'content_filtered', message: msg };
+  }
 
   // Provider not installed
   if (
@@ -121,12 +127,11 @@ function mapProviderError(e: unknown, provider: string): ProcessError {
     };
   }
 
-  // Default fallback
-  return {
-    type: 'transient',
-    code: 'network_error',
-    message: msg,
-  };
+  // Default fallback: 4xx → permanent, everything else → unknown
+  if (status !== undefined && status >= 400 && status < 500) {
+    return { type: 'permanent', code: 'provider_error', message: msg };
+  }
+  return { type: 'unknown', code: 'provider_unknown', message: msg };
 }
 
 async function callProvider(

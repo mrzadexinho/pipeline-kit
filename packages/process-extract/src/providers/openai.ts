@@ -37,7 +37,15 @@ export async function callOpenAI(params: ProviderCallParams): Promise<ProviderRe
     temperature: params.temperature,
   });
 
-  const rawJson = JSON.parse(response.choices[0]?.message?.content ?? '{}') as unknown;
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    const reason = response.choices[0]?.finish_reason ?? 'unknown';
+    throw Object.assign(new Error(`OpenAI returned no content (finish_reason: ${reason})`), {
+      code: 'content_filter',
+      status: 400,
+    });
+  }
+  const rawJson = JSON.parse(content) as unknown;
   const inputTokens = response.usage?.prompt_tokens ?? 0;
   const outputTokens = response.usage?.completion_tokens ?? 0;
   const finishReasons = response.choices.map((c) => c.finish_reason ?? 'unknown');
