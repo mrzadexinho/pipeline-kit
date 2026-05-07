@@ -11,13 +11,21 @@ import Database from 'better-sqlite3';
 import { eq } from 'drizzle-orm';
 import { type BetterSQLite3Database, drizzle } from 'drizzle-orm/better-sqlite3';
 import type { ZodType } from 'zod';
-import { atomsTable, idempotencyTable } from './atom-table.js';
+import {
+  atomsTable as defaultAtomsTable,
+  type AtomsTable,
+  idempotencyTable as defaultIdempotencyTable,
+} from './atom-table.js';
 
 export interface SqliteStoreConfig<T> {
   id?: string;
   path: string;
   schema: ZodType<T>;
-  idempotencyTtlMs?: number;
+  /** Override the default `pipeline_atoms` table (e.g. from `defineAtomTable`). */
+  table?: AtomsTable;
+  /** Override the default `pipeline_idempotency_cache` table. */
+  idempotencyTable?: typeof defaultIdempotencyTable;
+  idempotencyTtlMs?: number; // default 86_400_000 — TTL eviction not yet implemented; reserved for M1
   retryPolicy?: Partial<RetryPolicy>;
 }
 
@@ -66,7 +74,7 @@ function classifyDbError(e: unknown): StoreError {
 }
 
 function rowToAtom<T>(
-  row: typeof atomsTable.$inferSelect,
+  row: typeof defaultAtomsTable.$inferSelect,
   schema: ZodType<T>,
 ): Result<Atom<T>, StoreError> {
   const parsed = schema.safeParse(row.data);
@@ -94,7 +102,7 @@ function normalizeJson(v: unknown): unknown {
   return JSON.parse(JSON.stringify(v));
 }
 
-function atomToRow(a: Atom<unknown>): typeof atomsTable.$inferInsert {
+function atomToRow(a: Atom<unknown>): typeof defaultAtomsTable.$inferInsert {
   return {
     id: a.id,
     object: a.object,
@@ -110,14 +118,10 @@ function atomToRow(a: Atom<unknown>): typeof atomsTable.$inferInsert {
 
 function checkIdempotencyCache(
   db: BetterSQLite3Database,
+  idemTable: typeof defaultIdempotencyTable,
   key: string,
 ): { found: true; atomId: string } | { found: false } {
-  const row = db
-    .select()
-    .from(idempotencyTable)
-    .where(eq(idempotencyTable.key, key))
-    .limit(1)
-    .get();
+  const row = db.select().from(idemTable).where(eq(idemTable.key, key)).limit(1).get();
 
   if (row !== undefined) {
     return { found: true, atomId: row.atom_id };
@@ -125,8 +129,13 @@ function checkIdempotencyCache(
   return { found: false };
 }
 
-function writeIdempotencyCache(db: BetterSQLite3Database, key: string, atomId: string): void {
-  db.insert(idempotencyTable)
+function writeIdempotencyCache(
+  db: BetterSQLite3Database,
+  idemTable: typeof defaultIdempotencyTable,
+  key: string,
+  atomId: string,
+): void {
+  db.insert(idemTable)
     .values({
       key,
       atom_id: atomId,
@@ -149,22 +158,25 @@ function buildStore<T>(
   setDb: (db: BetterSQLite3Database) => void,
   resolvedId: string,
 ): SqliteStore<T> {
+  const atoms = config.table ?? defaultAtomsTable;
+  const idem = config.idempotencyTable ?? defaultIdempotencyTable;
+
   async function put(a: Atom<T>, ctx: PipelineContext): Promise<Result<Atom<T>, StoreError>> {
     const d = getDb();
 
     try {
       if (ctx.idempotencyKey !== undefined) {
-        const cacheResult = checkIdempotencyCache(d, ctx.idempotencyKey);
+        const cacheResult = checkIdempotencyCache(d, idem, ctx.idempotencyKey);
         if (cacheResult.found) {
           return ok(a);
         }
       }
 
       const row = atomToRow(a as Atom<unknown>);
-      d.insert(atomsTable)
+      d.insert(atoms)
         .values(row)
         .onConflictDoUpdate({
-          target: atomsTable.id,
+          target: atoms.id,
           set: {
             object: row.object,
             created_at: row.created_at,
@@ -178,7 +190,7 @@ function buildStore<T>(
         .run();
 
       if (ctx.idempotencyKey !== undefined) {
-        writeIdempotencyCache(d, ctx.idempotencyKey, a.id);
+        writeIdempotencyCache(d, idem, ctx.idempotencyKey, a.id);
       }
 
       return ok(a);
@@ -194,7 +206,7 @@ function buildStore<T>(
     const d = getDb();
 
     try {
-      const row = d.select().from(atomsTable).where(eq(atomsTable.id, id)).limit(1).get();
+      const row = d.select().from(atoms).where(eq(atoms.id, id)).limit(1).get();
       if (row === undefined) {
         return ok(null);
       }
@@ -215,8 +227,8 @@ function buildStore<T>(
     try {
       const rows = d
         .select()
-        .from(atomsTable)
-        .orderBy(atomsTable.created_at)
+        .from(atoms)
+        .orderBy(atoms.created_at)
         .limit(limit + 1)
         .offset(offset)
         .all();
@@ -287,8 +299,15 @@ export async function createSqliteStoreForBun<T>(
   const sqlite = new (BunSqliteDb as new (path: string) => unknown)(config.path);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const bunDb = (bunDrizzle as (db: unknown) => unknown)(sqlite);
+  if (
+    typeof bunDb !== 'object' ||
+    bunDb === null ||
+    typeof (bunDb as Record<string, unknown>).select !== 'function' ||
+    typeof (bunDb as Record<string, unknown>).insert !== 'function'
+  ) {
+    throw new Error('createSqliteStoreForBun: unexpected Bun Drizzle db shape');
+  }
   // Bun SQLite and better-sqlite3 share the same sync Drizzle interface at runtime.
-  // Cast through unknown so TypeScript accepts the structural compatibility.
   let db = bunDb as unknown as BetterSQLite3Database;
 
   function getDb(): BetterSQLite3Database {

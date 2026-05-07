@@ -21,7 +21,7 @@ export function defineAtomTable(name: string) {
   return sqliteTable(name, {
     id: text('id').primaryKey(),
     object: text('object').notNull(),
-    created_at: text('created_at').notNull(),
+    created_at: text('created_at').notNull(), // ISO-8601 string; list() sorts lexicographically — valid only for well-formed ISO dates
     metadata: text('metadata', { mode: 'json' }),
     data: text('data', { mode: 'json' }).notNull(),
     source_id: text('source_id'),
