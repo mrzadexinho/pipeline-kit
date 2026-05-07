@@ -1,0 +1,28 @@
+{
+  "name": "pipeline-kit",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Typed-stage TypeScript automation library — Source/Store/Process/Serve with HRP review checkpoints",
+  "type": "module",
+  "packageManager": "pnpm@10.33.4",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "typecheck": "pnpm -r typecheck",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "test": "vitest run --coverage",
+    "test:types": "tstyche",
+    "build": "pnpm -r build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.14",
+    "@changesets/cli": "^2.31.0",
+    "@vitest/coverage-v8": "^4.1.5",
+    "fast-check": "^4.7.0",
+    "tstyche": "^7.1.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.5"
+  }
+}

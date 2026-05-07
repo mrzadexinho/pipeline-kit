@@ -1,0 +1,42 @@
+{
+  "name": "@pipeline-kit/process-reviewable",
+  "version": "0.0.0",
+  "description": "Reviewable<I> HRP gate adapters — GatewerkReviewable + ConsoleReviewable + reviewable-wrapper",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@pipeline-kit/core": "workspace:*",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "gatewerk": ">=0.1.0"
+  },
+  "peerDependenciesMeta": {
+    "gatewerk": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "gatewerk": "file:../../../gatewerk/packages/sdk-ts"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}
