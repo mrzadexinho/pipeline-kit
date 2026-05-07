@@ -1,53 +1,99 @@
 # pipeline-kit
 
-> Typed-stage automation library — `Source → Store → Process → Serve`. The
-> abstraction layer beneath the workflow engine, above the tool aggregator.
-
-**Status:** Phase 1 (Deep Research) — researching architectural patterns before
-spec or code is written. v0 ship target post-Phase 2.
-
-## What this is
-
-A thin TypeScript library naming the four stages of any automation as typed
-interfaces, shipping reference adapters per stage, and providing a Composer
-that wires them with retry / rate-limit / idempotency / observability /
-HRP review checkpoints built in.
-
-Aligned with [Gatewerk](https://github.com/mrzadexinho/gatewerk) for HITL
-primitives (HRP — Human Review Protocol). Composes with — does not replace —
-workflow engines (n8n / Activepieces / Make), agent runtimes (LangGraph /
-Pydantic AI), and tool aggregators (Composio).
+> Typed-stage TypeScript automation library. Wire
+> `Source<O> → Store<T> → Process<I,O> → Serve<I>` with retry, rate-limit,
+> idempotency, observability, and HRP-review checkpoints baked in.
 
 ## Status
 
-- **Phase 1 (current):** deep research across 6 engineering axes + 4 business
-  axes + competitive landscape + inspiration mining. See
-  `docs/research-outline.md` for full scope.
-- **Phase 2 (next):** lock ~20 ADRs + API surface + reference adapter list
-  in `docs/spec.md`.
-- **Phase 3:** v0 build + first reference project (Trades Outbound,
-  OperatorOS productization template).
+**v0 status: M0 shipped** — kernel + `Reviewable<I>`. **M0.5** ships 15
+reference adapters. **M1** ships the first reference project (Trades
+Outbound) validating Loop γ.
 
-## Family-of-products context
+## What it is
 
-Same architect (Idris Idriszade), same conventions (Stripe-style API design,
-HMAC webhook signing, Result<T, E> error handling, Zod-validated boundaries):
+A small, typed library that names the four stages of any automation as
+TypeScript interfaces, ships a Composer that wires them end-to-end, and
+provides `Reviewable<I>` as a first-class primitive for human-review
+checkpoints. Aligned with the Gatewerk family — Stripe-style API design,
+HMAC webhook signing, `Result<T, E>` error handling, Zod 4 boundary
+validation.
 
+## Quickstart
+
+```typescript
+import { Pipeline } from '@pipeline-kit/core';
+import { GatewerkReviewable } from '@pipeline-kit/process-reviewable';
+import { createClient } from 'gatewerk';
+
+const reviewable = new GatewerkReviewable<MyData>({
+  client: createClient({ apiKey: process.env.GATEWERK_API_KEY }),
+  templateId: 'tpl_my_review',
+  config: {
+    allowApprove: true,
+    allowReject: true,
+    allowEdit: true,
+    allowRetry: true,
+    allowIgnore: true,
+  },
+});
+
+const pipeline = Pipeline.from(mySource)
+  .through(extractProcess)
+  .review(reviewable)
+  .to(myServe);
+
+const result = await pipeline.run();
+if (result.error !== null) {
+  console.error('pipeline failed:', result.error);
+} else {
+  console.log('pipeline output:', result.data.output);
+}
+```
+
+`.review(rev)` is sugar over `.through(reviewableWrapper(rev))` — explicit
+`Process<I, I>` composition is also supported via the `reviewableWrapper`
+factory.
+
+## Packages shipped in M0
+
+- `@pipeline-kit/core` — orchestration kernel: stage interfaces,
+  Composer (retry + rate-limit + OTel + idempotency + cancellation),
+  Pipeline chainable factory, webhook sign/verify (Stripe canon),
+  `createPipelineKit` SDK factory.
+- `@pipeline-kit/process-reviewable` — HRP gate adapters:
+  `GatewerkReviewable`, `ConsoleReviewable`, `reviewableWrapper`,
+  `EditableField<T>` + `Field.{unedited, edited, rejected}` helpers.
+
+## Architecture
+
+See [`docs/spec.md`](docs/spec.md) for the full Phase 2 spec — 23 v0
+ADRs, 16 reference adapters (M0.5), test plan, and roadmap.
+
+## Family-of-products
+
+- [gatewerk](https://github.com/mrzadexinho/gatewerk) — HITL station;
+  reference HRP implementation; `GatewerkReviewable<I>` wires pipeline-kit
+  to gatewerk natively.
 - [pursuit](https://github.com/mrzadexinho/pursuit) — opportunity-pursuit
-  framework + demand mining (parallel evolution; provides `PursuitDemandSource`)
-- [gatewerk](https://github.com/mrzadexinho/gatewerk) — HITL station
-  (Apache 2.0, v1.0+v1.1 in production) — reference HRP implementation
+  framework; provides `PursuitDemandSource` adapter (M1).
 - [orchestr8-mcp](https://github.com/mrzadexinho/orchestr8) — agent
-  coordination (memory backend for pipeline-kit Composer)
-- [devshield](https://github.com/mrzadexinho/devshield) — code review
-  suite (codeguard / scanline / migratoor / docguard) used as Process primitives
+  coordination; memory backend for pipeline-kit Composer.
 
-## Reading
+## Engineering
 
-Start with `docs/research-outline.md`. Phase 1 reading list lives in Section 13
-of that doc — ~58 sources across 10 categories, optimized for Claude Code
-bulk consumption.
+- TypeScript 6.x strict (`noUncheckedIndexedAccess`,
+  `noImplicitOverride`), ESM only.
+- `Result<T, E>` at every public boundary; no thrown errors crossing
+  the public stage API.
+- Zod 4 at every Source/Serve boundary.
+- HMAC-SHA256 with single `t=<unix>,v1=<hex>` header + 5-minute replay
+  window for webhook signing (Stripe canon).
+- OpenTelemetry traces native; `pipeline.<stage>` spans with
+  `runId`/`pipelineId`/`attempt`/`stageId` attributes.
+- Tested with Vitest 4 + fast-check 4 + tstyche 7 against Node 20 / 22
+  matrix + Bun 1.3+ runtime-compat smoke.
 
 ## License
 
-TBD — Apache 2.0 leaning (matches Gatewerk family convention).
+MIT — see [LICENSE](LICENSE).
