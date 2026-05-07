@@ -103,10 +103,12 @@ export async function withRetry<
     if (last !== null) {
       return last;
     }
-    return {
-      data: null,
-      error: { type: 'cancelled', code: 'cancelled', message: 'aborted before first attempt' } as E,
+    const synthetic = {
+      type: 'cancelled',
+      code: 'cancelled',
+      message: 'aborted before first attempt',
     };
+    return { data: null, error: synthetic as unknown as E };
   }
 }
 
