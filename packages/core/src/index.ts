@@ -1,3 +1,33 @@
+export type {
+  ComposerOpts,
+  ComposerResult,
+  ComposerStep,
+  RetryBudget,
+  RetryClassification,
+  ServeIdempotencyScope,
+  SpanAttributes,
+  StageName,
+  TokenBucket,
+  WithRetryOpts,
+} from './composer/index.js';
+export {
+  CANCELLED_RUN_ERROR,
+  cancelledResult,
+  classifyError,
+  combineSignals,
+  createRetryBudget,
+  createTokenBucket,
+  DEFAULT_RETRY_POLICY,
+  DEFAULT_TOKEN_BUCKET,
+  generateIdempotencyKey,
+  getTracer,
+  isCancelled,
+  mergeRetryPolicy,
+  runComposer,
+  scopedIdempotencyKey,
+  withRetry,
+  withSpan,
+} from './composer/index.js';
 export type { MemoryAdapter, PipelineContext, TraceContext } from './context.js';
 export type { ErrorEnvelope, ResourceEnvelope } from './envelope.js';
 export type {
