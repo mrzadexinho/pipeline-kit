@@ -44,5 +44,8 @@
         "default": "./dist/index.js"
       }
     }
+  },
+  "devDependencies": {
+    "@testcontainers/postgresql": "^11.14.0"
   }
 }
