@@ -63,6 +63,10 @@ describe('Resend provider', () => {
     expect(result.error).toBeNull();
     expect(result.data?.id).toBe('resend-idem-key-123');
     expect(sendMock).toHaveBeenCalledOnce();
+    expect(sendMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ idempotencyKey: 'resend-idem-key-123' }),
+    );
   });
 
   it('classifies rate_limit_exceeded as rate_limited', async () => {

@@ -32,8 +32,7 @@ export async function sendSmtp(
   input: EmailMessage,
   ctx: PipelineContext,
 ): Promise<Result<EmitResult, ServeError>> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let nodemailerMod: any;
+  let nodemailerMod: typeof import('nodemailer') | undefined;
   try {
     nodemailerMod = await import('nodemailer');
   } catch {
@@ -42,16 +41,15 @@ export async function sendSmtp(
     );
   }
 
-  // nodemailer v8 exports CJS-style; handle both default and direct export
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  const nm: { createTransport(opts: unknown): { sendMail(msg: unknown): Promise<unknown> } } =
-    nodemailerMod.default ?? nodemailerMod;
+  // nodemailer v6/v7 ships CJS with a `.default` re-export in ESM interop;
+  // v8+ may expose createTransport directly. Support both shapes.
+  const nm: typeof import('nodemailer') =
+    (nodemailerMod as unknown as { default?: typeof import('nodemailer') }).default ?? nodemailerMod;
 
   const fromDomain = config.from.includes('@')
     ? (config.from.split('@')[1] ?? 'localhost')
     : 'localhost';
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   const transporter = nm.createTransport(config.smtp);
 
   const headers: Record<string, string> = {};
@@ -60,7 +58,6 @@ export async function sendSmtp(
   }
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     await transporter.sendMail({
       from: config.from,
       to: Array.isArray(input.to) ? input.to.join(', ') : input.to,
