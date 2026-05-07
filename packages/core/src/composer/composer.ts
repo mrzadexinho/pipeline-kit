@@ -1,11 +1,15 @@
-import { createContext, type PipelineContext } from '../context.js';
+import { createContext, deriveAtomCtx, type PipelineContext } from '../context.js';
+import type { ProcessError } from '../errors/process.js';
 import type { RunError } from '../errors/run.js';
+import type { ServeError } from '../errors/serve.js';
+import type { SourceError } from '../errors/source.js';
+import type { StoreError } from '../errors/store.js';
 import type { RetryPolicy } from '../policy.js';
 import { err, ok, type Result } from '../result.js';
 import type { Atom } from '../stages/atom.js';
 import type { Source, SourceQuery } from '../stages/source.js';
 import { cancelledResult, isCancelled } from './cancellation.js';
-import { generateIdempotencyKey } from './idempotency.js';
+import { generateIdempotencyKey, scopedIdempotencyKey } from './idempotency.js';
 import { type StageName, withSpan } from './otel.js';
 import type { TokenBucket } from './rate-limit.js';
 import {
@@ -54,6 +58,9 @@ export interface ComposerResult {
   ctx: PipelineContext;
 }
 
+type StageCause = { type: string; code: string; message: string; retry_after_ms?: number };
+type AtomMeta = { atom_id: string; atoms_attempted: number; atoms_completed: number };
+
 export async function runComposer(opts: ComposerOpts): Promise<Result<ComposerResult, RunError>> {
   const ctx = createContext({
     pipelineId: opts.pipelineId,
@@ -66,22 +73,19 @@ export async function runComposer(opts: ComposerOpts): Promise<Result<ComposerRe
   const globalPolicy = mergeRetryPolicy(DEFAULT_RETRY_POLICY, opts.globalRetryPolicy);
 
   if (opts.source !== undefined) {
-    return runFanOut(opts, ctx, startTime, globalPolicy);
+    return runFanOut({ ...opts, source: opts.source }, ctx, startTime, globalPolicy);
   }
 
   return runSequential(opts, ctx, startTime, globalPolicy);
 }
 
 async function runFanOut(
-  opts: ComposerOpts,
+  opts: ComposerOpts & { source: NonNullable<ComposerOpts['source']> },
   ctx: PipelineContext,
   startTime: number,
   globalPolicy: RetryPolicy,
 ): Promise<Result<ComposerResult, RunError>> {
-  // opts.source is guaranteed present when runFanOut is called (checked in runComposer)
-  const { adapter: sourceAdapter, query: sourceQuery } = opts.source as NonNullable<
-    typeof opts.source
-  >;
+  const { adapter: sourceAdapter, query: sourceQuery } = opts.source;
   const budget = makeBudget(opts.globalRetryBudget, opts.steps.length, globalPolicy.maxAttempts);
 
   let atomCount = 0;
@@ -91,13 +95,7 @@ async function runFanOut(
   try {
     iter = sourceAdapter.iter(sourceQuery, ctx);
   } catch (e) {
-    return err({
-      type: 'source_failed',
-      code: 'source_iter_failed',
-      message: e instanceof Error ? e.message : String(e),
-      request_id: ctx.runId,
-      cause: { type: 'unknown', code: 'source_iter_failed', message: String(e) },
-    });
+    return err(sourceIterError(e, ctx.runId));
   }
 
   try {
@@ -113,25 +111,15 @@ async function runFanOut(
         }
 
         const stagePolicy = mergeRetryPolicy(globalPolicy, step.retryPolicy);
-        const stageOutcome = await runStageWithAtom(
-          step,
-          currentInput,
-          ctx,
-          stagePolicy,
-          budget,
-          atom.id,
-        );
+        const stageOutcome = await runStage(step, currentInput, ctx, stagePolicy, budget, atom.id);
 
         if (stageOutcome.error !== null) {
           return err(
-            toRunErrorWithAtomMeta(
-              step,
-              stageOutcome.error,
-              ctx,
-              atom.id,
-              atomCount + 1,
-              atomCount,
-            ),
+            toRunError(step, stageOutcome.error, ctx, {
+              atom_id: atom.id,
+              atoms_attempted: atomCount + 1,
+              atoms_completed: atomCount,
+            }),
           );
         }
         if (isCancelled(ctx.signal)) {
@@ -144,13 +132,7 @@ async function runFanOut(
       atomCount++;
     }
   } catch (e) {
-    return err({
-      type: 'source_failed',
-      code: 'source_iter_failed',
-      message: e instanceof Error ? e.message : String(e),
-      request_id: ctx.runId,
-      cause: { type: 'unknown', code: 'source_iter_failed', message: String(e) },
-    });
+    return err(sourceIterError(e, ctx.runId));
   }
 
   if (atomCount === 0) {
@@ -220,61 +202,49 @@ async function runStage(
   ctx: PipelineContext,
   policy: RetryPolicy,
   budget: RetryBudget,
-): Promise<
-  Result<unknown, { type: string; code: string; message: string; retry_after_ms?: number }>
-> {
-  return withSpan(
-    step.kind,
-    { runId: ctx.runId, pipelineId: ctx.pipelineId, stageId: step.id },
-    () =>
-      withRetry(
-        async (_attempt) => {
-          if (isCancelled(ctx.signal)) {
-            return err({ type: 'cancelled', code: 'cancelled', message: 'aborted' });
+  atomId?: string,
+): Promise<Result<unknown, StageCause>> {
+  const spanAttrs = {
+    runId: ctx.runId,
+    pipelineId: ctx.pipelineId,
+    stageId: step.id,
+    ...(atomId !== undefined ? { atomId } : {}),
+  };
+  return withSpan(step.kind, spanAttrs, () =>
+    withRetry(
+      async (_attempt) => {
+        if (isCancelled(ctx.signal)) {
+          return err({ type: 'cancelled', code: 'cancelled', message: 'aborted' });
+        }
+        if (step.rateLimit) {
+          const acquired = await step.rateLimit.acquire(1, ctx.signal);
+          if (!acquired) {
+            return err({ type: 'cancelled', code: 'rate_limit_aborted', message: 'aborted' });
           }
-          if (step.rateLimit) {
-            const acquired = await step.rateLimit.acquire(1, ctx.signal);
-            if (!acquired) {
-              return err({ type: 'cancelled', code: 'rate_limit_aborted', message: 'aborted' });
-            }
-          }
-          return step.run(input, ctx);
-        },
-        { policy, signal: ctx.signal, globalBudget: budget },
-      ),
+        }
+        const effectiveCtx =
+          atomId !== undefined && step.kind === 'serve'
+            ? deriveAtomCtx(
+                ctx,
+                scopedIdempotencyKey({ runId: ctx.runId, serveAdapterId: step.id, atomId }),
+              )
+            : ctx;
+        return step.run(input, effectiveCtx);
+      },
+      { policy, signal: ctx.signal, globalBudget: budget },
+    ),
   );
 }
 
-async function runStageWithAtom(
-  step: ComposerStep,
-  input: unknown,
-  ctx: PipelineContext,
-  policy: RetryPolicy,
-  budget: RetryBudget,
-  atomId: string,
-): Promise<
-  Result<unknown, { type: string; code: string; message: string; retry_after_ms?: number }>
-> {
-  return withSpan(
-    step.kind,
-    { runId: ctx.runId, pipelineId: ctx.pipelineId, stageId: step.id, atomId },
-    () =>
-      withRetry(
-        async (_attempt) => {
-          if (isCancelled(ctx.signal)) {
-            return err({ type: 'cancelled', code: 'cancelled', message: 'aborted' });
-          }
-          if (step.rateLimit) {
-            const acquired = await step.rateLimit.acquire(1, ctx.signal);
-            if (!acquired) {
-              return err({ type: 'cancelled', code: 'rate_limit_aborted', message: 'aborted' });
-            }
-          }
-          return step.run(input, ctx);
-        },
-        { policy, signal: ctx.signal, globalBudget: budget },
-      ),
-  );
+function sourceIterError(e: unknown, requestId: string): RunError {
+  const message = e instanceof Error ? e.message : String(e);
+  return {
+    type: 'source_failed',
+    code: 'source_iter_failed',
+    message,
+    request_id: requestId,
+    cause: { type: 'unknown', code: 'source_iter_failed', message } as SourceError,
+  };
 }
 
 function makeBudget(
@@ -288,84 +258,44 @@ function makeBudget(
 
 function toRunError(
   step: ComposerStep,
-  cause: { type: string; code: string; message: string },
+  cause: StageCause,
   ctx: PipelineContext,
+  atomMeta?: AtomMeta,
 ): RunError {
+  const metadata = atomMeta
+    ? {
+        atom_id: atomMeta.atom_id,
+        atoms_attempted: atomMeta.atoms_attempted,
+        atoms_completed: atomMeta.atoms_completed,
+      }
+    : undefined;
+
   if (cause.type === 'cancelled') {
     return {
       type: 'cancelled',
       code: 'pipeline_cancelled',
       message: cause.message,
       request_id: ctx.runId,
+      ...(metadata ? { metadata } : {}),
     };
   }
-  const baseFields = {
+  const base = {
     code: `${step.kind}_failed`,
     message: cause.message,
     request_id: ctx.runId,
+    ...(metadata ? { metadata } : {}),
   };
   switch (step.kind) {
     case 'source':
-      return { type: 'source_failed', ...baseFields, cause: cause as never };
+      return { type: 'source_failed', ...base, cause: cause as SourceError };
     case 'process':
     case 'review':
-      return { type: 'process_failed', ...baseFields, cause: cause as never };
+      return { type: 'process_failed', ...base, cause: cause as ProcessError };
     case 'serve':
-      return { type: 'serve_failed', ...baseFields, cause: cause as never };
+      return { type: 'serve_failed', ...base, cause: cause as ServeError };
     case 'store':
-      return { type: 'store_failed', ...baseFields, cause: cause as never };
+      return { type: 'store_failed', ...base, cause: cause as StoreError };
     default:
       return { type: 'unknown', code: 'composer_unknown_stage', message: cause.message };
-  }
-}
-
-function toRunErrorWithAtomMeta(
-  step: ComposerStep,
-  cause: { type: string; code: string; message: string },
-  ctx: PipelineContext,
-  atomId: string,
-  atomsAttempted: number,
-  atomsCompleted: number,
-): RunError {
-  if (cause.type === 'cancelled') {
-    return {
-      type: 'cancelled',
-      code: 'pipeline_cancelled',
-      message: cause.message,
-      request_id: ctx.runId,
-      metadata: {
-        atom_id: atomId,
-        atoms_attempted: atomsAttempted,
-        atoms_completed: atomsCompleted,
-      },
-    };
-  }
-  const baseFields = {
-    code: `${step.kind}_failed`,
-    message: cause.message,
-    request_id: ctx.runId,
-    metadata: { atom_id: atomId, atoms_attempted: atomsAttempted, atoms_completed: atomsCompleted },
-  };
-  switch (step.kind) {
-    case 'source':
-      return { type: 'source_failed', ...baseFields, cause: cause as never };
-    case 'process':
-    case 'review':
-      return { type: 'process_failed', ...baseFields, cause: cause as never };
-    case 'serve':
-      return { type: 'serve_failed', ...baseFields, cause: cause as never };
-    case 'store':
-      return { type: 'store_failed', ...baseFields, cause: cause as never };
-    default:
-      return {
-        type: 'unknown',
-        code: 'composer_unknown_stage',
-        message: cause.message,
-        metadata: {
-          atom_id: atomId,
-          atoms_attempted: atomsAttempted,
-          atoms_completed: atomsCompleted,
-        },
-      };
   }
 }

@@ -59,16 +59,19 @@ describe('fan-out — multi-atom process dispatch', () => {
 });
 
 describe('fan-out — multi-atom serve dispatch', () => {
-  it('Serve is invoked once per atom with distinct inputs', async () => {
+  it('Serve is invoked once per atom with distinct scoped idempotency keys', async () => {
     const atoms = [buildAtom('x1'), buildAtom('x2'), buildAtom('x3')];
     const source = makeIterSource(atoms);
     const emitted: unknown[] = [];
+    const seenKeys: string[] = [];
+    const serveId_ = serveId();
 
     const serveStep: ComposerStep = {
-      id: serveId(),
+      id: serveId_,
       kind: 'serve',
-      async run(input, _ctx) {
+      async run(input, ctx) {
         emitted.push(input);
+        if (ctx.idempotencyKey !== undefined) seenKeys.push(ctx.idempotencyKey);
         return ok(input);
       },
     };
@@ -81,6 +84,13 @@ describe('fan-out — multi-atom serve dispatch', () => {
 
     expect(r.error).toBeNull();
     expect(emitted).toEqual(['x1', 'x2', 'x3']);
+    // Each atom gets a distinct scoped key containing runId:serveId:atomId
+    expect(seenKeys).toHaveLength(3);
+    expect(new Set(seenKeys).size).toBe(3);
+    const runId = r.data?.runId;
+    for (const key of seenKeys) {
+      expect(key).toMatch(new RegExp(`^${runId}:${serveId_}:`));
+    }
   });
 });
 

@@ -32,6 +32,36 @@ export interface CreateContextOpts {
   memory?: MemoryAdapter;
 }
 
+export function deriveAtomCtx(parent: PipelineContext, idempotencyKey: string): PipelineContext {
+  return {
+    get runId() {
+      return parent.runId;
+    },
+    get pipelineId() {
+      return parent.pipelineId;
+    },
+    get attempt() {
+      return parent.attempt;
+    },
+    get metadata() {
+      return parent.metadata;
+    },
+    get signal() {
+      return parent.signal;
+    },
+    get trace() {
+      return parent.trace;
+    },
+    idempotencyKey,
+    get memory() {
+      return parent.memory;
+    },
+    attachMetadata(key, value) {
+      parent.attachMetadata(key, value);
+    },
+  };
+}
+
 export function createContext(opts: CreateContextOpts): PipelineContext {
   const internalMetadata: Record<string, unknown> = { ...opts.metadata };
 

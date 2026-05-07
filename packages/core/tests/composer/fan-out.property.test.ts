@@ -68,14 +68,14 @@ describe('fan-out property — serve idempotency key uniqueness', () => {
       fc.asyncProperty(fc.integer({ min: 1, max: 20 }), async (n) => {
         const atoms = Array.from({ length: n }, (_, i) => buildAtom(`data_${i}`));
         const source = makeIterSource(atoms);
-        const seenInputs: Set<unknown> = new Set();
+        const seenKeys: Set<string> = new Set();
         let callCount = 0;
 
         const step: ComposerStep = {
           id: serveId(),
           kind: 'serve',
-          async run(input, _ctx) {
-            seenInputs.add(input);
+          async run(input, ctx) {
+            if (ctx.idempotencyKey !== undefined) seenKeys.add(ctx.idempotencyKey);
             callCount++;
             return ok(input);
           },
@@ -88,7 +88,8 @@ describe('fan-out property — serve idempotency key uniqueness', () => {
         });
 
         if (r.error !== null) return false;
-        return callCount === n && seenInputs.size === n;
+        // All N Serve invocations must have distinct scoped idempotency keys
+        return callCount === n && seenKeys.size === n;
       }),
       { numRuns: 20 },
     );
