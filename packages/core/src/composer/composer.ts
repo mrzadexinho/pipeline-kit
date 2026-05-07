@@ -74,6 +74,9 @@ export async function runComposer(opts: ComposerOpts): Promise<Result<ComposerRe
     if (stageOutcome.error !== null) {
       return err(toRunError(step, stageOutcome.error, ctx));
     }
+    if (isCancelled(ctx.signal)) {
+      return cancelledResult();
+    }
     currentInput = stageOutcome.data;
     stagesCompleted++;
   }
