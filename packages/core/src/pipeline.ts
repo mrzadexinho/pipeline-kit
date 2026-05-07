@@ -16,7 +16,7 @@ import { reviewableToProcess } from './reviewable-to-process.js';
 import type { Atom } from './stages/atom.js';
 import type { Process } from './stages/process.js';
 import type { Serve } from './stages/serve.js';
-import type { Source, SourceQuery } from './stages/source.js';
+import type { Source } from './stages/source.js';
 import type { Store } from './stages/store.js';
 
 export const Pipeline = {
@@ -70,15 +70,29 @@ function makeSourcePipeline<O>(definition: PipelineDefinition): SourcePipeline<O
 function makeTerminalPipeline<O>(definition: PipelineDefinition): TerminalPipeline<O> {
   return {
     async run(input?: unknown, options?: RunOptions): Promise<Result<RunResult<O>, RunError>> {
-      const composerSteps = definition.steps.map(toComposerStep);
+      const sourceStep = definition.steps[0];
+      if (sourceStep === undefined || sourceStep.kind !== 'source') {
+        return err({
+          type: 'unknown',
+          code: 'no_source_step',
+          message: 'Pipeline has no source step',
+        });
+      }
+
+      const downstreamSteps = definition.steps.slice(1).map(toComposerStep);
+
       const result = await runComposer({
         pipelineId: definition.pipelineId,
-        steps: composerSteps,
-        initialInput: input,
+        steps: downstreamSteps,
+        source: {
+          adapter: sourceStep.source,
+          query: input as Record<string, unknown> | undefined,
+        },
         signal: options?.signal,
         metadata: options?.metadata,
         idempotencyKey: options?.idempotencyKey,
       });
+
       if (result.error !== null) {
         return err(result.error);
       }
@@ -100,7 +114,7 @@ function makeTerminalPipeline<O>(definition: PipelineDefinition): TerminalPipeli
 function toComposerStep(step: PipelineStep): ComposerStep {
   switch (step.kind) {
     case 'source':
-      return makeSourceComposerStep(step.source);
+      throw new Error('Source step must not be passed to toComposerStep');
     case 'process':
       return makeProcessComposerStep(step.process);
     case 'store':
@@ -110,29 +124,6 @@ function toComposerStep(step: PipelineStep): ComposerStep {
     case 'serve':
       return makeServeComposerStep(step.serve);
   }
-}
-
-function makeSourceComposerStep(source: Source<unknown>): ComposerStep {
-  const bucket = source.rateLimit ? createTokenBucket(source.rateLimit) : undefined;
-  return {
-    id: source.id,
-    kind: 'source',
-    retryPolicy: source.retryPolicy,
-    rateLimit: bucket,
-    async run(input, ctx) {
-      const result = await source.fetch(input as SourceQuery, ctx);
-      if (result.error !== null) return result;
-      const firstAtom = result.data[0];
-      if (firstAtom === undefined) {
-        return err({
-          type: 'unavailable',
-          code: 'source_no_atoms',
-          message: 'Source produced no atoms',
-        });
-      }
-      return ok(firstAtom.data);
-    },
-  };
 }
 
 function makeProcessComposerStep(process: Process<unknown, unknown>): ComposerStep {

@@ -31,7 +31,9 @@ const buildAtom = (data: string): Atom<string> => ({
 const stringSource: Source<string> = {
   id: srcId(),
   schema: stringSchema,
-  async *iter() {},
+  async *iter(_query, _ctx) {
+    yield buildAtom('hello');
+  },
   async fetch() {
     return ok([buildAtom('hello')]);
   },
@@ -174,6 +176,11 @@ describe('Pipeline.run() — Loop α validation', () => {
   it('source error surfaces as RunError of type source_failed', async () => {
     const failingSource: Source<string> = {
       ...stringSource,
+      async *iter() {
+        yield* ((): never => {
+          throw { type: 'auth', code: 'no_token', message: 'denied' };
+        })();
+      },
       async fetch() {
         return err({ type: 'auth', code: 'no_token', message: 'denied' });
       },
@@ -228,9 +235,10 @@ describe('Pipeline.run() — Loop α validation', () => {
     expect(recorded).toEqual([]);
   });
 
-  it('source emitting empty atom list surfaces source_failed (M0 first-atom semantics)', async () => {
+  it('source emitting no atoms surfaces source_failed with source_no_atoms', async () => {
     const emptySource: Source<string> = {
       ...stringSource,
+      async *iter() {},
       async fetch() {
         return ok([]);
       },
@@ -240,6 +248,7 @@ describe('Pipeline.run() — Loop α validation', () => {
 
     const r = await terminal.run();
     expect(r.error?.type).toBe('source_failed');
+    expect(r.error?.code).toBe('source_no_atoms');
   });
 });
 

@@ -8,6 +8,7 @@ export interface SpanAttributes {
   pipelineId: string;
   attempt?: number;
   stageId?: string;
+  atomId?: string;
   [key: string]: unknown;
 }
 
