@@ -66,3 +66,15 @@ export type { Process } from './stages/process.js';
 export type { EmitResult, IdempotencySupport, Serve } from './stages/serve.js';
 export type { Source, SourceQuery } from './stages/source.js';
 export type { ListResult, Store, StoreFilters } from './stages/store.js';
+export type {
+  PipelineKitEvent,
+  ReviewCreatedData,
+  ReviewDecidedData,
+  RunCompletedData,
+  RunCreatedData,
+  RunFailedData,
+  SignOptions,
+  VerifyOptions,
+  WebhookAlgorithm,
+} from './webhooks/index.js';
+export { sign, verify, webhooks } from './webhooks/index.js';

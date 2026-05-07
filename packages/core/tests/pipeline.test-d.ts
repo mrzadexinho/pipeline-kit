@@ -1,5 +1,4 @@
 import { expect, test } from 'tstyche';
-import type { z } from 'zod';
 import { Pipeline } from '../src/pipeline.js';
 import type {
   PipelineDefinition,
