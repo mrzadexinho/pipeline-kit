@@ -1,3 +1,5 @@
+export type { ClientConfig, PipelineKitClient } from './client.js';
+export { createPipelineKit } from './client.js';
 export type {
   ComposerOpts,
   ComposerResult,
@@ -57,6 +59,27 @@ export type {
   TerminalPipeline,
 } from './pipeline-types.js';
 export type { Jitter, RetryPolicy, TokenBucketConfig } from './policy.js';
+export type {
+  AtomListFilters,
+  AtomListResult,
+  AtomsResource,
+} from './resources/atoms.js';
+export type {
+  CreatePipelineInput,
+  PipelineDescriptor,
+  PipelineListFilters,
+  PipelineListResult,
+  PipelinesResource,
+} from './resources/pipelines.js';
+export type {
+  CreateRunInput,
+  RunDescriptor,
+  RunListFilters,
+  RunListResult,
+  RunStatus,
+  RunsResource,
+} from './resources/runs.js';
+export type { WebhooksResource } from './resources/webhooks.js';
 export type { Result } from './result.js';
 export { err, ok } from './result.js';
 export type { Reviewable, ReviewableConfig, ReviewResponse } from './reviewable.js';

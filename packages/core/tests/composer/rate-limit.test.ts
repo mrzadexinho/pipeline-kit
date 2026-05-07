@@ -59,8 +59,8 @@ describe('createTokenBucket', () => {
   });
 
   it('caps tokens at capacity even after long idle', async () => {
-    const b = createTokenBucket({ capacity: 2, refillRate: 100, intervalMs: 10 });
-    await new Promise((r) => setTimeout(r, 50));
+    const b = createTokenBucket({ capacity: 2, refillRate: 1, intervalMs: 100 });
+    await new Promise((r) => setTimeout(r, 500));
     expect(b.tryAcquire()).toBe(true);
     expect(b.tryAcquire()).toBe(true);
     expect(b.tryAcquire()).toBe(false);
