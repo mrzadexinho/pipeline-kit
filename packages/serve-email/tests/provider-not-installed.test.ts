@@ -1,8 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createContext } from '../../core/src/context.js';
+import type { PipelineContext, TraceContext } from '@pipeline-kit/core';
 
-function makeCtx() {
-  return createContext({ pipelineId: 'pipe_test' });
+function makeCtx(): PipelineContext {
+  const meta: Record<string, unknown> = {};
+  return {
+    runId: 'pk_run_test',
+    pipelineId: 'pk_pipe_test',
+    attempt: 1,
+    metadata: meta,
+    signal: new AbortController().signal,
+    trace: {} as unknown as TraceContext,
+    attachMetadata(k: string, v: unknown) { meta[k] = v; },
+  };
 }
 
 describe('provider-not-installed', () => {

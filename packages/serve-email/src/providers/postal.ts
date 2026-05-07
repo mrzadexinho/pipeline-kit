@@ -1,6 +1,6 @@
 import { err, ok, type EmitResult, type PipelineContext, type Result, type ServeError } from '@pipeline-kit/core';
 import type { EmailServeConfigPostal, EmailMessage } from '../email-serve.js';
-import { generateEmitId, makeServeError } from '../email-serve.js';
+import { generateEmitId, makeServeError } from '../internal.js';
 
 function classifyPostalStatus(status: number, body: unknown): ServeError {
   const msg = JSON.stringify(body);

@@ -1,11 +1,10 @@
 import { err, ok, type EmitResult, type PipelineContext, type Result, type ServeError } from '@pipeline-kit/core';
-import type { EmailServeConfigSmtp } from '../email-serve.js';
-import type { EmailMessage } from '../email-serve.js';
-import { generateEmitId, makeServeError } from '../email-serve.js';
+import type { EmailServeConfigSmtp, EmailMessage } from '../email-serve.js';
+import { generateEmitId, makeServeError } from '../internal.js';
 
 function classifySmtpError(e: unknown): ServeError {
   const msg = e instanceof Error ? e.message.toLowerCase() : String(e).toLowerCase();
-  const code = (e as { code?: string }).code ?? '';
+  const code = e instanceof Error && 'code' in e ? String((e as NodeJS.ErrnoException).code ?? '') : '';
 
   if (
     code === 'EAUTH' ||

@@ -1,7 +1,7 @@
 import { err, ok, type EmitResult, type PipelineContext, type Result, type ServeError } from '@pipeline-kit/core';
 import type { CreateEmailOptions, CreateEmailRequestOptions } from 'resend';
 import type { EmailServeConfigResend, EmailMessage } from '../email-serve.js';
-import { generateEmitId, makeServeError } from '../email-serve.js';
+import { generateEmitId, makeServeError } from '../internal.js';
 
 function classifyResendError(name: string, statusCode: number | null, message: string): ServeError {
   const nameLower = name.toLowerCase();
@@ -40,8 +40,10 @@ export async function sendResend(
 
   const client = new ResendClass(config.resend.apiKey);
 
-  // CreateEmailOptions requires at least one of react/html/text.
-  // Our schema allows both optional, so we cast via unknown to satisfy the SDK.
+  // CreateEmailOptions requires at least one of react/html/text; our EmailMessage
+  // schema allows both optional. The cast is intentional: if neither is provided,
+  // the SDK returns a validation error that is caught by the error-handling block
+  // below, so the invariant is enforced at runtime rather than compile time.
   const payload = {
     from: config.from,
     to: input.to,

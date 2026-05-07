@@ -7,7 +7,6 @@ declare module 'nodemailer' {
     port?: number;
     secure?: boolean;
     auth?: { user?: string; pass?: string };
-    [key: string]: unknown;
   }
 
   interface MailMessage {
@@ -19,12 +18,10 @@ declare module 'nodemailer' {
     text?: string;
     attachments?: Array<{ filename?: string; content?: string | Buffer }>;
     headers?: Record<string, string>;
-    [key: string]: unknown;
   }
 
   interface SentMessageInfo {
     messageId?: string;
-    [key: string]: unknown;
   }
 
   interface Transporter {

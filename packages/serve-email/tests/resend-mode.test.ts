@@ -1,5 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createContext } from '../../core/src/context.js';
+import type { PipelineContext, TraceContext } from '@pipeline-kit/core';
+
+function makeCtx(idempotencyKey?: string): PipelineContext {
+  const meta: Record<string, unknown> = {};
+  return {
+    runId: 'pk_run_test',
+    pipelineId: 'pk_pipe_test',
+    attempt: 1,
+    metadata: meta,
+    signal: new AbortController().signal,
+    trace: {} as unknown as TraceContext,
+    idempotencyKey,
+    attachMetadata(k: string, v: unknown) { meta[k] = v; },
+  };
+}
 
 // Mock the resend module before any imports use it
 vi.mock('resend', () => {
@@ -29,10 +43,6 @@ const validMessage = {
   subject: 'Resend test',
   html: '<p>Hello</p>',
 };
-
-function makeCtx(idempotencyKey?: string) {
-  return createContext({ pipelineId: 'pipe_test', idempotencyKey });
-}
 
 describe('Resend provider', () => {
   beforeEach(() => {

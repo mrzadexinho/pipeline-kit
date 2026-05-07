@@ -9,25 +9,10 @@ import {
   type Serve,
 } from '@pipeline-kit/core';
 import { z } from 'zod';
+import { generateEmitId, makeServeError } from './internal.js';
 import { sendSmtp } from './providers/smtp.js';
 import { sendPostal } from './providers/postal.js';
 import { sendResend } from './providers/resend.js';
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-export function generateEmitId(): string {
-  return `pk_emit_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
-}
-
-export function makeServeError(
-  type: ServeError['type'],
-  code: string,
-  message: string,
-): ServeError {
-  return { type, code, message } as ServeError;
-}
 
 // ---------------------------------------------------------------------------
 // EmailMessage schema

@@ -1,6 +1,20 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { createEmailServe } from '../src/email-serve.js';
-import { createContext } from '../../core/src/context.js';
+import type { PipelineContext, TraceContext } from '@pipeline-kit/core';
+
+function makeCtx(idempotencyKey?: string): PipelineContext {
+  const meta: Record<string, unknown> = {};
+  return {
+    runId: 'pk_run_test',
+    pipelineId: 'pk_pipe_test',
+    attempt: 1,
+    metadata: meta,
+    signal: new AbortController().signal,
+    trace: {} as unknown as TraceContext,
+    idempotencyKey,
+    attachMetadata(k: string, v: unknown) { meta[k] = v; },
+  };
+}
 
 const postalConfig = {
   provider: 'postal' as const,
@@ -16,10 +30,6 @@ const validMessage = {
   subject: 'Test subject',
   text: 'Hello world',
 };
-
-function makeCtx(idempotencyKey?: string) {
-  return createContext({ pipelineId: 'pipe_test', idempotencyKey });
-}
 
 function makeFetchResponse(status: number, body: unknown) {
   return Promise.resolve({
