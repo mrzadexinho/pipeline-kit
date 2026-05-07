@@ -122,5 +122,55 @@ describe('SMTP provider', () => {
     expect(sendMailMock).toHaveBeenCalledOnce();
     const callArg = sendMailMock.mock.calls[0]?.[0] as { headers?: Record<string, string> };
     expect(callArg?.headers?.['Message-ID']).toContain(idempotencyKey);
+    // Message-ID should follow `<key@from-domain>` pattern
+    expect(callArg?.headers?.['Message-ID']).toBe(`<${idempotencyKey}@example.com>`);
+  });
+
+  it('falls back to localhost when from address has no @ symbol', async () => {
+    const cfgNoAt = { ...smtpConfig, from: 'no-at-symbol' };
+    const serve = createEmailServe(cfgNoAt);
+    const idempotencyKey = 'idem-no-at';
+    const ctx = makeCtx(idempotencyKey);
+
+    const sendMailMock = vi.fn().mockResolvedValue({ messageId: 'msg-id' });
+    (nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }).default.createTransport.mockReturnValue({
+      sendMail: sendMailMock,
+    });
+
+    await serve.emit(validMessage, ctx);
+
+    expect(sendMailMock).toHaveBeenCalledOnce();
+    const callArg = sendMailMock.mock.calls[0]?.[0] as { headers?: Record<string, string> };
+    expect(callArg?.headers?.['Message-ID']).toBe(`<${idempotencyKey}@localhost>`);
+  });
+
+  it('classifies generic non-classified error as transient with code smtp_error', async () => {
+    const serve = createEmailServe(smtpConfig);
+    const ctx = makeCtx();
+
+    (nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }).default.createTransport.mockReturnValue({
+      sendMail: vi.fn().mockRejectedValue(new Error('something else')),
+    });
+
+    const result = await serve.emit(validMessage, ctx);
+
+    expect(result.data).toBeNull();
+    expect(result.error?.type).toBe('transient');
+    expect(result.error?.code).toBe('smtp_error');
+  });
+
+  it('classifies timeout error as transient with code smtp_timeout', async () => {
+    const serve = createEmailServe(smtpConfig);
+    const ctx = makeCtx();
+
+    (nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }).default.createTransport.mockReturnValue({
+      sendMail: vi.fn().mockRejectedValue(new Error('connection timeout')),
+    });
+
+    const result = await serve.emit(validMessage, ctx);
+
+    expect(result.data).toBeNull();
+    expect(result.error?.type).toBe('transient');
+    expect(result.error?.code).toBe('smtp_timeout');
   });
 });

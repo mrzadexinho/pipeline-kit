@@ -89,4 +89,68 @@ describe('Postal provider', () => {
     const headers = callArgs[1]?.headers as Record<string, string>;
     expect(headers['X-Idempotency-Key']).toBe(idempotencyKey);
   });
+
+  it('classifies 401 response as auth error', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(makeFetchResponse(401, { error: 'unauthorized' })),
+    );
+
+    const serve = createEmailServe(postalConfig);
+    const ctx = makeCtx();
+
+    const result = await serve.emit(validMessage, ctx);
+
+    expect(result.data).toBeNull();
+    expect(result.error?.type).toBe('auth');
+    expect(result.error?.code).toBe('postal_auth_failed');
+  });
+
+  it('classifies 403 response as auth error', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(makeFetchResponse(403, { error: 'forbidden' })),
+    );
+
+    const serve = createEmailServe(postalConfig);
+    const ctx = makeCtx();
+
+    const result = await serve.emit(validMessage, ctx);
+
+    expect(result.data).toBeNull();
+    expect(result.error?.type).toBe('auth');
+    expect(result.error?.code).toBe('postal_auth_failed');
+  });
+
+  it('classifies 5xx response as transient error', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(makeFetchResponse(502, { error: 'bad gateway' })),
+    );
+
+    const serve = createEmailServe(postalConfig);
+    const ctx = makeCtx();
+
+    const result = await serve.emit(validMessage, ctx);
+
+    expect(result.data).toBeNull();
+    expect(result.error?.type).toBe('transient');
+    expect(result.error?.code).toBe('postal_server_error');
+  });
+
+  it('classifies fetch network throw as network error', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockRejectedValue(new TypeError('fetch failed')),
+    );
+
+    const serve = createEmailServe(postalConfig);
+    const ctx = makeCtx();
+
+    const result = await serve.emit(validMessage, ctx);
+
+    expect(result.data).toBeNull();
+    expect(result.error?.type).toBe('network');
+    expect(result.error?.code).toBe('postal_network_error');
+  });
 });

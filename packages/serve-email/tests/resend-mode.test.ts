@@ -98,4 +98,59 @@ describe('Resend provider', () => {
     expect(result.error?.type).toBe('rate_limited');
     expect(result.error?.code).toBe('resend_rate_limited');
   });
+
+  it('classifies invalid_api_key (401) as auth error', async () => {
+    sendMock.mockResolvedValue({
+      data: null,
+      error: {
+        name: 'invalid_api_key',
+        message: 'Invalid API key',
+        statusCode: 401,
+      },
+    });
+
+    const serve = createEmailServe(resendConfig);
+    const ctx = makeCtx();
+
+    const result = await serve.emit(validMessage, ctx);
+
+    expect(result.data).toBeNull();
+    expect(result.error?.type).toBe('auth');
+    expect(result.error?.code).toBe('resend_auth_failed');
+  });
+
+  it('classifies generic SDK error as unknown with code resend_error', async () => {
+    sendMock.mockResolvedValue({
+      data: null,
+      error: {
+        name: 'something_unexpected',
+        message: 'unexpected payload',
+        statusCode: 400,
+      },
+    });
+
+    const serve = createEmailServe(resendConfig);
+    const ctx = makeCtx();
+
+    const result = await serve.emit(validMessage, ctx);
+
+    expect(result.data).toBeNull();
+    expect(result.error?.type).toBe('unknown');
+    expect(result.error?.code).toBe('resend_error');
+  });
+
+  it('calls send with no second-arg when ctx has no idempotency key', async () => {
+    sendMock.mockResolvedValue({ data: { id: 'resend-msg-noidem' }, error: null });
+
+    const serve = createEmailServe(resendConfig);
+    const ctx = makeCtx();
+
+    const result = await serve.emit(validMessage, ctx);
+
+    expect(result.error).toBeNull();
+    expect(sendMock).toHaveBeenCalledOnce();
+    // When no idempotency key, send is called with just the payload (single arg)
+    const callArgs = sendMock.mock.calls[0] as unknown[];
+    expect(callArgs.length).toBe(1);
+  });
 });
