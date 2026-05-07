@@ -78,6 +78,9 @@ importers:
       '@google/generative-ai':
         specifier: '*'
         version: 0.24.1
+      '@opentelemetry/api':
+        specifier: ^1.9.1
+        version: 1.9.1
       '@pipeline-kit/core':
         specifier: workspace:*
         version: link:../core
