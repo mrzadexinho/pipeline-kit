@@ -133,8 +133,9 @@ both anticipate fan-out at the orchestration layer:
    atoms NOT processed. (v0 simplification — partial-success semantics
    defer to v1; matches Inngest fail-fast default.)
 
-6. **Empty Source.** Zero atoms emitted → `Result<RunResult, RunError>`
-   with `error: { type: 'unavailable', code: 'source_no_atoms', ... }`.
+6. **Empty Source.** `Source.iter()` that completes (returns
+   `done: true`) without ever yielding → `Result<null, RunError>` with
+   `error: { type: 'unavailable', code: 'source_no_atoms', ... }`.
    Preserves M0 behavior; just now triggered by genuine empty iterable
    (M0's first-atom path triggered it on `atoms[0] === undefined` from
    `Atom[]`). Adapters can opt-into `allowEmpty: true` config to return
@@ -142,26 +143,51 @@ both anticipate fan-out at the orchestration layer:
    — useful for scheduled-source pipelines that legitimately no-op.
    v0 default: error on empty.
 
+   **Long-lived source pattern (webhook-source).** An `iter()` that
+   blocks waiting on an HTTP buffer (or any external arrival) is NOT
+   considered empty — it's "still iterating" and may yield later.
+   `pipeline.run()` against such a Source runs until `ctx.signal`
+   aborts; result on abort is `cancelled` (per §7), not
+   `source_no_atoms`. Document the long-lived pattern in the
+   webhook-source adapter README.
+
 7. **Cancellation.** `ctx.signal.aborted` checked between atoms (loop
    header) and propagated to in-flight stage. Abort mid-iteration → next
    atom not started; in-flight stage's current attempt observes
    `ctx.signal.aborted`; result is `{ error: { type: 'cancelled', ... } }`.
 
-8. **`RunResult` semantics.**
-   - `output: O` = last successfully processed atom's output (M0
-     behavior preserved for the single-atom case; extended for multi).
-   - `atomCount: number` = count of atoms emitted by Source (NOT count
-     of stage successes; if atom 5 of 10 fails, `atomCount` is still 10
-     by ADR12 spec — but `output` reflects atom 4's output and
-     `error.metadata.failed_at_atom` carries atom 5's id for triage).
+8. **`RunResult` semantics — success variant.** When all M atoms
+   yielded by `Source.iter()` complete every downstream stage:
+   - `Result<RunResult, never>` returned (data variant).
+   - `output: O` = atom M's terminal-stage output (last atom's
+     output; M0 single-atom behavior preserved as the M=1 case).
+   - `atomCount: number` = M (count of atoms `iter()` yielded during
+     the run).
    - `outputs?: ReadonlyArray<O>` is **NOT added** in M0.5 — keep
      `output` singular per spec; users who need per-atom outputs wire
      a Store adapter or read from OTel spans.
 
-9. **`Source.fetch` direct-call semantics.** Unchanged from M0 contract.
-   `fetch` is for batch grab; the property test "iter and fetch produce
-   same data" (per spec §3) holds for every v0 Source adapter — adapters
-   implement both, even if Composer's run-loop only uses iter.
+9. **Partial-failure shape — error variant.** When atom N of M
+   yielded by Source then fails downstream after retry exhaustion
+   (per §5):
+   - `Result<null, RunError>` returned (error variant). No
+     `RunResult`.
+   - `error.type` + `error.code` = root atom's stage error.
+   - `error.metadata.atom_id` = failing atom's id.
+   - `error.metadata.atoms_attempted` = N (1-indexed; the failing
+     atom's position in iter sequence).
+   - `error.metadata.atoms_completed` = N - 1 (atoms that completed
+     all stages before fail-fast).
+   - Atoms N+1 through M are NOT pulled from `iter()` — lazy
+     semantics; the iter generator is suspended/garbage-collected.
+     `atomCount` is therefore N, not M (M is unknown to Composer
+     because iter() never completed).
+
+10. **`Source.fetch` direct-call semantics.** Unchanged from M0
+    contract. `fetch` is for batch grab; the property test "iter and
+    fetch produce same data" (per spec §3) holds for every v0 Source
+    adapter — adapters implement both, even if Composer's run-loop
+    only uses iter.
 
 #### Test additions for Lock 2 (Task 1)
 
@@ -174,12 +200,17 @@ Composer fan-out test suite (`packages/core/tests/composer/fan-out.test.ts`):
 - `RunResult.atomCount === 3` for 3-atom emit.
 - `RunResult.output` === last atom's output.
 - Per-atom failure: atom 2 of 3 errors after 1 retry → run errors with
-  atom 2's error; atom 3 not processed; `atomCount === 3` (emit count
-  preserved); `metadata.failed_at_atom` === atom 2's id.
+  atom 2's error; atom 3 NOT pulled from iter (lazy semantics);
+  `error.metadata.atom_id` === atom 2's id;
+  `error.metadata.atoms_attempted === 2`;
+  `error.metadata.atoms_completed === 1`.
 - Cancellation mid-iteration: signal aborts during atom 2 of 3 → result
-  is `cancelled`; atom 3 not processed.
-- Empty Source (0 atoms) → `error.code === 'source_no_atoms'`.
-- Per-atom OTel spans: 3 atoms × 3 stages = 9 span emissions plus root.
+  is `cancelled`; atom 3 not pulled from iter.
+- Empty Source (iter completes without yielding) →
+  `error.code === 'source_no_atoms'`. Distinct from long-lived source
+  pattern (iter blocks indefinitely; abort yields `cancelled`).
+- Per-atom OTel spans: 3 atoms × 3 stages = 9 span emissions plus
+  per-atom child spans plus root.
 
 Property test addition (`composer/fan-out.property.test.ts`):
 
