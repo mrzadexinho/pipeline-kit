@@ -1,0 +1,58 @@
+{
+  "name": "@pipeline-kit/serve-email",
+  "version": "0.0.0",
+  "description": "Pipeline-kit Serve adapter for delivering pipeline results via email (Nodemailer / Resend)",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "pipeline-kit",
+    "serve",
+    "automation"
+  ],
+  "dependencies": {
+    "@pipeline-kit/core": "workspace:*",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "nodemailer": "*",
+    "resend": "*"
+  },
+  "peerDependenciesMeta": {
+    "nodemailer": {
+      "optional": true
+    },
+    "resend": {
+      "optional": true
+    }
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

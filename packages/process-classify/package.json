@@ -1,0 +1,54 @@
+{
+  "name": "@pipeline-kit/process-classify",
+  "version": "0.0.0",
+  "description": "Pipeline-kit Process adapter for label classification of pipeline atoms",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "pipeline-kit",
+    "process",
+    "automation"
+  ],
+  "dependencies": {
+    "@pipeline-kit/core": "workspace:*",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "@pipeline-kit/process-extract": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@pipeline-kit/process-extract": {
+      "optional": true
+    }
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}
