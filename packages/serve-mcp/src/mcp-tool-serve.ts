@@ -141,7 +141,8 @@ export function createMcpToolServe<I, O>(
       };
     }
 
-    const result = await config.pipeline.run(parsed.data);
+    const controller = new AbortController();
+    const result = await config.pipeline.run(parsed.data, { signal: controller.signal });
     if (result.error !== null) {
       const message =
         typeof result.error.message === 'string' && result.error.message.length > 0

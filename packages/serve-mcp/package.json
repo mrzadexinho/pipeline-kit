@@ -27,10 +27,16 @@
     "automation"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
     "@pipeline-kit/core": "workspace:*",
-    "zod": "^4.4.3",
-    "zod-to-json-schema": "^3.24.0"
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@modelcontextprotocol/sdk": {
+      "optional": false
+    }
   },
   "license": "MIT",
   "publishConfig": {
