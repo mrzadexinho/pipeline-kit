@@ -1,27 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { z } from 'zod';
-import type { PipelineContext, TraceContext } from '@pipeline-kit/core';
 import { createWebhookServe } from '../src/webhook-serve.js';
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function makeCtx(idempotencyKey?: string): PipelineContext {
-  const meta: Record<string, unknown> = {};
-  return {
-    runId: 'pk_run_test',
-    pipelineId: 'pk_pipe_test',
-    attempt: 1,
-    metadata: meta,
-    signal: new AbortController().signal,
-    trace: {} as unknown as TraceContext,
-    idempotencyKey,
-    attachMetadata(k: string, v: unknown) {
-      meta[k] = v;
-    },
-  };
-}
+import { makeCtx } from './helpers.js';
 
 const eventSchema = z.object({ event: z.string() });
 

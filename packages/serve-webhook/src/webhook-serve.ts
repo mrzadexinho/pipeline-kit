@@ -50,6 +50,7 @@ function makeServeError(
   code: string,
   message: string,
 ): ServeError {
+  // narrowing cast: type is the union discriminant, BaseError fields are common
   return { type, code, message } as ServeError;
 }
 
@@ -100,7 +101,18 @@ export function createWebhookServe<I>(config: WebhookServeConfig<I>): Serve<I> {
         );
       }
 
-      // 2. SSRF guard
+      // 2. Idempotency key required (idempotencySupport: 'required' contract)
+      if (!ctx.idempotencyKey) {
+        return err(
+          makeServeError(
+            'validation',
+            'idempotency_key_required',
+            'Webhook serve requires ctx.idempotencyKey (idempotencySupport: required)',
+          ),
+        );
+      }
+
+      // 3. SSRF guard
       if (config.ssrf?.enabled && isSsrfBlocked(config.url)) {
         return err(
           makeServeError(
@@ -111,16 +123,16 @@ export function createWebhookServe<I>(config: WebhookServeConfig<I>): Serve<I> {
         );
       }
 
-      // 3. Serialize body
+      // 4. Serialize body
       const body = JSON.stringify(parsed.data);
 
-      // 4. Build headers
+      // 5. Build headers
       const headers: Record<string, string> = {};
 
-      // 5. Idempotency header
-      headers[idempotencyHeader] = ctx.idempotencyKey ?? '';
+      // 6. Idempotency header (key guaranteed non-empty by guard above)
+      headers[idempotencyHeader] = ctx.idempotencyKey;
 
-      // 6. Auth header
+      // 7. Auth header
       switch (authMode) {
         case 'hmac': {
           const sig = sign(body, config.secret!, { timestamp: new Date() });
@@ -143,7 +155,7 @@ export function createWebhookServe<I>(config: WebhookServeConfig<I>): Serve<I> {
           break;
       }
 
-      // 7. POST the body
+      // 8. POST the body
       let response: Response;
       try {
         response = await fetch(config.url, {
@@ -161,10 +173,10 @@ export function createWebhookServe<I>(config: WebhookServeConfig<I>): Serve<I> {
         );
       }
 
-      // 8. Classify response
+      // 9. Classify response
       if (response.ok) {
         return ok({
-          id: ctx.idempotencyKey ?? generateId(),
+          id: ctx.idempotencyKey,
           emitted_at: new Date().toISOString(),
           metadata: {},
         });

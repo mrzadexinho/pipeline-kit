@@ -14,6 +14,9 @@ importers:
       '@changesets/cli':
         specifier: ^2.31.0
         version: 2.31.0(@types/node@25.6.0)
+      '@opentelemetry/api':
+        specifier: ^1.9.1
+        version: 1.9.1
       '@opentelemetry/sdk-trace-base':
         specifier: ^2.7.1
         version: 2.7.1(@opentelemetry/api@1.9.1)
@@ -169,6 +172,9 @@ importers:
       '@pipeline-kit/core':
         specifier: workspace:*
         version: link:../core
+      ipaddr.js:
+        specifier: ^2.4.0
+        version: 2.4.0
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -1509,6 +1515,10 @@ packages:
   ipaddr.js@1.9.1:
     resolution: {integrity: sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==}
     engines: {node: '>= 0.10'}
+
+  ipaddr.js@2.4.0:
+    resolution: {integrity: sha512-9VGk3HGanVE6JoZXHiCpnGy5X0jYDnN4EA4lntFPj+1vIWlFhIylq2CrrCOJH9EAhc5CYhq18F2Av2tgoAPsYQ==}
+    engines: {node: '>= 10'}
 
   is-electron@2.2.2:
     resolution: {integrity: sha512-FO/Rhvz5tuw4MCWkpMzHFKWD2LsfHzIb7i6MdPYZ/KW7AlxawyLkqdy+jPZP1WubqEADE3O4FUENlJHDfQASRg==}
@@ -3674,6 +3684,8 @@ snapshots:
   ip-address@10.2.0: {}
 
   ipaddr.js@1.9.1: {}
+
+  ipaddr.js@2.4.0: {}
 
   is-electron@2.2.2: {}
 

@@ -1,26 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { z } from 'zod';
-import type { PipelineContext, TraceContext } from '@pipeline-kit/core';
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function makeCtx(idempotencyKey?: string): PipelineContext {
-  const meta: Record<string, unknown> = {};
-  return {
-    runId: 'pk_run_test',
-    pipelineId: 'pk_pipe_test',
-    attempt: 1,
-    metadata: meta,
-    signal: new AbortController().signal,
-    trace: {} as unknown as TraceContext,
-    idempotencyKey,
-    attachMetadata(k: string, v: unknown) {
-      meta[k] = v;
-    },
-  };
-}
+import { makeCtx } from './helpers.js';
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -204,19 +184,19 @@ describe('createWebhookServe', () => {
     expect(result.error?.code).toBe('webhook_network_error');
   });
 
-  it('Case 11: success without idempotencyKey — id is generated', async () => {
+  it('Case 11: returns validation error when ctx.idempotencyKey is missing', async () => {
     const { createWebhookServe } = await import('../src/webhook-serve.js');
     const serve = createWebhookServe({
       url: 'https://hook.example.com/',
-      auth: 'none',
+      auth: 'hmac',
+      secret: 's',
       schema: z.object({ event: z.string() }),
     });
 
-    fetchMock.mockResolvedValue({ ok: true, status: 200 });
+    const result = await serve.emit({ event: 'x' }, makeCtx()); // no idempotencyKey
 
-    const result = await serve.emit({ event: 'test' }, makeCtx(undefined));
-
-    expect(result.error).toBeNull();
-    expect(result.data?.id).toMatch(/^pk_emit_/);
+    expect(result.error?.code).toBe('idempotency_key_required');
+    expect(result.error?.type).toBe('validation');
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
