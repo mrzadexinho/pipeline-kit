@@ -10,11 +10,12 @@ import {
 import { eq, sql } from 'drizzle-orm';
 import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import type { ZodType } from 'zod';
-import { embeddingTable } from './embedding-table.js';
+import { defineEmbeddingTable } from './embedding-table.js';
 
 export interface PgvectorStoreConfig<T> {
   id?: string;
   connectionString: string;
+  tableName?: string;
   dimension: number;
   distance: 'cosine' | 'l2' | 'inner_product';
   indexType?: 'hnsw' | 'ivfflat';
@@ -94,7 +95,8 @@ function classifyDbError(e: unknown): StoreError {
   return makeStoreError('unknown', 'db_unknown', e.message);
 }
 
-type EmbeddingRow = typeof embeddingTable.$inferSelect;
+// EmbeddingRow is inferred from any defineEmbeddingTable result — shape is identical regardless of dim/name
+type EmbeddingRow = ReturnType<typeof defineEmbeddingTable>['$inferSelect'];
 
 function rowToAtom<T>(
   row: EmbeddingRow,
@@ -133,6 +135,9 @@ export function createPgvectorStore<T>(config: PgvectorStoreConfig<T>): Pgvector
 
   const resolvedId = config.id ?? generateStoreId();
 
+  // Per-instance table derived from config — respects tableName and dimension
+  const table = defineEmbeddingTable(config.tableName ?? 'pipeline_embeddings', config.dimension);
+
   // Lazy db instance — created on first use so tests can inject before first call
   let db: PostgresJsDatabase | undefined;
 
@@ -153,7 +158,7 @@ export function createPgvectorStore<T>(config: PgvectorStoreConfig<T>): Pgvector
     const d = getDb();
 
     try {
-      const row: typeof embeddingTable.$inferInsert = {
+      const row: typeof table.$inferInsert = {
         id: atom.id,
         object: atom.object,
         created_at: new Date(atom.created_at),
@@ -166,10 +171,10 @@ export function createPgvectorStore<T>(config: PgvectorStoreConfig<T>): Pgvector
       };
 
       await d
-        .insert(embeddingTable)
+        .insert(table)
         .values(row)
         .onConflictDoUpdate({
-          target: embeddingTable.id,
+          target: table.id,
           set: {
             object: row.object,
             created_at: row.created_at,
@@ -195,7 +200,7 @@ export function createPgvectorStore<T>(config: PgvectorStoreConfig<T>): Pgvector
     const d = getDb();
 
     try {
-      const rows = await d.select().from(embeddingTable).where(eq(embeddingTable.id, id)).limit(1);
+      const rows = await d.select().from(table).where(eq(table.id, id)).limit(1);
 
       const row = rows[0];
       if (row === undefined) {
@@ -218,8 +223,8 @@ export function createPgvectorStore<T>(config: PgvectorStoreConfig<T>): Pgvector
     try {
       const rows = await d
         .select()
-        .from(embeddingTable)
-        .orderBy(embeddingTable.created_at)
+        .from(table)
+        .orderBy(table.created_at)
         .limit(limit + 1)
         .offset(offset);
 
@@ -258,12 +263,12 @@ export function createPgvectorStore<T>(config: PgvectorStoreConfig<T>): Pgvector
       const embStr = `[${Array.from(embedding).join(',')}]`;
       const distOp =
         config.distance === 'cosine'
-          ? sql`${embeddingTable.embedding} <=> ${embStr}::vector`
+          ? sql`${table.embedding} <=> ${sql.param(embStr)}::vector`
           : config.distance === 'l2'
-            ? sql`${embeddingTable.embedding} <-> ${embStr}::vector`
-            : sql`${embeddingTable.embedding} <#> ${embStr}::vector`;
+            ? sql`${table.embedding} <-> ${sql.param(embStr)}::vector`
+            : sql`${table.embedding} <#> ${sql.param(embStr)}::vector`;
 
-      const rows = await d.select().from(embeddingTable).orderBy(distOp).limit(k);
+      const rows = await d.select().from(table).orderBy(distOp).limit(k);
 
       const results: Array<Atom<T> & { embedding: Float32Array | null }> = [];
       for (const row of rows) {

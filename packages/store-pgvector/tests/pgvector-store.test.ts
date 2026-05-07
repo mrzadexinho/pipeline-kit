@@ -238,6 +238,19 @@ describe('createPgvectorStore', () => {
     });
   });
 
+  describe('indexType config', () => {
+    it('creates store with indexType ivfflat without error', () => {
+      const store = createPgvectorStore({
+        connectionString: 'postgres://mock',
+        dimension: 384,
+        distance: 'cosine',
+        indexType: 'ivfflat',
+        schema: ItemSchema,
+      });
+      expect(store.id).toMatch(/^pk_store_pgv_/);
+    });
+  });
+
   describe('list with cursor pagination', () => {
     it('list with limit=3 returns 3 items and has_more=true when 4 rows available', async () => {
       const atoms = Array.from({ length: 4 }, (_, i) =>

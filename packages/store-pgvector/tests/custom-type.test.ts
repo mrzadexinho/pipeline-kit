@@ -22,6 +22,18 @@ describe('serializeEmbedding / deserializeEmbedding', () => {
     expect(Array.from(back)).toEqual([1, 2, 3]);
   });
 
+  it('serialization preserves actual embedding length; dimension mismatch detected by PG', () => {
+    // A store configured for dim=384 would receive this 3-element vector at query time.
+    // Our serialization faithfully preserves the actual length so PG can detect the mismatch.
+    const v3 = new Float32Array([1.0, 2.0, 3.0]);
+    const serialized = serializeEmbedding(v3);
+    const deserialized = deserializeEmbedding(serialized);
+    expect(deserialized).toHaveLength(3); // 3, not 384
+    expect(Array.from(deserialized)).toHaveLength(3);
+    // Verify round-trip values are exact for integer inputs
+    expect(Array.from(deserialized)).toEqual([1, 2, 3]);
+  });
+
   it('pgvectorColumn column is usable in a table definition', () => {
     // Verify the builder does not throw and produces a truthy column descriptor
     const col = pgvectorColumn('embedding', { dim: 384 });
