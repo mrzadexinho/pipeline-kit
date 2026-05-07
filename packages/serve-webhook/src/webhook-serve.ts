@@ -54,6 +54,9 @@ function makeServeError(
   return { type, code, message } as ServeError;
 }
 
+// Uses ipaddr.js directly rather than ssrf-req-filter: that lib wraps http.Agent for
+// node-fetch/axios and is incompatible with native fetch (no agent option). ipaddr.js
+// is the underlying primitive ssrf-req-filter uses internally for IP range checks.
 export function isSsrfBlocked(url: string): boolean {
   try {
     const { hostname } = new URL(url);

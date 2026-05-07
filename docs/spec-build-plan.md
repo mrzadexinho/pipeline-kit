@@ -12,9 +12,9 @@
 
 ### Test framework (per ADR15)
 
-- **Unit + integration:** Vitest 2.x.
-- **Property:** fast-check 3.x.
-- **Type-level:** tstyche (optional v0; mandatory for `Pipeline.from().through().to()` chainable API type-narrowing tests).
+- **Unit + integration:** Vitest 4.x.
+- **Property:** fast-check 4.x.
+- **Type-level:** tstyche 7.x (optional v0; mandatory for `Pipeline.from().through().to()` chainable API type-narrowing tests).
 - **Coverage thresholds (CI gate):** 80% lines / 80% functions / 75% branches /
   80% statements. Below = red build.
 - **Lint + format:** Biome 2.x.

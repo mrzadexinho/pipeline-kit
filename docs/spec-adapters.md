@@ -140,7 +140,7 @@
 ### 11. `route-process` — basic single-priority routing
 
 - **Package:** `@pipeline-kit/process-route`.
-- **Config:** `{ predicate: (input: I) => string, branches: Record<string, Process<I, unknown>> }`.
+- **Config:** `{ predicate: (input: I) => string, branches: Record<string, Process<I, unknown>>, defaultBranch?: string, retryPolicy?: Partial<RetryPolicy>, id?: string }`.
 - **Behavior:** evaluates predicate, dispatches to named branch. v0 ships
   single-priority routing only (per Phase 1 brain Q5 — full route-policy
   unification deferred to ADR-C in v1 spec).
@@ -207,8 +207,13 @@
 - **Use case:** any pipeline can be exposed as an MCP tool for agent
   consumption. Validates "auto-MCP exposure" (Q7) by shipping the runtime
   piece in v0; auto-codegen tooling is the v1 add.
-- **Reference deps:** `@modelcontextprotocol/sdk`, `zod`,
-  `zod-to-json-schema`.
+- **Reference deps:** `@modelcontextprotocol/sdk` (peerDep — users wire it
+  into their own MCP `Server` instance per ADR22, library not runtime), `zod`.
+- **JSON Schema derivation:** uses zod v4's native `z.toJSONSchema()` rather
+  than the `zod-to-json-schema` package. Reason: `zod-to-json-schema@3.x`
+  types target zod v3's `ZodType` and produce TS2345 against zod v4's
+  `ZodType<I, unknown, $ZodTypeInternals<I, unknown>>`. Output JSON Schema is
+  equivalent.
 
 ---
 
