@@ -1,5 +1,12 @@
-import { vi, describe, it, expect, beforeEach } from 'vitest';
-import type { PipelineContext, TraceContext, Store, Atom, Result, StoreError } from '@pipeline-kit/core';
+import type {
+  Atom,
+  PipelineContext,
+  Result,
+  Store,
+  StoreError,
+  TraceContext,
+} from '@pipeline-kit/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ---------------------------------------------------------------------------
 // Mock @slack/web-api before any imports that use it
@@ -37,9 +44,10 @@ function makeCtx(idempotencyKey?: string): PipelineContext {
   };
 }
 
-function makeMockStore(
-  initialAtom?: Atom<{ ts: string; channel: string }>,
-): Store<{ ts: string; channel: string }> & {
+function makeMockStore(initialAtom?: Atom<{ ts: string; channel: string }>): Store<{
+  ts: string;
+  channel: string;
+}> & {
   putMock: ReturnType<typeof vi.fn>;
   getMock: ReturnType<typeof vi.fn>;
 } {
@@ -189,10 +197,7 @@ describe('SlackServe', () => {
     const serve = createSlackServe(baseConfig);
     const ctx = makeCtx();
 
-    const result = await serve.emit(
-      { text: 'Thread reply', thread_ts: '1234567890.000001' },
-      ctx,
-    );
+    const result = await serve.emit({ text: 'Thread reply', thread_ts: '1234567890.000001' }, ctx);
 
     expect(result.error).toBeNull();
     expect(postMessageMock).toHaveBeenCalledOnce();

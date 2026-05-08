@@ -1,6 +1,13 @@
-import { err, ok, type EmitResult, type PipelineContext, type Result, type ServeError } from '@pipeline-kit/core';
+import {
+  type EmitResult,
+  err,
+  ok,
+  type PipelineContext,
+  type Result,
+  type ServeError,
+} from '@pipeline-kit/core';
 import type { CreateEmailOptions, CreateEmailRequestOptions } from 'resend';
-import type { EmailServeConfigResend, EmailMessage } from '../email-serve.js';
+import type { EmailMessage, EmailServeConfigResend } from '../email-serve.js';
 import { generateEmitId, makeServeError } from '../internal.js';
 
 function classifyResendError(name: string, statusCode: number | null, message: string): ServeError {
@@ -34,7 +41,11 @@ export async function sendResend(
     ResendClass = mod.Resend;
   } catch {
     return err(
-      makeServeError('unknown', 'provider_not_installed', 'resend peer dependency is not installed'),
+      makeServeError(
+        'unknown',
+        'provider_not_installed',
+        'resend peer dependency is not installed',
+      ),
     );
   }
 
@@ -58,11 +69,14 @@ export async function sendResend(
     ? { idempotencyKey: ctx.idempotencyKey }
     : undefined;
 
-  let result: { data: { id: string } | null; error: { name: string; statusCode: number | null; message: string } | null };
+  let result: {
+    data: { id: string } | null;
+    error: { name: string; statusCode: number | null; message: string } | null;
+  };
   try {
-    result = await (options
+    result = (await (options
       ? client.emails.send(payload, options)
-      : client.emails.send(payload)) as typeof result;
+      : client.emails.send(payload))) as typeof result;
   } catch (e) {
     return err(
       makeServeError('unknown', 'resend_unexpected', e instanceof Error ? e.message : String(e)),

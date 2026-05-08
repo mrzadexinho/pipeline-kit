@@ -200,7 +200,9 @@ describe('process-extract / openai', () => {
   it('missing usage and null finish_reason fall back to defaults', async () => {
     // Response with no usage and finish_reason=null exercises ?? 0 and ?? 'unknown' branches
     mockCreate.mockResolvedValueOnce({
-      choices: [{ message: { content: JSON.stringify({ name: 'Eve', age: 22 }) }, finish_reason: null }],
+      choices: [
+        { message: { content: JSON.stringify({ name: 'Eve', age: 22 }) }, finish_reason: null },
+      ],
       // no usage field
     });
 

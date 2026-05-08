@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { PipelineContext, TraceContext } from '@pipeline-kit/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 function makeCtx(idempotencyKey?: string): PipelineContext {
   const meta: Record<string, unknown> = {};
@@ -11,7 +11,9 @@ function makeCtx(idempotencyKey?: string): PipelineContext {
     signal: new AbortController().signal,
     trace: {} as unknown as TraceContext,
     idempotencyKey,
-    attachMetadata(k: string, v: unknown) { meta[k] = v; },
+    attachMetadata(k: string, v: unknown) {
+      meta[k] = v;
+    },
   };
 }
 

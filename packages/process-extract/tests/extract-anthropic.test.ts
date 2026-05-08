@@ -175,7 +175,12 @@ describe('process-extract / anthropic', () => {
   it('null stop_reason falls back to "unknown"', async () => {
     mockMessagesCreate.mockResolvedValueOnce({
       content: [
-        { type: 'tool_use', id: 't', name: 'extract', input: { sentiment: 'neutral', confidence: 0.5 } },
+        {
+          type: 'tool_use',
+          id: 't',
+          name: 'extract',
+          input: { sentiment: 'neutral', confidence: 0.5 },
+        },
       ],
       stop_reason: null,
       usage: { input_tokens: 1, output_tokens: 1 },

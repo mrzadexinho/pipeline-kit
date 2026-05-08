@@ -1,18 +1,18 @@
 import {
+  type EmitResult,
   err,
   ok,
-  type EmitResult,
   type PipelineContext,
   type Result,
   type RetryPolicy,
-  type ServeError,
   type Serve,
+  type ServeError,
 } from '@pipeline-kit/core';
 import { z } from 'zod';
 import { generateEmitId, makeServeError } from './internal.js';
-import { sendSmtp } from './providers/smtp.js';
 import { sendPostal } from './providers/postal.js';
 import { sendResend } from './providers/resend.js';
+import { sendSmtp } from './providers/smtp.js';
 
 // ---------------------------------------------------------------------------
 // EmailMessage schema
@@ -24,9 +24,7 @@ export const EmailMessage = z.object({
   html: z.string().optional(),
   text: z.string().optional(),
   cc: z.array(z.string().email()).optional(),
-  attachments: z
-    .array(z.object({ filename: z.string(), content: z.string() }))
-    .optional(),
+  attachments: z.array(z.object({ filename: z.string(), content: z.string() })).optional(),
 });
 
 export type EmailMessage = z.infer<typeof EmailMessage>;

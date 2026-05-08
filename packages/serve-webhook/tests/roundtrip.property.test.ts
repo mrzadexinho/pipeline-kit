@@ -1,6 +1,6 @@
+import { sign, verify } from '@pipeline-kit/core';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { sign, verify } from '@pipeline-kit/core';
 
 describe('sign/verify roundtrip', () => {
   it('for arbitrary secrets and payloads: sign then verify succeeds', async () => {

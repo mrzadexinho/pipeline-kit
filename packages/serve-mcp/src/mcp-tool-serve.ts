@@ -1,7 +1,7 @@
 import {
+  type EmitResult,
   err,
   ok,
-  type EmitResult,
   type PipelineContext,
   type Result,
   type RetryPolicy,
@@ -66,7 +66,9 @@ function makeServeError(
   return base as ServeError;
 }
 
-function describeZodIssues(issues: ReadonlyArray<{ path: ReadonlyArray<PropertyKey>; message: string }>): string {
+function describeZodIssues(
+  issues: ReadonlyArray<{ path: ReadonlyArray<PropertyKey>; message: string }>,
+): string {
   return issues
     .map((i) => {
       const path = i.path.length > 0 ? i.path.join('.') : '(root)';
@@ -79,9 +81,7 @@ function describeZodIssues(issues: ReadonlyArray<{ path: ReadonlyArray<PropertyK
 // Factory
 // ---------------------------------------------------------------------------
 
-export function createMcpToolServe<I, O>(
-  config: McpToolServeConfig<I, O>,
-): McpToolServe<I, O> {
+export function createMcpToolServe<I, O>(config: McpToolServeConfig<I, O>): McpToolServe<I, O> {
   if (!config.toolName || config.toolName.trim().length === 0) {
     throw new Error('McpToolServe: toolName is required.');
   }
@@ -92,10 +92,7 @@ export function createMcpToolServe<I, O>(
   const id = config.id ?? generateId();
   const inputJsonSchema = toJSONSchema(config.inputSchema) as Record<string, unknown>;
 
-  const emit = async (
-    input: I,
-    ctx: PipelineContext,
-  ): Promise<Result<EmitResult, ServeError>> => {
+  const emit = async (input: I, ctx: PipelineContext): Promise<Result<EmitResult, ServeError>> => {
     // 1. Validate input
     const parsed = config.inputSchema.safeParse(input);
     if (!parsed.success) {
@@ -118,9 +115,7 @@ export function createMcpToolServe<I, O>(
         typeof runError.message === 'string' && runError.message.length > 0
           ? runError.message
           : 'pipeline failed';
-      return err(
-        makeServeError('unknown', 'pipeline_error', message, { runError }),
-      );
+      return err(makeServeError('unknown', 'pipeline_error', message, { runError }));
     }
 
     const data = result.data;

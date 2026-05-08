@@ -125,7 +125,9 @@ describe('sqlite-store branch coverage', () => {
 
     it('maps auth/permission error to StoreError type=auth', async () => {
       const store = createSqliteStore({ path: ':memory:', schema: ItemSchema });
-      store._setDb(makeThrowingDb(new Error('attempt to write a readonly database (permission denied)')));
+      store._setDb(
+        makeThrowingDb(new Error('attempt to write a readonly database (permission denied)')),
+      );
 
       const result = await store.put(makeAtom({ id: 'pk_atom_branch_auth' }), makeCtx());
       expect(result.data).toBeNull();

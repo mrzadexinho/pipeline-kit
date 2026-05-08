@@ -12,8 +12,8 @@ import { eq } from 'drizzle-orm';
 import { type BetterSQLite3Database, drizzle } from 'drizzle-orm/better-sqlite3';
 import type { ZodType } from 'zod';
 import {
-  atomsTable as defaultAtomsTable,
   type AtomsTable,
+  atomsTable as defaultAtomsTable,
   idempotencyTable as defaultIdempotencyTable,
 } from './atom-table.js';
 

@@ -1,5 +1,12 @@
-import { err, ok, type EmitResult, type PipelineContext, type Result, type ServeError } from '@pipeline-kit/core';
-import type { EmailServeConfigPostal, EmailMessage } from '../email-serve.js';
+import {
+  type EmitResult,
+  err,
+  ok,
+  type PipelineContext,
+  type Result,
+  type ServeError,
+} from '@pipeline-kit/core';
+import type { EmailMessage, EmailServeConfigPostal } from '../email-serve.js';
 import { generateEmitId, makeServeError } from '../internal.js';
 
 function classifyPostalStatus(status: number, body: unknown): ServeError {
@@ -16,7 +23,11 @@ function classifyPostalStatus(status: number, body: unknown): ServeError {
   if (status >= 500) {
     return makeServeError('transient', 'postal_server_error', msg);
   }
-  return makeServeError('unknown', 'postal_unexpected_status', `Unexpected status ${status}: ${msg}`);
+  return makeServeError(
+    'unknown',
+    'postal_unexpected_status',
+    `Unexpected status ${status}: ${msg}`,
+  );
 }
 
 export async function sendPostal(

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { PipelineContext, TraceContext } from '@pipeline-kit/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 function makeCtx(idempotencyKey?: string): PipelineContext {
   const meta: Record<string, unknown> = {};
@@ -11,7 +11,9 @@ function makeCtx(idempotencyKey?: string): PipelineContext {
     signal: new AbortController().signal,
     trace: {} as unknown as TraceContext,
     idempotencyKey,
-    attachMetadata(k: string, v: unknown) { meta[k] = v; },
+    attachMetadata(k: string, v: unknown) {
+      meta[k] = v;
+    },
   };
 }
 
@@ -33,8 +35,12 @@ const nodemailer = await import('nodemailer');
 
 function getSendMail() {
   // Get the sendMail mock from the transport created by createTransport
-  const createTransportMock = (nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }).default.createTransport as ReturnType<typeof vi.fn>;
-  const transport = createTransportMock.mock.results[0]?.value as { sendMail: ReturnType<typeof vi.fn> } | undefined;
+  const createTransportMock = (
+    nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }
+  ).default.createTransport as ReturnType<typeof vi.fn>;
+  const transport = createTransportMock.mock.results[0]?.value as
+    | { sendMail: ReturnType<typeof vi.fn> }
+    | undefined;
   return transport?.sendMail;
 }
 
@@ -65,7 +71,9 @@ describe('SMTP provider', () => {
     const ctx = makeCtx('idem-key-1');
 
     // Ensure a fresh transport mock with resolved sendMail
-    (nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }).default.createTransport.mockReturnValue({
+    (
+      nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }
+    ).default.createTransport.mockReturnValue({
       sendMail: vi.fn().mockResolvedValue({ messageId: 'test-id' }),
     });
 
@@ -80,10 +88,12 @@ describe('SMTP provider', () => {
     const serve = createEmailServe(smtpConfig);
     const ctx = makeCtx();
 
-    (nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }).default.createTransport.mockReturnValue({
-      sendMail: vi.fn().mockRejectedValue(
-        Object.assign(new Error('Invalid credentials'), { code: 'EAUTH' }),
-      ),
+    (
+      nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }
+    ).default.createTransport.mockReturnValue({
+      sendMail: vi
+        .fn()
+        .mockRejectedValue(Object.assign(new Error('Invalid credentials'), { code: 'EAUTH' })),
     });
 
     const result = await serve.emit(validMessage, ctx);
@@ -97,7 +107,9 @@ describe('SMTP provider', () => {
     const serve = createEmailServe(smtpConfig);
     const ctx = makeCtx();
 
-    (nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }).default.createTransport.mockReturnValue({
+    (
+      nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }
+    ).default.createTransport.mockReturnValue({
       sendMail: vi.fn().mockRejectedValue(new Error('too many requests')),
     });
 
@@ -113,7 +125,9 @@ describe('SMTP provider', () => {
     const ctx = makeCtx(idempotencyKey);
 
     const sendMailMock = vi.fn().mockResolvedValue({ messageId: 'msg-id' });
-    (nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }).default.createTransport.mockReturnValue({
+    (
+      nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }
+    ).default.createTransport.mockReturnValue({
       sendMail: sendMailMock,
     });
 
@@ -133,7 +147,9 @@ describe('SMTP provider', () => {
     const ctx = makeCtx(idempotencyKey);
 
     const sendMailMock = vi.fn().mockResolvedValue({ messageId: 'msg-id' });
-    (nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }).default.createTransport.mockReturnValue({
+    (
+      nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }
+    ).default.createTransport.mockReturnValue({
       sendMail: sendMailMock,
     });
 
@@ -148,7 +164,9 @@ describe('SMTP provider', () => {
     const serve = createEmailServe(smtpConfig);
     const ctx = makeCtx();
 
-    (nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }).default.createTransport.mockReturnValue({
+    (
+      nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }
+    ).default.createTransport.mockReturnValue({
       sendMail: vi.fn().mockRejectedValue(new Error('something else')),
     });
 
@@ -163,7 +181,9 @@ describe('SMTP provider', () => {
     const serve = createEmailServe(smtpConfig);
     const ctx = makeCtx();
 
-    (nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }).default.createTransport.mockReturnValue({
+    (
+      nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }
+    ).default.createTransport.mockReturnValue({
       sendMail: vi.fn().mockRejectedValue(new Error('connection timeout')),
     });
 

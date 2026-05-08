@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { PipelineContext, TraceContext } from '@pipeline-kit/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 function makeCtx(): PipelineContext {
   const meta: Record<string, unknown> = {};
@@ -10,7 +10,9 @@ function makeCtx(): PipelineContext {
     metadata: meta,
     signal: new AbortController().signal,
     trace: {} as unknown as TraceContext,
-    attachMetadata(k: string, v: unknown) { meta[k] = v; },
+    attachMetadata(k: string, v: unknown) {
+      meta[k] = v;
+    },
   };
 }
 

@@ -1,4 +1,3 @@
-export { createEmailServe } from './email-serve.js';
 export type {
   EmailMessage,
   EmailServeConfig,
@@ -9,3 +8,4 @@ export type {
   ResendConfig,
   SmtpConfig,
 } from './email-serve.js';
+export { createEmailServe } from './email-serve.js';

@@ -1,17 +1,17 @@
-import ipaddr from 'ipaddr.js';
 import {
+  type EmitResult,
   err,
   ok,
-  sign,
-  type EmitResult,
   type PipelineContext,
   type Result,
   type RetryPolicy,
-  type ServeError,
   type Serve,
+  type ServeError,
+  sign,
   type TokenBucketConfig,
 } from '@pipeline-kit/core';
-import { type ZodType } from 'zod';
+import ipaddr from 'ipaddr.js';
+import type { ZodType } from 'zod';
 
 // ---------------------------------------------------------------------------
 // Config
@@ -45,11 +45,7 @@ function generateId(): string {
   return `pk_emit_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function makeServeError(
-  type: ServeError['type'],
-  code: string,
-  message: string,
-): ServeError {
+function makeServeError(type: ServeError['type'], code: string, message: string): ServeError {
   // narrowing cast: type is the union discriminant, BaseError fields are common
   return { type, code, message } as ServeError;
 }
@@ -76,9 +72,7 @@ export function createWebhookServe<I>(config: WebhookServeConfig<I>): Serve<I> {
   const authMode = config.auth ?? 'hmac';
 
   if (authMode === 'hmac' && !config.secret) {
-    throw new Error(
-      'WebhookServe: secret is required when auth is "hmac". Pass config.secret.',
-    );
+    throw new Error('WebhookServe: secret is required when auth is "hmac". Pass config.secret.');
   }
 
   const id = config.id ?? generateId();
@@ -118,11 +112,7 @@ export function createWebhookServe<I>(config: WebhookServeConfig<I>): Serve<I> {
       // 3. SSRF guard
       if (config.ssrf?.enabled && isSsrfBlocked(config.url)) {
         return err(
-          makeServeError(
-            'validation',
-            'ssrf_blocked',
-            'Request to private/loopback IP is blocked',
-          ),
+          makeServeError('validation', 'ssrf_blocked', 'Request to private/loopback IP is blocked'),
         );
       }
 
@@ -201,11 +191,7 @@ export function createWebhookServe<I>(config: WebhookServeConfig<I>): Serve<I> {
 
       if (status >= 400 && status < 500) {
         return err(
-          makeServeError(
-            'validation',
-            'webhook_client_error',
-            `HTTP ${status}: client error`,
-          ),
+          makeServeError('validation', 'webhook_client_error', `HTTP ${status}: client error`),
         );
       }
 

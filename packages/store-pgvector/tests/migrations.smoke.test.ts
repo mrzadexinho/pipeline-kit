@@ -126,10 +126,7 @@ describe.skipIf(SKIP_SMOKE)('pgvector-store [skip-ci] smoke', () => {
     for (let i = 0; i < fixtures.length; i++) {
       const f = fixtures[i];
       if (f === undefined) continue;
-      const put = await seedStore.put(
-        { ...makeAtom(f.id, i + 100), embedding: f.vec },
-        makeCtx(),
-      );
+      const put = await seedStore.put({ ...makeAtom(f.id, i + 100), embedding: f.vec }, makeCtx());
       expect(put.error).toBeNull();
     }
   }

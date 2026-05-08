@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import { createEmailServe } from '../src/email-serve.js';
 import type { PipelineContext, TraceContext } from '@pipeline-kit/core';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { createEmailServe } from '../src/email-serve.js';
 
 function makeCtx(idempotencyKey?: string): PipelineContext {
   const meta: Record<string, unknown> = {};
@@ -12,7 +12,9 @@ function makeCtx(idempotencyKey?: string): PipelineContext {
     signal: new AbortController().signal,
     trace: {} as unknown as TraceContext,
     idempotencyKey,
-    attachMetadata(k: string, v: unknown) { meta[k] = v; },
+    attachMetadata(k: string, v: unknown) {
+      meta[k] = v;
+    },
   };
 }
 
@@ -139,10 +141,7 @@ describe('Postal provider', () => {
   });
 
   it('classifies fetch network throw as network error', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockRejectedValue(new TypeError('fetch failed')),
-    );
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('fetch failed')));
 
     const serve = createEmailServe(postalConfig);
     const ctx = makeCtx();
