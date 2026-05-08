@@ -1,6 +1,6 @@
 # @pipeline-kit/serve-email
 
-Serve adapter for delivering pipeline results via email using Nodemailer or Resend.
+Serve adapter for delivering pipeline results via email — supports SMTP (Nodemailer), Postal, and Resend providers.
 
 ## Install
 
@@ -8,6 +8,24 @@ Serve adapter for delivering pipeline results via email using Nodemailer or Rese
 pnpm add @pipeline-kit/serve-email
 ```
 
+Peer dependencies (install whichever provider you use):
+- `nodemailer` (SMTP)
+- `resend` (Resend HTTP API)
+
+Postal uses `fetch` and needs no extra peer dep.
+
 ## Usage
 
-See [`docs/spec.md`](../../docs/spec.md) and [`docs/briefs/m0_5_reference_adapters-spec.md`](../../docs/briefs/m0_5_reference_adapters-spec.md) for full API documentation.
+```typescript
+import { createEmailServe } from '@pipeline-kit/serve-email';
+
+const email = createEmailServe({
+  provider: 'resend',
+  from: 'noreply@example.com',
+  resend: { apiKey: process.env.RESEND_API_KEY! },
+});
+```
+
+## Reference
+
+Canonical API surface: [`docs/spec-adapters.md`](../../docs/spec-adapters.md). Core types: [`docs/spec-api-surface.md`](../../docs/spec-api-surface.md).

@@ -1,6 +1,6 @@
 # @pipeline-kit/process-extract
 
-Process adapter for LLM-powered structured data extraction using Zod schemas as output contracts.
+Process adapter for LLM-powered structured data extraction with Zod schema validation and JSON-schema auto-derivation.
 
 ## Install
 
@@ -8,6 +8,25 @@ Process adapter for LLM-powered structured data extraction using Zod schemas as 
 pnpm add @pipeline-kit/process-extract
 ```
 
+Peer dependencies (install whichever provider you use):
+- `openai`
+- `@anthropic-ai/sdk`
+- `@google/generative-ai`
+
 ## Usage
 
-See [`docs/spec.md`](../../docs/spec.md) and [`docs/briefs/m0_5_reference_adapters-spec.md`](../../docs/briefs/m0_5_reference_adapters-spec.md) for full API documentation.
+```typescript
+import { createExtractProcess } from '@pipeline-kit/process-extract';
+import { z } from 'zod';
+
+const extract = createExtractProcess({
+  provider: 'openai',
+  model: 'gpt-4o-mini',
+  prompt: (input: { text: string }) => `Extract entities from: ${input.text}`,
+  outputSchema: z.object({ name: z.string(), email: z.string().email() }),
+});
+```
+
+## Reference
+
+Canonical API surface: [`docs/spec-adapters.md`](../../docs/spec-adapters.md). Core types: [`docs/spec-api-surface.md`](../../docs/spec-api-surface.md).

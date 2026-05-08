@@ -1,6 +1,6 @@
 # @pipeline-kit/store-sqlite
 
-Store adapter for persisting pipeline atoms to SQLite using Drizzle ORM and better-sqlite3.
+Store adapter for persisting pipeline atoms to SQLite via Drizzle ORM. Uses `better-sqlite3` on Node; a `createSqliteStoreForBun` factory is provided for Bun runtimes (`bun:sqlite`).
 
 ## Install
 
@@ -8,6 +8,20 @@ Store adapter for persisting pipeline atoms to SQLite using Drizzle ORM and bett
 pnpm add @pipeline-kit/store-sqlite
 ```
 
+`better-sqlite3` and `drizzle-orm` are bundled as direct dependencies.
+
 ## Usage
 
-See [`docs/spec.md`](../../docs/spec.md) and [`docs/briefs/m0_5_reference_adapters-spec.md`](../../docs/briefs/m0_5_reference_adapters-spec.md) for full API documentation.
+```typescript
+import { createSqliteStore } from '@pipeline-kit/store-sqlite';
+import { z } from 'zod';
+
+const store = createSqliteStore({
+  path: './data/atoms.db',
+  schema: z.object({ id: z.string(), payload: z.unknown() }),
+});
+```
+
+## Reference
+
+Canonical API surface: [`docs/spec-adapters.md`](../../docs/spec-adapters.md). Core types: [`docs/spec-api-surface.md`](../../docs/spec-api-surface.md).

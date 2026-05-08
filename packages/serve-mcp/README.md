@@ -1,6 +1,6 @@
 # @pipeline-kit/serve-mcp
 
-Serve adapter for exposing pipeline stages as MCP tools and resources via the MCP SDK.
+Serve adapter for exposing a TerminalPipeline as an MCP tool — userland wires the returned `toolRegistration` into its own MCP `Server` instance.
 
 ## Install
 
@@ -8,6 +8,26 @@ Serve adapter for exposing pipeline stages as MCP tools and resources via the MC
 pnpm add @pipeline-kit/serve-mcp
 ```
 
+Peer dependency:
+- `@modelcontextprotocol/sdk`
+
 ## Usage
 
-See [`docs/spec.md`](../../docs/spec.md) and [`docs/briefs/m0_5_reference_adapters-spec.md`](../../docs/briefs/m0_5_reference_adapters-spec.md) for full API documentation.
+```typescript
+import { createMcpToolServe } from '@pipeline-kit/serve-mcp';
+import { z } from 'zod';
+
+const tool = createMcpToolServe({
+  toolName: 'summarize_ticket',
+  description: 'Summarize a support ticket via the kit pipeline',
+  inputSchema: z.object({ ticketId: z.string() }),
+  outputSchema: z.object({ summary: z.string() }),
+  pipeline: terminalPipeline,
+});
+
+// Register tool.toolRegistration with your MCP server.
+```
+
+## Reference
+
+Canonical API surface: [`docs/spec-adapters.md`](../../docs/spec-adapters.md). Core types: [`docs/spec-api-surface.md`](../../docs/spec-api-surface.md).

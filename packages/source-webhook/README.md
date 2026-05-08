@@ -1,6 +1,6 @@
 # @pipeline-kit/source-webhook
 
-Source adapter for receiving inbound webhooks via a Hono HTTP server with Zod validation.
+Source adapter for receiving inbound webhooks via Hono — exposes a pre-wired Hono `app` and a raw web-standards `(req: Request) => Promise<Response>` handler. Verifies HMAC signatures via core's `verify()`.
 
 ## Install
 
@@ -8,6 +8,23 @@ Source adapter for receiving inbound webhooks via a Hono HTTP server with Zod va
 pnpm add @pipeline-kit/source-webhook
 ```
 
+`hono` and `@hono/zod-validator` are bundled as direct dependencies. Mount `app` (or `handler`) on Node, Bun, Cloudflare Workers, Vercel Edge, or Lambda.
+
 ## Usage
 
-See [`docs/spec.md`](../../docs/spec.md) and [`docs/briefs/m0_5_reference_adapters-spec.md`](../../docs/briefs/m0_5_reference_adapters-spec.md) for full API documentation.
+```typescript
+import { createWebhookSource } from '@pipeline-kit/source-webhook';
+import { z } from 'zod';
+
+const webhook = createWebhookSource({
+  path: '/webhooks/orders',
+  secret: process.env.WEBHOOK_SECRET!,
+  schema: z.object({ orderId: z.string(), total: z.number() }),
+});
+
+// In your server: webhook.app  (Hono)  or  webhook.handler  (raw fetch)
+```
+
+## Reference
+
+Canonical API surface: [`docs/spec-adapters.md`](../../docs/spec-adapters.md). Core types: [`docs/spec-api-surface.md`](../../docs/spec-api-surface.md).
