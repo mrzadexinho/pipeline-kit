@@ -4,9 +4,9 @@
 > points where pipeline-kit could have provided a shovel primitive. Each
 > entry is anchored in concrete file refs, not impressions.
 >
-> Seed observations live in `research-outline-v1-claude-constellation.md`.
+> Seed observations live in `research-outline-v1-constellation.md`.
 > Canonical entries here are deeper reads. Outline & methodology in
-> `research-outline-v1-claude.md` § Phase 0.
+> `research-outline-v1.md` § Phase 0.
 >
 > **Important framing:** projects below are *example use cases*, not kit
 > customers. Every friction tagged is meant to generalise to "anyone,
