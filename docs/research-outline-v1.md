@@ -1,41 +1,83 @@
 # pipeline-kit — v1 Research Outline
 
-> **Purpose:** scope what gets researched in the v1 Phase 1 cycle before any
-> spec or code is written. Feeds `research-notes-v1-cat-*.md` per category,
-> then a brain synthesis into `docs/spec-v1.md`.
->
-> **Author:** Brain — 2026-05-07.
-> **Predecessor:** Phase 1 v0 research (10 categories → 23 ADRs → M0 + M0.5
-> shipped). The v0 model and ADRs are locked inputs — this research extends
-> them, not re-deliberates them.
-> **Status:** Draft — open for iteration before research begins.
+> **Purpose:** scope v1 Phase 1 research before spec or code. Feeds
+> `research-notes-v1-cat-*.md` per category, then brain synthesis into
+> `docs/spec-v1.md`.
+> **Author:** Brain — 2026-05-08 (merged from 7-cat draft + 10-cat
+> friction-first + Phase 0 catalog).
+> **Predecessor:** Phase 1 v0 (10 cats → 23 ADRs → M0 + M0.5 shipped at
+> 1c340bc); v0 ADRs locked inputs, not re-deliberated.
+> **Phase 0 input:** `docs/research-friction-catalog.md` (9 projects, top-15).
+> **Companions:** `research-outline-v1-constellation.md`,
+> `research-outline-v1-packs.md`.
+> **Status:** LOCKED 2026-05-08; Phase 1 may begin.
 
 ---
 
 ## What changed since v0
 
-v0 research established the typed-stage model (Source/Store/Process/Serve),
-the Composer, Result<T,E>, Zod boundaries, OTel, HRP/Reviewable, 23 ADRs,
-and 17 reference packages. All shipped and green.
+v0 synthesised 23 ADRs + 17 reference adapters; M0 + M0.5 shipped both. v1
+extends without re-deliberating v0. Five concerns inherit:
 
-v1 research addresses three things v0 deliberately deferred:
+1. **Protocol stack gaps** — durable execution, triggers, agent protocols, memory/feedback (Brain).
+2. **Stage model extension** — DAGs, new stage types, two-plane semantics.
+3. **Empirical validation** — spike-driven, not document synthesis.
+4. **Cross-runtime reach** *(new)* — kit is TS-only; half the example automations (Python) cannot reach kit until this is solved.
+5. **Identity / secrets / cost** *(new)* — every adapter quietly re-solves credentials and rate-budgets; no shared pattern exists.
 
-1. **Protocol stack gaps** — durable execution, trigger/scheduling, agent
-   communication, memory/feedback. These are the missing layers between the
-   typed-stage primitives and a production-grade personal automation toolkit.
+---
 
-2. **Stage model extension** — the 4-stage linear model needs to handle DAGs,
-   new primitive types (Agent, Gate, Aggregate, Trigger), and richer semantics
-   per stage. Real automations are graphs, not chains.
+## What v1 is NOT
 
-3. **Empirical validation** — v0 research was read → synthesise. v1 adds a
-   mandatory spike per category: a small working proof-of-concept that answers
-   questions docs cannot. Findings from spikes feed the ADR candidates.
-
-**What v1 is NOT:**
 - Not a product launch or reference project (no Trades Outbound).
 - Not a re-deliberation of v0 ADRs.
 - Not a framework or runtime — kit stays a library beneath workflow engines.
+- Constellation projects are example use cases, not customers — kit must not bake in any project-specific assumption (per `feedback_pipeline_kit_4tier_no_customer.md`).
+
+---
+
+## The reframe: friction-first, not category-first
+
+Brain's original outline named 7 categories from inside the kit looking out.
+This locked outline rebases on **friction common to all automation** —
+surfaced first in `Claude-Workspace/` because we have direct read access, but
+kit treats those projects as *example use cases*, no different from any
+n8n flow / Apify actor / Python script. Kit stays product- and
+use-case-agnostic; the constellation is convenient evidence, not the
+customer base. Friction-first asks what hurts in real automations, not what
+feels architecturally incomplete inside the kit.
+
+---
+
+## Phase 0 prerequisite — DONE
+
+Phase 0 ended 2026-05-08 with all 9 projects catalogued. Output:
+`docs/research-friction-catalog.md`. Top-3 evidence findings:
+
+- **Cat IX (F-INTEROP)** — top-rank; 5/9 projects; gates kit's reach to half the constellation (TS-only otherwise).
+- **Cat VIII (F-AUTH)** — most ubiquitous; 9/9 projects re-roll credentials.
+- **Cat V (F-MEMORY)** — highest per-incidence severity; 4 incompatible memory shapes (gatewerk / orchestr8 / pursuit / cole-obsidian).
+
+**Two locked downstream calls from Phase 0:** orchestr8 IS the
+`MemoryAdapter` reference impl (Cat V spike is wiring, not selection);
+devshield IS the pack pattern (lift bundling discipline).
+
+---
+
+## Phase 1 spike order — LOCKED 2026-05-08
+
+| # | Cat | Friction | Rationale |
+|---|-----|----------|-----------|
+| 1 | IX Cross-Runtime | F-INTEROP | top-rank; gates half the constellation |
+| 2 | VIII Identity/Secrets | F-AUTH | 9/9 ubiquity; redaction is v1 must-have (`-packs.md` §5.3) |
+| 3 | V Memory/Feedback | F-MEMORY | orchestr8 wiring; highest per-incidence severity |
+| 4 | I Durable Execution | F-DURABILITY | pg-boss spike on VPS noesis |
+| 5 | IV Trigger/Schedule | F-TRIGGER | overlaps Cat I infra (pg-boss) |
+| 6 | VI Stage Model Extension | F-PRIMITIVE | Gate / Aggregate / two-plane |
+| 7 | III DAG Composition | F-LINEAR | only 2/9 projects today; deferable if I+IV land |
+| 8 | II Agent Protocols | F-AGENT | depends on Cat VI primitives |
+| 9 | VII Config/DX | F-CONFIG | depends on stable stage primitives |
+| 10 | X Cost/Usage | F-COST | depends on observability + redaction (Cat VIII) |
 
 ---
 
@@ -50,294 +92,353 @@ Each category follows this sequence:
 4. SYNTHESIS        — ADR candidate(s) for the v1 spec
 ```
 
-Spikes live in `research/spikes/<category-slug>/`. Each spike is a minimal
-runnable TypeScript (or Python) program — not a package, not a test suite.
-It exists to surface friction, edge cases, and missing primitives.
-
-Output per category: one `research-notes-v1-cat-<N>.md` file.
+Spikes live in `research/spikes/<category-slug>/` — minimal runnable TS (or
+Python) programs, not packages or test suites. Surface friction, edge cases,
+missing primitives. Output per category: one `research-notes-v1-cat-<N>.md`.
 
 ---
 
 ## Category I — Durable Execution & Runtime Protocols
 
-**The gap:** `pipeline.run()` is fire-and-forget. If the VPS reboots mid-run,
-state is lost. Retry policy exists but is in-process only. For long-running,
-multi-step automations (LLM chains, multi-source enrichment) durability is
-non-negotiable.
+**Friction anchor:** F-DURABILITY (catalog top-15 #7) + F-RETRY (#9).
 
-**The question:** What is the right durable execution primitive for a
-self-hosted, TypeScript-primary, library-not-runtime kit on a VPS with
-Postgres (Supabase) already available?
+**Gap:** `pipeline.run()` is fire-and-forget; VPS reboot loses state; retry
+is in-process only. Long-running LLM chains and multi-source enrichment
+need durability.
 
-**Sources to mine:**
-1. Inngest — step functions, event-driven, hosted + self-hostable
-2. Trigger.dev — background jobs, scheduled tasks, retries, self-hostable
-3. Hatchet — DAG workflows, worker management, self-hosted Postgres-backed
-4. Temporal — deterministic workflows, activity/workflow split, heavy ops overhead
-5. BullMQ — Redis-backed job queue; lightweight; widely used
-6. pg-boss — Postgres-backed job queue; zero extra infra for Supabase users
-7. Effect Workflow (`@effect/workflow`) — revisit ADR1 cascade impact
-8. Cloudflare Durable Objects — edge-native durable state (alternative deployment target)
+**Question:** Right durable-execution primitive for a self-hosted,
+TS-primary, library-not-runtime kit on a VPS with Postgres (Supabase)?
 
-**Spike:** Wire `Pipeline.from(source).through(process).to(serve)` inside a
-pg-boss job. Does the kit's `Result<T,E>` + retry semantics compose cleanly
-with pg-boss's retry/backoff? What does checkpoint/resume look like per atom?
+**Sources to mine:** Inngest (step functions, event-driven, self-hostable);
+Trigger.dev (background jobs, scheduled tasks, retries); Hatchet (DAG
+workflows, Postgres-backed); Temporal (deterministic workflows,
+activity/workflow split, heavy ops); BullMQ (Redis queue, lightweight);
+pg-boss (Postgres queue, zero extra infra for Supabase); Effect Workflow
+(`@effect/workflow` — revisit ADR1 cascade); Cloudflare Durable Objects
+(edge-native durable state alternative).
+
+**Spike:** Wire `Pipeline.from(s).through(p).to(srv)` inside a pg-boss job.
+Does kit's `Result<T,E>` + retry compose with pg-boss retry/backoff?
+Checkpoint/resume per atom?
 
 **Questions to answer:**
-- Which durable runtime has the lowest ops overhead on a self-hosted VPS
-  with Postgres already running?
-- How does `PipelineContext` need to change to carry a durable step reference?
-- Is the right answer a thin wrapper package (`@pipeline-kit/composer-pgboss`)
-  or a documented integration pattern?
-- What is the checkpoint granularity — per pipeline run, per atom, per stage?
+- Lowest ops overhead durable runtime on self-hosted VPS w/ Postgres?
+- How must `PipelineContext` change to carry a durable step reference?
+- Thin wrapper (`@pipeline-kit/composer-pgboss`) or documented pattern?
+- Checkpoint granularity — per run / atom / stage?
 
 ---
 
 ## Category II — Agent Protocols & Multi-Agent Composition
 
-**The gap:** MCP adapters (`source-mcp`, `serve-mcp`) exist but treat MCP as
-a dumb tool-call boundary. The emerging landscape is agents that compose other
-agents, pipelines that invoke other pipelines, and inter-agent protocols that
-go beyond tool-call/response. A2A (Google), Anthropic's Agent SDK, and OpenAI
-Agents all make different bets.
+**Friction anchor:** F-AGENT (catalog top-15 #12).
 
-**The question:** What is the right `Agent<I,O>` primitive for pipeline-kit,
-and how do autonomous agents compose with typed stages?
+**Gap:** MCP adapters treat MCP as a dumb tool-call boundary. Real landscape
+is agents composing agents, pipelines invoking pipelines, and inter-agent
+protocols beyond tool-call/response (A2A, Anthropic Agent SDK, OpenAI Agents
+each bet differently).
 
-**Sources to mine:**
-1. Anthropic Agent SDK — subagent dispatch, tool use, multi-turn
-2. OpenAI Agents SDK — handoffs, tool schemas, guardrails
-3. Google A2A protocol — agent-to-agent communication spec
-4. LangGraph — graph-based agent orchestration, node/edge model
-5. CrewAI — multi-agent teams, role-based agents
-6. Pydantic AI — type-safe Python agent model (lift patterns, not code)
-7. smolagents (HuggingFace) — minimal agent primitives
-8. MCP spec deep-dive — resources + prompts + tools (not just tools)
+**Question:** Right `Agent<I,O>` primitive for pipeline-kit; how do
+autonomous agents compose with typed stages?
 
-**Spike:** Build a pipeline where `process-extract` is replaced by a
-multi-turn Claude agent that uses MCP tools mid-extraction. Does
-`Process<I,O>` hold, or does agent async back-and-forth break the interface?
+**Sources to mine:** Anthropic Agent SDK (subagent dispatch, tool use,
+multi-turn); OpenAI Agents SDK (handoffs, tool schemas, guardrails);
+Google A2A protocol (agent-to-agent comm spec); LangGraph (graph-based
+agent orchestration, node/edge); CrewAI (role-based multi-agent teams);
+Pydantic AI (type-safe Python agent model — lift patterns); smolagents
+(HuggingFace, minimal agent primitives); MCP spec deep-dive (resources +
+prompts + tools, not just tools).
+
+**Spike:** Replace `process-extract` with a multi-turn Claude agent using
+MCP tools mid-extraction. Does `Process<I,O>` hold, or does async
+back-and-forth break it?
 
 **Questions to answer:**
-- Is `Agent<I,O>` a new stage type or a special case of `Process<I,O>`?
-- How does `PipelineContext.signal` (AbortSignal) thread through a multi-turn agent?
-- What does A2A look like as a Serve adapter? (pipeline emitting to another agent)
-- How do agent handoffs compose with Reviewable<I> gates?
-- What is the MCP resource/prompt pattern that `source-mcp` currently ignores?
+- `Agent<I,O>` — new stage type or special case of `Process<I,O>`?
+- How does `ctx.signal` (AbortSignal) thread through a multi-turn agent?
+- A2A as a Serve adapter (pipeline emitting to another agent)?
+- How do agent handoffs compose with `Reviewable<I>` gates?
+- The MCP resource/prompt pattern `source-mcp` currently ignores?
 
 ---
 
 ## Category III — DAG Composition & Graph Model
 
-**The gap:** The current composition model is linear:
-`Pipeline.from(s).through(p).to(srv)`. Real automations need fan-out (one atom
-→ multiple branches), fan-in (multiple atoms → one aggregate), parallel
-execution, conditional branching, and loops. These require a graph model.
+**Friction anchor:** F-LINEAR (catalog top-15 #11).
 
-**The question:** How do you extend the typed-stage chain into a typed DAG
-without losing type safety or breaking the existing linear API?
+**Gap:** Current composition is linear (`from(s).through(p).to(srv)`). Real
+automations need fan-out, fan-in, parallel exec, conditional branching, and
+loops — graph model required.
 
-**Sources to mine:**
-1. LangGraph — StateGraph model; nodes, edges, conditional edges, cycles
-2. Prefect 3.0 — Python DAG with type hints; `.submit()` / `.result()` pattern
-3. Temporal — workflow-as-code DAG; deterministic execution constraint
-4. Apache Beam — PCollection / PTransform composition model
-5. Dagster — asset-based DAG; software-defined assets
-6. RxJS — observable pipelines; operators as graph edges; back-pressure
-7. Effect.ts — `Effect.all`, `Effect.race`, `Effect.fork` parallel semantics
-8. n8n node graph — visual DAG → JSON representation; what the schema looks like
+**Question:** Extend the typed-stage chain into a typed DAG without losing
+type safety or breaking the linear API?
 
-**Spike:** Try to express a fan-out (one source → two parallel process branches
-→ merge → one serve) using current pipeline-kit. Document exactly where the
-type system breaks, where the Composer has no answer, and what the minimum
-API addition would need to be.
+**Sources to mine:** LangGraph StateGraph (nodes, edges, conditional edges,
+cycles); Prefect 3.0 (Python DAG with type hints, `.submit()` / `.result()`);
+Temporal (workflow-as-code DAG, deterministic constraint); Apache Beam
+(PCollection / PTransform composition); Dagster (asset-based DAG,
+software-defined assets); RxJS (observable pipelines, operators as edges,
+back-pressure); Effect.ts (`Effect.all` / `.race` / `.fork`); n8n node graph
+(visual DAG → JSON schema).
+
+**Spike:** Express a fan-out (one source → two parallel process branches →
+merge → one serve) in current pipeline-kit. Document where types break,
+where Composer has no answer, the minimum API addition needed.
 
 **Questions to answer:**
-- What is the right TypeScript representation of a typed DAG? (Class-based?
-  Builder-pattern? Functional composition?)
-- Does fan-out require a new `Fan<I, Branches>` primitive, or can `Pipeline`
-  grow `.branch()` / `.merge()` methods?
-- How does OTel span hierarchy extend to a DAG? (Currently parent → child
-  per stage; DAG needs sibling spans + join points)
-- How does retry policy apply in a DAG? (Per node? Per edge? Per subgraph?)
-- Is a DAG-pipeline backward-compatible with the linear API, or a new
-  `Workflow` abstraction alongside `Pipeline`?
+- Right TS representation of a typed DAG? (Class / builder / functional?)
+- New `Fan<I, Branches>` primitive, or `Pipeline.branch()` / `.merge()`?
+- OTel span hierarchy in a DAG — sibling spans + join points?
+- Retry policy in a DAG — per node / edge / subgraph?
+- DAG backward-compatible with linear API, or new `Workflow` abstraction?
 
 ---
 
 ## Category IV — Trigger, Scheduling & Event Protocols
 
-**The gap:** pipeline-kit has no trigger model. Every automation needs a
-trigger — cron schedule, webhook arrival, event emission, manual invocation.
-These should be first-class kit primitives, not bespoke runners per project.
-The VPS context makes a self-hosted scheduler viable.
+**Friction anchor:** F-TRIGGER (catalog top-15 #10).
 
-**The question:** What is the unified trigger model for pipeline-kit, and how
-does it compose with the Source stage?
+**Gap:** No trigger model. Every automation needs one — cron / webhook /
+event / manual. Should be first-class, not bespoke per project; VPS context
+makes a self-hosted scheduler viable.
 
-**Sources to mine:**
-1. CloudEvents spec (CNCF) — standard event envelope; what a "trigger event" is
-2. Inngest events — `inngest.send()` / `trigger` / `cron` unified model
-3. pg-boss — scheduled jobs + cron expressions in Postgres
-4. BullMQ — repeatable jobs, cron patterns, delayed jobs, priorities
-5. Zapier trigger schema — what makes a good user-facing trigger definition
-6. n8n trigger nodes — poll vs webhook vs interval; how they differ
-7. GitHub Actions workflow triggers — `on: schedule / push / workflow_dispatch`
-8. Resend webhook events — event taxonomy; how event types are namespaced
+**Question:** Unified trigger model for pipeline-kit; how does it compose
+with the Source stage?
 
-**Spike:** Deploy a cron-triggered pipeline run on the VPS using pg-boss
-(already has Supabase/Postgres). Run `pipeline.run()` on schedule; test what
-happens when two cron fires overlap (concurrent run protection).
+**Sources to mine:** CloudEvents spec (CNCF — standard event envelope);
+Inngest events (`inngest.send()` / trigger / cron unified); pg-boss
+(scheduled jobs + cron in Postgres); BullMQ (repeatable jobs, cron, delayed,
+priorities); Zapier trigger schema (user-facing trigger definition);
+n8n trigger nodes (poll vs webhook vs interval); GitHub Actions workflow
+triggers (`on: schedule / push / workflow_dispatch`); Resend webhook events
+(event taxonomy + namespacing).
+
+**Spike:** Deploy a cron-triggered pipeline run on VPS via pg-boss. Run
+`pipeline.run()` on schedule; test concurrent-run protection when two
+fires overlap.
 
 **Questions to answer:**
-- What is `Trigger<O>` as a kit primitive? Is it a Source specialisation or
-  a separate layer?
-- How does a webhook trigger (push event → pipeline start) unify with a
-  cron trigger (schedule → pipeline start)?
-- What is the CloudEvents-compatible event envelope that wraps a trigger?
-- How does trigger deduplication work? (Two webhooks delivering the same event)
-- Is the right answer a `@pipeline-kit/trigger-pgboss` package, or does
-  trigger belong inside the Composer options?
+- `Trigger<O>` — Source specialisation or separate layer?
+- How does webhook trigger unify with cron trigger?
+- CloudEvents-compatible event envelope wrapping a trigger?
+- Trigger deduplication — two webhooks delivering same event?
+- `@pipeline-kit/trigger-pgboss` package, or trigger-in-Composer-options?
 
 ---
 
 ## Category V — Memory, State & Feedback Protocols
 
-**The gap:** Automations currently run statelessly — each run starts fresh.
-For a personal automation toolkit, cross-run learning is high-leverage: LLM
-extraction improves when it sees past failures; routing improves with feedback;
-agents recall prior context. The orchestr8 `MemoryAdapter` stub exists but
-has no v0 reference implementation.
+**Friction anchor:** F-MEMORY (catalog top-15 #4) + F-X-mem (#13).
 
-**The question:** What are the right memory primitives for pipeline-kit —
-short-term (run context), medium-term (cursor/checkpoint), long-term
-(cross-run learning)?
+**Gap:** Automations run statelessly; each run starts fresh. Cross-run
+learning is high-leverage (LLM extraction sees past failures; routing
+improves with feedback; agents recall context). v0 `MemoryAdapter` stub has
+no reference impl.
 
-**Sources to mine:**
-1. mem0 — multi-level memory (user, session, agent); self-hostable
-2. orchestr8 MCP — already in pipeline-kit orbit; what it actually provides
-3. Zep — structured memory with temporal context
-4. LangMem — LangChain's memory abstraction
-5. pgvector patterns — already in kit; how semantic search composes with memory
-6. Mastra memory — TypeScript-native agent memory (review current state)
-7. Anthropic extended thinking — reasoning traces as memory signals
-8. Pursuit's feedback corpus pattern — Python-side reference (lift pattern)
+**Question:** Right memory primitives — short-term (run context),
+medium-term (cursor/checkpoint), long-term (cross-run learning)?
 
-**Spike:** Wire mem0 (self-hosted) as the `MemoryAdapter` implementation.
-Run `extract-process` twice on the same input — second run consults memory
-of first run's failures. Does `wasEdited` / `EditableField<T>` flow back
-into memory correctly?
+**Sources to mine:** orchestr8 MCP (confirmed Phase 0 reference impl;
+already in kit orbit); Zep (structured memory + temporal context); LangMem
+(LangChain memory abstraction); pgvector patterns (semantic search + memory
+composition); Mastra memory (TS-native agent memory — review current state);
+Anthropic extended thinking (reasoning traces as memory signals); Pursuit
+feedback corpus pattern (Python-side reference); mem0 (multi-level memory
+comparison — user / session / agent, self-hostable).
+
+**Spike:** Wire orchestr8 (TypeScript MCP) as the `MemoryAdapter` impl.
+Run `process-extract` twice on same input — second run consults memory of
+first run's `EditableField<T>` deltas. Does `wasEdited` flow back?
 
 **Questions to answer:**
-- What is the concrete `MemoryAdapter` interface beyond the current stub?
-  (read, write, search, forget — what methods?)
-- How does memory scope work? Per-pipeline? Per-stage? Per-atom? Per-user?
-- What is the feedback loop from `EditableField<T>` → memory → next run?
-- How does pgvector-store compose with MemoryAdapter? (Semantic memory vs
-  structured memory)
-- Is memory a Context concern (`ctx.memory`) or a stage concern
-  (`Memory<T>` as a new stage type)?
+- Concrete `MemoryAdapter` interface beyond stub — methods (read/write/search/forget)?
+- Memory scope — pipeline / stage / atom / user?
+- Feedback loop: `EditableField<T>` → memory → next run?
+- pgvector-store ↔ MemoryAdapter — semantic vs structured composition?
+- Memory as Context concern (`ctx.memory`) or stage type (`Memory<T>`)?
 
 ---
 
 ## Category VI — Stage Model Extension
 
-**The gap:** The 4-stage model (Source/Store/Process/Serve) handles linear
-automations well. But three classes of primitive are missing or underspecified:
+**Friction anchor:** F-PRIMITIVE (catalog top-15 #3).
 
-A. **New stage types** — Agent, Gate, Aggregate, Trigger, Fan, Signal
-B. **Richer stage semantics** — Source has 2 methods; should it have more?
-   (checkpoint, health, schema-introspect) Process is too broad — does
-   extraction and routing and filtering feel meaningfully different?
-C. **Two-plane model** — data plane (atoms flowing) vs control plane
-   (signals, health checks, cancellation, metadata). Currently conflated.
+**Gap:** 4-stage model handles linear; three classes missing: (A) new
+stage types — Agent / Gate / Aggregate / Trigger / Fan / Signal; (B)
+richer stage semantics — should `Source<O>` grow `checkpoint` / `health` /
+`schemaIntrospect`? Is `Process<I,O>` too broad (extract vs route vs filter)?
+(C) two-plane — data plane (atoms) vs control plane (signals, health,
+cancellation, metadata) currently conflated.
 
-**Sources to mine:**
-1. Apache Beam — PCollection / PTransform; DoFn, CombineFn, CoGroupByKey
-2. Kafka Streams — topology DSL; KStream, KTable, GlobalKTable
-3. Flink DataStream API — map, filter, keyBy, window, aggregate
-4. Temporal activity/workflow split — what belongs in activity vs workflow
-5. Pursuit's Python stage model — local reference; what patterns emerged
-6. tRPC procedure builder — how method chaining carries type context
-7. Effect.ts typed effects — `Effect<Success, Error, Requirements>`
-8. LangGraph StateGraph — how state schema flows through a graph
+**Sources to mine:** Apache Beam (PCollection / PTransform; DoFn / CombineFn
+/ CoGroupByKey); Kafka Streams (topology DSL; KStream / KTable /
+GlobalKTable); Flink DataStream API (map / filter / keyBy / window /
+aggregate); Temporal activity/workflow split; Pursuit Python stage model
+(local reference); tRPC procedure builder (method chaining carries type
+context); Effect.ts typed effects (`Effect<S, E, R>`); LangGraph StateGraph
+(state schema flow through graph).
 
-**Spike A (new types):** Implement `Gate<I>` as a generalised
-`Reviewable<I>` — a stage that can pass, hold, reject, or transform input
-based on any predicate (not just human decision). Express it without
-changing the core interfaces. What's missing?
+**Spike A (new types):** Implement `Gate<I>` as generalised `Reviewable<I>`
+— pass/hold/reject/transform on any predicate. Express without core
+interface changes. What's missing?
 
-**Spike B (two-plane):** Trace what happens when `ctx.signal` aborts —
-how does the cancellation signal flow through the current Composer? Where
-does the data plane and control plane get confused?
+**Spike B (two-plane):** Trace `ctx.signal` abort through the Composer —
+where do data and control planes get confused?
 
 **Questions to answer:**
-- What is `Agent<I,O>` — a Process with multi-turn semantics? A new
-  stage type? How does it differ from `Process<I,O>` in the type system?
-- What is `Gate<I>` — is it `Reviewable<I>` generalised, or a distinct
-  primitive that Reviewable implements?
-- What is `Aggregate<I[], O>` — fan-in for a DAG? Where does it live?
-- Should `Source<O>` grow `checkpoint()` / `health()` methods? Or are
-  these Context concerns?
-- Is the data plane / control plane split an ADR-level decision, or
-  an implementation detail?
+- `Agent<I,O>` — Process with multi-turn semantics, or distinct stage type?
+- `Gate<I>` — generalised Reviewable, or distinct primitive Reviewable implements?
+- `Aggregate<I[],O>` — fan-in for DAG; where does it live?
+- Should `Source<O>` grow `checkpoint()` / `health()`? Or Context concerns?
+- Two-plane split — ADR-level decision or implementation detail?
 
 ---
 
 ## Category VII — Configuration, Templates & Developer Experience
 
-**The gap:** Using pipeline-kit requires writing TypeScript. For a personal
-automation toolkit, this is fine for complex pipelines — but common patterns
-(scheduled API pull → LLM extract → store) should be expressible as config,
-not code. No template system, no CLI, no pipeline-as-data format exists yet.
+**Friction anchor:** F-CONFIG (catalog top-15 #6).
 
-**The question:** What is the minimum DX layer that makes pipeline-kit
-efficient for Idris's own use without becoming a no-code product?
+**Gap:** Using pipeline-kit requires TS. Common patterns (scheduled API
+pull → LLM extract → store) should be config, not code. No templates,
+no CLI, no pipeline-as-data format yet.
 
-**Sources to mine:**
-1. Inngest function definition — TypeScript config object → hosted function
-2. n8n node spec — JSON-based pipeline definition; what fields matter
-3. Zapier action/trigger schema — what a non-dev-friendly automation spec looks like
-4. GitHub Actions YAML — declarative workflow; triggers + steps + env
-5. Pulumi — TypeScript-native infra-as-code; config without YAML; resource model
-6. Temporal SDK — workflow definition as regular TypeScript function
-7. Hatchet workflow definition — `createWorkflow()` config factory pattern
-8. `pipeline.describe()` (existing) — what `PipelineDefinition` currently returns;
-   gap between current output and a runnable config format
+**Question:** Minimum DX layer that makes pipeline-kit efficient without
+becoming a no-code product?
 
-**Spike:** Take a real pipeline (apify-source → extract-process → email-serve)
-and express it as a JSON config object. Write a 50-line runner that reads the
-config and executes `Pipeline.from(...)`. What type information is lost?
-What must remain code?
+**Sources to mine:** Inngest function definition (TS config object → hosted
+function); n8n node spec (JSON-based pipeline definition); Zapier
+action/trigger schema (non-dev-friendly automation spec); GitHub Actions
+YAML (declarative workflow — triggers + steps + env); Pulumi (TS-native
+infra-as-code, no YAML, resource model); Temporal SDK (workflow as regular
+TS function); Hatchet `createWorkflow()` (config factory); existing
+`pipeline.describe()` (gap to runnable config format).
+
+**Spike:** Take a real pipeline (apify-source → extract-process →
+email-serve), express as JSON config + 50-line runner. What type info is
+lost? What must remain code?
 
 **Questions to answer:**
-- What is `PipelineDefinition` v1 — a serialisable config format or a
-  runtime-only descriptor?
-- What belongs in config (adapter selection, retry policy, schedule) vs code
-  (custom predicates, schema definitions, prompt functions)?
-- What is the minimum CLI? (`pk run <config>`, `pk inspect <run-id>`,
-  `pk trace <run-id>`) — what commands are needed before a UI makes sense?
-- Should pipeline templates be TypeScript factory functions, JSON files,
-  or both?
-- Is there a `@pipeline-kit/cli` package, or does the CLI ship as a
-  separate tool?
+- `PipelineDefinition` v1 — serialisable config or runtime-only descriptor?
+- Config (adapter / retry / schedule) vs code (predicates / schemas /
+  prompt fns)?
+- Minimum CLI — `pk run` / `inspect` / `trace`?
+- Templates as TS factory functions, JSON files, or both?
+- `@pipeline-kit/cli` package, or separate tool?
+
+---
+
+## Category VIII — Identity, Secrets & Auth Protocols
+
+**Friction anchor:** F-AUTH (catalog top-15 #2 — 9/9 projects).
+
+**Gap:** Every adapter needs credentials (Apify / Slack / SMTP / Supabase /
+Anthropic / OAuth / HMAC). v0 punted; every reference package re-invents
+`process.env.X`. No rotation, no scoping, no audit — invisible debt.
+
+**Question:** Right secrets/identity protocol for kit, scaling from solo
+laptop to multi-tenant VPS without becoming a vault product?
+
+**Sources to mine:** Doppler / Infisical (developer secret mgmt); SOPS / age
+(encrypted-in-git); HashiCorp Vault (dynamic secrets + lease); AWS / GCP IAM
+(scoping precedent); OAuth 2.1 + DPoP (token binding); SSH agent forwarding
+(secret-without-storage); Supabase service-role / anon-key (pursuit usage);
+Apify credential scoping (agent-forge usage).
+
+**Spike:** `SecretsAdapter` resolving Source/Serve creds from SOPS-encrypted
+YAML on VPS noesis with rotation semantics; test agent-forge Apify token +
+pursuit Supabase keys.
+
+**Questions to answer:**
+- `SecretsAdapter` — Context concern, adapter dependency, or stage type?
+- Right scoping unit — pipeline / atom / adapter / per-call?
+- Rotation semantics kit guarantees — pre / mid / post-rotation?
+- Does kit ship a concrete adapter, or only a contract?
+- HMAC signing for webhooks (already in v0) — extend to general envelope auth?
+
+---
+
+## Category IX — Cross-Runtime & Cross-Language Interop
+
+**Friction anchor:** F-INTEROP (catalog top-15 #1) + F-X-langbridge (#15).
+
+**Gap:** Kit is TypeScript. Pursuit / agent-forge / cole-obsidian are
+Python; gatewerk is dual-SDK. A TS-only "shovel" leaves half the
+constellation unreachable — kit becomes a TS-tribe artefact, not
+infrastructure.
+
+**Question:** Right cross-runtime interop protocol — Python bindings,
+HTTP/MCP/A2A wire, or shared schema any runtime can implement?
+
+**Sources to mine:** gRPC + Protobuf (language-neutral RPC); JSON Schema +
+OpenAPI (wire-format precedent); CloudEvents (runtime-neutral event spec);
+MCP (JSON-RPC-based); A2A (agent-to-agent, language-neutral); ts-pattern +
+zod-to-json-schema (TS schema → wire); Pydantic ↔ JSON Schema (Python
+bridge); Bun / Deno / Node compat constraints.
+
+**Spike:** Express `Source<O> → Process<I,O> → Serve<I>` as JSON-RPC;
+implement minimal Python `pipeline_kit_py` shim; run a pipeline with
+Python Source (pursuit-style API pull) and TS Process (kit extract).
+
+**Questions to answer:**
+- Cross-runtime answer — wire protocol, binding, or both?
+- How does `Result<T,E>` translate? (Python has no discriminated unions.)
+- How do Zod schemas reach Python — codegen or JSON Schema bridge?
+- Cross-runtime OTel context propagation?
+- Does kit own the cross-runtime spec, or delegate to MCP / A2A?
+
+---
+
+## Category X — Cost, Usage & Resource Accounting
+
+**Friction anchor:** F-COST (catalog top-15 #8).
+
+**Gap:** LLM-heavy automations have non-trivial per-run cost; kit has no
+cost model. Per-run / per-atom / per-adapter cost is invisible; budget caps
+($X-per-run) impossible. Local-AI-stack (Ollama) is partly a cost response;
+kit has no opinion at the budget boundary.
+
+**Question:** Right cost-accounting primitive — cross-cutting Context
+concern, Serve-level meter, or Composer-level budget?
+
+**Sources to mine:** Anthropic / OpenAI usage APIs (token counts, per-call
+cost); LangSmith (LLM trace + cost); Helicone / Langfuse (open-source LLM
+obs + cost); Stripe Billing meters (usage-based metering); Vercel AI SDK
+middleware (instrumentation); OpenTelemetry GenAI semantic conventions
+(span attrs for LLM cost); Orb / Metronome (usage-billing patterns); Ollama
+telemetry (local: latency / energy / compute).
+
+**Spike:** Add `ctx.usage` to PipelineContext; wire to Anthropic SDK usage
+events; emit per-atom cost from extract-process; test budget cap (abort at
+$0.10 spent); repeat with Ollama backend — cost surface differs.
+
+**Questions to answer:**
+- Cost as `ctx.usage` (Context attribute) or `MeterAdapter` (adapter)?
+- Cost taxonomy — token / request / time / data-volume / energy?
+- Cost composition with retry — per attempt or per success?
+- Does kit ship a `CostBudget` gate primitive, or is it adapter responsibility?
+- How does cost-cap interact with `Reviewable<I>` (ask human before spending)?
 
 ---
 
 ## Synthesis target
 
-After all 7 categories are researched and spiked, the brain produces:
+After all 10 categories are researched and spiked, the brain produces:
 
-**v1 ADR candidates** — following the same ADR template as v0 (Status /
-Context / Decision / Alternatives / Reference signal / Consequences). Each
-category is expected to produce 2-4 ADR candidates. Target: 15-20 new ADRs
-covering the gaps above.
+**v1 ADR candidates** — ~25-30 ADRs (10 cats × ~2-3 each), following v0 ADR
+template (Status / Context / Decision / Alternatives / Reference / Consequences).
 
 **Stage model v1 spec** — extension of `spec-api-surface.md` with new
-primitives, revised stage interfaces, and composition model beyond linear.
+primitives (Trigger, Agent, Gate, Aggregate, Fan), revised stage interfaces,
+DAG composition model, three v1 cross-cuts (replay / dry-run / MCP-expose).
 
-**Revised roadmap** — `spec-build-plan.md §4` updated with v1 milestones
-(M2-M5) reflecting what the research reveals.
+**Adapter additions** — concrete reference adapters for `SecretsAdapter`,
+`MemoryAdapter`, `MeterAdapter`, `TriggerAdapter` (per Cat IV/V/VIII/X).
+
+**Pack inventory** — see `research-outline-v1-packs.md`: ~10 launch / ~7
+expand / ~9 domain.
+
+**Roadmap revision** — `spec-build-plan.md §4` updated with v1 milestones
+(M2-M5) reflecting research findings + pack-tier rollout.
 
 ---
 
@@ -371,21 +472,28 @@ Each `research-notes-v1-cat-<N>.md` should follow this structure:
 
 ## Research session discipline
 
-- **No spec resolution during research.** Surface findings; don't lock ADRs
-  until brain synthesis.
-- **Spike before synthesis.** Don't write ADR candidates from reading alone;
-  always have spike evidence.
-- **Per-category files only.** No single notes file; one file per category
-  (mirrors v0 `research-notes-cat-*.md` discipline).
-- **Line limit:** each notes file < 500 lines. Split if needed.
-- **No new v0 ADR amendments** during v1 research. Conflicts with v0 surface
-  as open questions for brain to adjudicate in v1 spec.
+- **Friction-anchor every category.** No category without a Phase 0 top-15 cross-ref to `docs/research-friction-catalog.md` — if you can't anchor, the category isn't ready.
+- **No v0 ADR amendments during v1.** Conflicts with v0 surface as open questions for brain to adjudicate in v1 spec.
+- **No spec resolution during research.** Surface findings; lock ADRs only at brain synthesis.
+- **Spike before synthesis.** No ADR candidate without spike evidence.
+- **Per-category files only.** Mirror v0 `research-notes-cat-*.md` discipline; no single notes file.
+- **Line limit:** each notes file ≤500 lines. Split if needed.
+- **No project is a kit customer.** Constellation projects are example use cases. Kit must not bake in project-specific assumptions — design for "anyone, anywhere."
 
 ---
 
-*End of v1 research outline. 7 categories; spike-first empirical approach;
-15-20 ADR candidates expected from synthesis.*
+## Companion files
 
-*Author: Brain — 2026-05-07.*
+- `research-outline-v1-constellation.md` — per-project seed observations, friction tag taxonomy, frequency-table seed.
+- `research-outline-v1-packs.md` — 4-tier architecture, ~30-pack roster (3 tiers), 5 vision additions, 3 v1 must-haves, explicit non-scope.
+- `research-friction-catalog.md` — Phase 0 output (DONE 2026-05-08; 9 projects; top-15 friction items ranked).
+
+---
+
+*End of v1 research outline. 10 categories; spike-first empirical approach;
+25-30 ADR candidates expected from synthesis.*
+
+*Author: Brain — 2026-05-08 (merged from 7-cat draft 0175af6 + 10-cat
+friction-first + Phase 0 catalog).*
 *v0 inputs: spec.md (23 ADRs) + spec-api-surface.md + spec-adapters.md +
 spec-build-plan.md. v1 research branches from M0.5 ship tip 1c340bc.*
