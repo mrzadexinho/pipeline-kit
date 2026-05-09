@@ -15,3 +15,6 @@ coverage/
 .cache/
 *.tsbuildinfo
 .pnpm-store/
+
+# Claude Code IDE local state (commands, settings)
+.claude/
