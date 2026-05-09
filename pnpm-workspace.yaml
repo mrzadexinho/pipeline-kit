@@ -1,2 +1,9 @@
 packages:
   - 'packages/*'
+
+# pnpm 10 doesn't run dependency lifecycle scripts by default. better-sqlite3
+# needs its prebuild-install postinstall to fetch the native binding for the
+# host platform; without this its tests fail in CI with "Could not locate the
+# bindings file".
+onlyBuiltDependencies:
+  - better-sqlite3
