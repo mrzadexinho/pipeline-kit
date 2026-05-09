@@ -46,6 +46,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # NODE_AUTH_TOKEN is what `actions/setup-node` interpolates into the
+          # ~/.npmrc auth line (//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}).
+          # Without it, publishes go anonymous → 404 PUT on @idriszade/* scope.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           # TODO(post-v0.1.0): re-enable after configuring Trusted Publishing per-package on npmjs.com.
           # Trusted Publishing is configured per-package and requires the package to exist on npm first
           # (chicken-and-egg for the greenfield org). With NPM_CONFIG_PROVENANCE=true but no trusted
