@@ -63,10 +63,10 @@ importers:
 
   packages/process-classify:
     dependencies:
-      '@pipeline-kit/core':
+      '@idriszade/core':
         specifier: workspace:*
         version: link:../core
-      '@pipeline-kit/process-extract':
+      '@idriszade/process-extract':
         specifier: workspace:*
         version: link:../process-extract
       zod:
@@ -81,12 +81,12 @@ importers:
       '@google/generative-ai':
         specifier: '*'
         version: 0.24.1
+      '@idriszade/core':
+        specifier: workspace:*
+        version: link:../core
       '@opentelemetry/api':
         specifier: ^1.9.1
         version: 1.9.1
-      '@pipeline-kit/core':
-        specifier: workspace:*
-        version: link:../core
       openai:
         specifier: '*'
         version: 6.36.0(zod@4.4.3)
@@ -99,7 +99,7 @@ importers:
 
   packages/process-reviewable:
     dependencies:
-      '@pipeline-kit/core':
+      '@idriszade/core':
         specifier: workspace:*
         version: link:../core
       zod:
@@ -112,13 +112,13 @@ importers:
 
   packages/process-route:
     dependencies:
-      '@pipeline-kit/core':
+      '@idriszade/core':
         specifier: workspace:*
         version: link:../core
 
   packages/process-validate:
     dependencies:
-      '@pipeline-kit/core':
+      '@idriszade/core':
         specifier: workspace:*
         version: link:../core
       zod:
@@ -127,7 +127,7 @@ importers:
 
   packages/serve-email:
     dependencies:
-      '@pipeline-kit/core':
+      '@idriszade/core':
         specifier: workspace:*
         version: link:../core
       nodemailer:
@@ -142,19 +142,19 @@ importers:
 
   packages/serve-mcp:
     dependencies:
+      '@idriszade/core':
+        specifier: workspace:*
+        version: link:../core
       '@modelcontextprotocol/sdk':
         specifier: ^1.0.0
         version: 1.29.0(zod@4.4.3)
-      '@pipeline-kit/core':
-        specifier: workspace:*
-        version: link:../core
       zod:
         specifier: ^4.4.3
         version: 4.4.3
 
   packages/serve-slack:
     dependencies:
-      '@pipeline-kit/core':
+      '@idriszade/core':
         specifier: workspace:*
         version: link:../core
       '@slack/web-api':
@@ -166,7 +166,7 @@ importers:
 
   packages/serve-webhook:
     dependencies:
-      '@pipeline-kit/core':
+      '@idriszade/core':
         specifier: workspace:*
         version: link:../core
       ipaddr.js:
@@ -178,7 +178,7 @@ importers:
 
   packages/source-api:
     dependencies:
-      '@pipeline-kit/core':
+      '@idriszade/core':
         specifier: workspace:*
         version: link:../core
       zod:
@@ -187,7 +187,7 @@ importers:
 
   packages/source-apify:
     dependencies:
-      '@pipeline-kit/core':
+      '@idriszade/core':
         specifier: workspace:*
         version: link:../core
       apify-client:
@@ -199,12 +199,12 @@ importers:
 
   packages/source-mcp:
     dependencies:
+      '@idriszade/core':
+        specifier: workspace:*
+        version: link:../core
       '@modelcontextprotocol/sdk':
         specifier: ^1.0.0
         version: 1.29.0(zod@4.4.3)
-      '@pipeline-kit/core':
-        specifier: workspace:*
-        version: link:../core
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -214,7 +214,7 @@ importers:
       '@hono/zod-validator':
         specifier: ^0.7.6
         version: 0.7.6(hono@4.12.18)(zod@4.4.3)
-      '@pipeline-kit/core':
+      '@idriszade/core':
         specifier: workspace:*
         version: link:../core
       hono:
@@ -226,7 +226,7 @@ importers:
 
   packages/store-pgvector:
     dependencies:
-      '@pipeline-kit/core':
+      '@idriszade/core':
         specifier: workspace:*
         version: link:../core
       drizzle-orm:
@@ -245,7 +245,7 @@ importers:
 
   packages/store-postgres:
     dependencies:
-      '@pipeline-kit/core':
+      '@idriszade/core':
         specifier: workspace:*
         version: link:../core
       drizzle-orm:
@@ -264,7 +264,7 @@ importers:
 
   packages/store-sqlite:
     dependencies:
-      '@pipeline-kit/core':
+      '@idriszade/core':
         specifier: workspace:*
         version: link:../core
       better-sqlite3:
