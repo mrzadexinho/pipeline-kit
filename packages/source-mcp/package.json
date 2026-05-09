@@ -1,5 +1,5 @@
 {
-  "name": "@pipeline-kit/source-mcp",
+  "name": "@idriszade/source-mcp",
   "version": "0.0.0",
   "description": "Pipeline-kit Source adapter for consuming MCP tool and resource outputs",
   "type": "module",
@@ -28,7 +28,7 @@
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
-    "@pipeline-kit/core": "workspace:*",
+    "@idriszade/core": "workspace:*",
     "zod": "^4.4.3"
   },
   "license": "MIT",

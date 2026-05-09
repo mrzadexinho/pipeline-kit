@@ -1,5 +1,5 @@
 {
-  "name": "@pipeline-kit/serve-slack",
+  "name": "@idriszade/serve-slack",
   "version": "0.0.0",
   "description": "Pipeline-kit Serve adapter for posting pipeline results to Slack channels and DMs",
   "type": "module",
@@ -27,7 +27,7 @@
     "automation"
   ],
   "dependencies": {
-    "@pipeline-kit/core": "workspace:*",
+    "@idriszade/core": "workspace:*",
     "@slack/web-api": "^7.0.0",
     "zod": "^4.4.3"
   },

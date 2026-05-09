@@ -1,5 +1,5 @@
 {
-  "name": "@pipeline-kit/store-postgres",
+  "name": "@idriszade/store-postgres",
   "version": "0.0.0",
   "description": "Pipeline-kit Store adapter for persisting pipeline atoms to PostgreSQL via Drizzle ORM",
   "type": "module",
@@ -27,7 +27,7 @@
     "automation"
   ],
   "dependencies": {
-    "@pipeline-kit/core": "workspace:*",
+    "@idriszade/core": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "postgres": "^3.4.0",
     "zod": "^4.4.3"

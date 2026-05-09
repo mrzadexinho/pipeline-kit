@@ -1,5 +1,5 @@
 {
-  "name": "@pipeline-kit/process-reviewable",
+  "name": "@idriszade/process-reviewable",
   "version": "0.0.0",
   "description": "Reviewable<I> HRP gate adapters — GatewerkReviewable + ConsoleReviewable + reviewable-wrapper",
   "type": "module",
@@ -22,7 +22,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@pipeline-kit/core": "workspace:*",
+    "@idriszade/core": "workspace:*",
     "zod": "^4.4.3"
   },
   "peerDependencies": {

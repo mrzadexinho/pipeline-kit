@@ -1,5 +1,5 @@
 {
-  "name": "@pipeline-kit/source-api",
+  "name": "@idriszade/source-api",
   "version": "0.0.0",
   "description": "Pipeline-kit Source adapter for polling and streaming HTTP/REST APIs",
   "type": "module",
@@ -27,7 +27,7 @@
     "automation"
   ],
   "dependencies": {
-    "@pipeline-kit/core": "workspace:*",
+    "@idriszade/core": "workspace:*",
     "zod": "^4.4.3"
   },
   "license": "MIT",

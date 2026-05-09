@@ -1,5 +1,5 @@
 {
-  "name": "@pipeline-kit/process-extract",
+  "name": "@idriszade/process-extract",
   "version": "0.0.0",
   "description": "Pipeline-kit Process adapter for LLM-powered structured data extraction with Zod schemas",
   "type": "module",
@@ -28,7 +28,7 @@
   ],
   "dependencies": {
     "@opentelemetry/api": "^1.9.1",
-    "@pipeline-kit/core": "workspace:*",
+    "@idriszade/core": "workspace:*",
     "zod": "^4.4.3",
     "zod-to-json-schema": "^3.24.0"
   },

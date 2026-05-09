@@ -1,5 +1,5 @@
 {
-  "name": "@pipeline-kit/source-apify",
+  "name": "@idriszade/source-apify",
   "version": "0.0.0",
   "description": "Pipeline-kit Source adapter for ingesting Apify Actor run results",
   "type": "module",
@@ -27,7 +27,7 @@
     "automation"
   ],
   "dependencies": {
-    "@pipeline-kit/core": "workspace:*",
+    "@idriszade/core": "workspace:*",
     "apify-client": "^2.13.0",
     "zod": "^4.4.3"
   },

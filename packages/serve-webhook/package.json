@@ -1,5 +1,5 @@
 {
-  "name": "@pipeline-kit/serve-webhook",
+  "name": "@idriszade/serve-webhook",
   "version": "0.0.0",
   "description": "Pipeline-kit Serve adapter for dispatching HMAC-signed outbound webhook payloads",
   "type": "module",
@@ -27,7 +27,7 @@
     "automation"
   ],
   "dependencies": {
-    "@pipeline-kit/core": "workspace:*",
+    "@idriszade/core": "workspace:*",
     "ipaddr.js": "^2.4.0",
     "zod": "^4.4.3"
   },

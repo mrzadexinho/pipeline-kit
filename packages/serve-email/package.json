@@ -1,5 +1,5 @@
 {
-  "name": "@pipeline-kit/serve-email",
+  "name": "@idriszade/serve-email",
   "version": "0.0.0",
   "description": "Pipeline-kit Serve adapter for delivering pipeline results via email (Nodemailer / Resend)",
   "type": "module",
@@ -27,7 +27,7 @@
     "automation"
   ],
   "dependencies": {
-    "@pipeline-kit/core": "workspace:*",
+    "@idriszade/core": "workspace:*",
     "zod": "^4.4.3"
   },
   "peerDependencies": {

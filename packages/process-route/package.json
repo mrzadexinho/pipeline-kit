@@ -1,5 +1,5 @@
 {
-  "name": "@pipeline-kit/process-route",
+  "name": "@idriszade/process-route",
   "version": "0.0.0",
   "description": "Pipeline-kit Process adapter for predicate-based routing of atoms to downstream stages",
   "type": "module",
@@ -27,7 +27,7 @@
     "automation"
   ],
   "dependencies": {
-    "@pipeline-kit/core": "workspace:*"
+    "@idriszade/core": "workspace:*"
   },
   "license": "MIT",
   "publishConfig": {

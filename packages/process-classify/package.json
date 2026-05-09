@@ -1,5 +1,5 @@
 {
-  "name": "@pipeline-kit/process-classify",
+  "name": "@idriszade/process-classify",
   "version": "0.0.0",
   "description": "Pipeline-kit Process adapter for label classification of pipeline atoms",
   "type": "module",
@@ -27,14 +27,14 @@
     "automation"
   ],
   "dependencies": {
-    "@pipeline-kit/core": "workspace:*",
+    "@idriszade/core": "workspace:*",
     "zod": "^4.4.3"
   },
   "peerDependencies": {
-    "@pipeline-kit/process-extract": "workspace:*"
+    "@idriszade/process-extract": "workspace:*"
   },
   "peerDependenciesMeta": {
-    "@pipeline-kit/process-extract": {
+    "@idriszade/process-extract": {
       "optional": true
     }
   },

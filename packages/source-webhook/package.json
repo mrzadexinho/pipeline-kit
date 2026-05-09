@@ -1,5 +1,5 @@
 {
-  "name": "@pipeline-kit/source-webhook",
+  "name": "@idriszade/source-webhook",
   "version": "0.0.0",
   "description": "Pipeline-kit Source adapter for receiving inbound webhooks via Hono",
   "type": "module",
@@ -28,7 +28,7 @@
   ],
   "dependencies": {
     "@hono/zod-validator": "^0.7.6",
-    "@pipeline-kit/core": "workspace:*",
+    "@idriszade/core": "workspace:*",
     "hono": "^4.9.0",
     "zod": "^4.4.3"
   },

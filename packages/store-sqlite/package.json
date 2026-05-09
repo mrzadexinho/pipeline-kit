@@ -1,5 +1,5 @@
 {
-  "name": "@pipeline-kit/store-sqlite",
+  "name": "@idriszade/store-sqlite",
   "version": "0.0.0",
   "description": "Pipeline-kit Store adapter for persisting pipeline atoms to SQLite via Drizzle ORM",
   "type": "module",
@@ -27,7 +27,7 @@
     "automation"
   ],
   "dependencies": {
-    "@pipeline-kit/core": "workspace:*",
+    "@idriszade/core": "workspace:*",
     "better-sqlite3": "^11.0.0",
     "drizzle-orm": "^0.45.2",
     "zod": "^4.4.3"

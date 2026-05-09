@@ -1,5 +1,5 @@
 {
-  "name": "@pipeline-kit/process-validate",
+  "name": "@idriszade/process-validate",
   "version": "0.0.0",
   "description": "Pipeline-kit Process adapter for schema-driven validation of pipeline atoms via Zod",
   "type": "module",
@@ -27,7 +27,7 @@
     "automation"
   ],
   "dependencies": {
-    "@pipeline-kit/core": "workspace:*",
+    "@idriszade/core": "workspace:*",
     "zod": "^4.4.3"
   },
   "license": "MIT",
