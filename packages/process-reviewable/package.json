@@ -25,17 +25,6 @@
     "@idriszade/core": "workspace:*",
     "zod": "^4.4.3"
   },
-  "peerDependencies": {
-    "gatewerk": ">=0.1.0"
-  },
-  "peerDependenciesMeta": {
-    "gatewerk": {
-      "optional": true
-    }
-  },
-  "devDependencies": {
-    "gatewerk": "file:../../../gatewerk/packages/sdk-ts"
-  },
   "license": "MIT",
   "publishConfig": {
     "access": "public",

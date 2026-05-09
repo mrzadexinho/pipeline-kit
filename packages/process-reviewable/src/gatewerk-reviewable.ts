@@ -9,7 +9,21 @@ import {
   type ReviewResponse,
   review as reviewId,
 } from '@idriszade/core';
-import type { GatewerkClient } from 'gatewerk';
+
+// Structural type for the gatewerk SDK client. Kit declares the exact shape
+// it consumes so users can pass an instance of `gatewerk`'s GatewerkClient
+// (peer-dep-optional) without process-reviewable carrying a build-time dep
+// on the gatewerk package.
+export interface GatewerkClient {
+  reviews: {
+    create(input: {
+      template: string;
+      payload: Record<string, unknown>;
+      callback_url: string;
+    }): Promise<Result<{ id?: string }, { message?: string }>>;
+    get(id: string): Promise<Result<ReviewDetailLike, { message?: string }>>;
+  };
+}
 
 export interface GatewerkReviewableOpts<I> {
   client: GatewerkClient;

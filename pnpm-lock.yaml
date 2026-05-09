@@ -105,10 +105,6 @@ importers:
       zod:
         specifier: ^4.4.3
         version: 4.4.3
-    devDependencies:
-      gatewerk:
-        specifier: file:../../../gatewerk/packages/sdk-ts
-        version: file:../gatewerk/packages/sdk-ts
 
   packages/process-route:
     dependencies:
@@ -1613,9 +1609,6 @@ packages:
 
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
-
-  gatewerk@file:../gatewerk/packages/sdk-ts:
-    resolution: {directory: ../gatewerk/packages/sdk-ts, type: directory}
 
   get-caller-file@2.0.5:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
@@ -4160,8 +4153,6 @@ snapshots:
     optional: true
 
   function-bind@1.1.2: {}
-
-  gatewerk@file:../gatewerk/packages/sdk-ts: {}
 
   get-caller-file@2.0.5: {}
 
