@@ -124,7 +124,7 @@ Checkpoint/resume per atom?
 **Questions to answer:**
 - Lowest ops overhead durable runtime on self-hosted VPS w/ Postgres?
 - How must `PipelineContext` change to carry a durable step reference?
-- Thin wrapper (`@pipeline-kit/composer-pgboss`) or documented pattern?
+- Thin wrapper (`@idriszade/composer-pgboss`) or documented pattern?
 - Checkpoint granularity — per run / atom / stage?
 
 ---
@@ -222,7 +222,7 @@ fires overlap.
 - How does webhook trigger unify with cron trigger?
 - CloudEvents-compatible event envelope wrapping a trigger?
 - Trigger deduplication — two webhooks delivering same event?
-- `@pipeline-kit/trigger-pgboss` package, or trigger-in-Composer-options?
+- `@idriszade/trigger-pgboss` package, or trigger-in-Composer-options?
 
 ---
 
@@ -323,7 +323,7 @@ lost? What must remain code?
   prompt fns)?
 - Minimum CLI — `pk run` / `inspect` / `trace`?
 - Templates as TS factory functions, JSON files, or both?
-- `@pipeline-kit/cli` package, or separate tool?
+- `@idriszade/cli` package, or separate tool?
 
 ---
 

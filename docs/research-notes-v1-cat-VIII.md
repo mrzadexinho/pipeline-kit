@@ -183,7 +183,7 @@ Direction of travel in secrets management is **away from "fetch a long-lived sec
 **Default flat hyphenated names** (`apify-token`); **default deps shape `{ secrets: SecretsResolver }`** (multi-resolve from one resolver). `scope(prefix)` + `{ <ns>Secrets: ScopedSecretsResolver }` are **OPTIONAL façades** for namespace-heavy adapters at N≥3. Hyphen joiner matches existing kit `NAME_RE`. Both shapes byte-identical runtime observables (spike #5 + spike #6). Cell (2) structurally disqualified. See ADR-v1-VIII-4.
 
 ### Q5 — Does kit ship a concrete adapter, or only a contract? + HMAC envelope auth?
-**Kit ships BOTH the contract (`SecretsResolver` + `createVersionAwareResolver` + `createTtlResolver`) AND a 3-reference-adapter trio at M2: `@pipeline-kit/secrets-env` + `-sops` + `-oidc`.** Three references prove the contract spans long-lived API keys → encrypted-in-git → short-lived workload-identity tokens. **HMAC envelope auth stays at v0 ADR17 webhook scope, NOT extended via `SecretsAdapter` coupling** — orthogonal concerns. See ADR-v1-VIII-5.
+**Kit ships BOTH the contract (`SecretsResolver` + `createVersionAwareResolver` + `createTtlResolver`) AND a 3-reference-adapter trio at M2: `@idriszade/secrets-env` + `-sops` + `-oidc`.** Three references prove the contract spans long-lived API keys → encrypted-in-git → short-lived workload-identity tokens. **HMAC envelope auth stays at v0 ADR17 webhook scope, NOT extended via `SecretsAdapter` coupling** — orthogonal concerns. See ADR-v1-VIII-5.
 
 ---
 
@@ -311,10 +311,10 @@ Both deps shapes produce byte-identical runtime observables; choice is adapter-a
 
 **Decision:** Kit ships at v1 / M2:
 - **Contract:** `SecretsResolver` interface + `createVersionAwareResolver` + `createTtlResolver` + `scope()` façade (per ADRs VIII-1 → VIII-4).
-- **Reference-adapter trio (M2 packs under `@pipeline-kit/secrets`):**
-  - `@pipeline-kit/secrets-env` — env-var resolver. Default for laptop + VPS (matches every constellation project today).
-  - `@pipeline-kit/secrets-sops` — SOPS + age / KMS encrypted-in-git. Self-hosted GitOps direction.
-  - `@pipeline-kit/secrets-oidc` — OIDC token exchange. Modern direction (AWS IRSA / GCP WIF / GitHub Actions OIDC).
+- **Reference-adapter trio (M2 packs under `@idriszade/secrets`):**
+  - `@idriszade/secrets-env` — env-var resolver. Default for laptop + VPS (matches every constellation project today).
+  - `@idriszade/secrets-sops` — SOPS + age / KMS encrypted-in-git. Self-hosted GitOps direction.
+  - `@idriszade/secrets-oidc` — OIDC token exchange. Modern direction (AWS IRSA / GCP WIF / GitHub Actions OIDC).
 
 **Non-goals (explicit rejections — do NOT ship):**
 - Kit is NOT a secret store — lean on Doppler / Infisical / 1Password / Vault / cloud SMs at user-glue tier.
@@ -335,8 +335,8 @@ Both deps shapes produce byte-identical runtime observables; choice is adapter-a
 - M2 LOC budget impact: ~600-900 LOC for the trio vs ~250 LOC for env-only. User accepted at spike-6 close-out.
 - All three reference adapters expose the same `SecretsResolver` shape; user can mix via wrapper composition.
 - v0 `pk.webhooks.verify(rawBody, sigHeader, secret)` API surface unchanged — `secret` stays a raw string at the API boundary; user MAY source it from a `SecretsResolver` at user-glue tier but kit makes no contract.
-- Pack roster (`-packs.md` §2 launch tier `@pipeline-kit/secrets`) updated to enumerate the trio.
-- Future v1.x: `@pipeline-kit/secrets-doppler` / `-infisical` / `-vault` welcomed as ecosystem additions; not v1.0 scope.
+- Pack roster (`-packs.md` §2 launch tier `@idriszade/secrets`) updated to enumerate the trio.
+- Future v1.x: `@idriszade/secrets-doppler` / `-infisical` / `-vault` welcomed as ecosystem additions; not v1.0 scope.
 
 ### ADR-v1-VIII-6 — PII / secret redaction in observability: default-on at Zod boundary
 
@@ -352,7 +352,7 @@ const Atom = z.object({
   api_key:    z.string().describe('@secret'),
 });
 ```
-- `@redact` annotation: field value replaced with `<redacted:N-chars>` in OTel span attrs + `@pipeline-kit/observe` adapter outputs.
+- `@redact` annotation: field value replaced with `<redacted:N-chars>` in OTel span attrs + `@idriszade/observe` adapter outputs.
 - `@secret` annotation: field value replaced with `<secret:hash-prefix>` (first 8 chars of SHA-256 hex of value); enables debugging "did the secret value change?" without leaking it.
 - Default-on; explicit opt-out via `pipeline.observe({ redaction: 'off' })` (discouraged; loud warning).
 - Hooks at the Zod boundary (Source ingest + Serve emit); NOT coupled to `SecretsResolver` contract — orthogonal concern.
@@ -360,14 +360,14 @@ const Atom = z.object({
 **Alternatives considered:**
 - *Redaction off-by-default with opt-in.* Rejected — leak-by-default is unforgivable for personal automations carrying real data (packs §5.3 stance).
 - *Couple redaction to `SecretsResolver` (auto-redact every value returned by `resolve()`).* Rejected — `resolve()` returns strings to the adapter; redaction must happen at the observability boundary, not the resolution boundary.
-- *Redaction as separate pack `@pipeline-kit/redact`.* Rejected — must be default-on in core to avoid leak-by-default.
+- *Redaction as separate pack `@idriszade/redact`.* Rejected — must be default-on in core to avoid leak-by-default.
 - *Use `z.string().brand('Secret')` instead of `.describe('@redact')`.* Considered; deferred — branded types lose the semantic tag at runtime serialisation; description annotation survives JSON Schema bridge (per Cat IX ADR-v1-IX-2).
 
 **Reference:** packs §5.3; Cat IX ADR-v1-IX-2 (Zod → JSON Schema bridge — annotations survive); v0 spec §1 boundary discipline.
 
 **Consequences:**
 - Atom schemas grow `.describe('@redact')` / `@secret` annotations at sensitive fields.
-- `@pipeline-kit/observe` (launch-tier pack) consumes annotations to filter span attrs before export.
+- `@idriszade/observe` (launch-tier pack) consumes annotations to filter span attrs before export.
 - M2 micro-spike required: validate Zod-annotation propagation through `zod-to-json-schema` (Cat IX ADR-v1-IX-2 codegen) → Pydantic `Field(..., description=...)` round-trip → cross-runtime adapters honour annotations.
 - v0 ADR amendment risk: NONE — v0 spec §1 sets Zod boundaries but does not specify span-attr extraction.
 - Concrete unresolved: brand-vs-describe choice (deferred to v1 spec lock); secret-hash algorithm + truncation length (defer to M2).

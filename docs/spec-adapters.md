@@ -4,7 +4,7 @@
 > Each gets a 1-paragraph signature spec covering package name, config
 > shape, behavior, dependencies, and ADR anchors. All adapters are
 > individually publishable as scoped npm packages
-> (`@pipeline-kit/source-api`, etc.) but ship in the v0 monorepo for
+> (`@idriszade/source-api`, etc.) but ship in the v0 monorepo for
 > testing cohesion.
 >
 > **Author:** Brain — 2026-05-06.
@@ -15,7 +15,7 @@
 
 ### 1. `api-source` — REST/GraphQL with cursor pagination + auth
 
-- **Package:** `@pipeline-kit/source-api`.
+- **Package:** `@idriszade/source-api`.
 - **Config:** `{ baseUrl, auth: { type: 'bearer'|'apiKey'|'basic', value }, paginate: 'cursor'|'offset'|'page', schema: ZodSchema<O> }`.
 - **Cursor support:** generic via `cursor` param; adapter declares cursor
   field (e.g., `next_cursor`, `next_page_token`).
@@ -25,7 +25,7 @@
 
 ### 2. `webhook-source` — incoming webhook intake with HMAC verify (Hono-backed)
 
-- **Package:** `@pipeline-kit/source-webhook`.
+- **Package:** `@idriszade/source-webhook`.
 - **Config:** `{ path, secret, schema: ZodSchema<O>, verify: { tolerance, acceptedAlgorithms }, idempotencyHeader: 'X-Webhook-Id' | string }`.
 - **Runtime:** exposes Hono `app` instance OR generic Web-Standards
   `(req: Request) => Promise<Response>` handler. Userland chooses runtime
@@ -39,7 +39,7 @@
 
 ### 3. `apify-source` — wrap any Apify actor as Source<O>
 
-- **Package:** `@pipeline-kit/source-apify`.
+- **Package:** `@idriszade/source-apify`.
 - **Config:** `{ actorId, input, schema: ZodSchema<O>, datasetMode: 'append'|'reset', credentials: ApifyConfig }`.
 - **Behavior:** Apify run launches via Apify SDK; result Atoms emitted from
   dataset. Cursor = Apify dataset offset.
@@ -50,7 +50,7 @@
 
 ### 4. `mcp-tool-source` — wrap any MCP tool call as Source<O>
 
-- **Package:** `@pipeline-kit/source-mcp`.
+- **Package:** `@idriszade/source-mcp`.
 - **Config:** `{ serverUrl, toolName, args, schema?: ZodSchema<O> }`.
 - **Behavior:** connects to MCP server, calls tool, emits result as Atom<O>.
   Auto-derives Zod schema from MCP tool's input/output schema if `schema` not
@@ -67,7 +67,7 @@
 
 ### 5. `postgres-store` — Drizzle-backed Postgres Store<T>
 
-- **Package:** `@pipeline-kit/store-postgres`.
+- **Package:** `@idriszade/store-postgres`.
 - **Config:** `{ connectionString, schema: PgTable, atomTable: PgTable<AtomShape>, idempotencyTtl: 86_400_000 }`.
 - **Migrations:** ships `migrations/0001_init.sql` (atom table + idempotency
   cache table). `drizzle-kit migrate` in CI/prod; never `push` in prod (ADR11).
@@ -78,7 +78,7 @@
 
 ### 6. `sqlite-store` — Drizzle-backed SQLite Store<T>; local + dev
 
-- **Package:** `@pipeline-kit/store-sqlite`.
+- **Package:** `@idriszade/store-sqlite`.
 - **Config:** `{ path, schema, atomTable }`.
 - **Runtime:** `drizzle-orm/better-sqlite3` for Node; `drizzle-orm/bun-sqlite`
   for Bun.
@@ -89,7 +89,7 @@
 
 ### 7. `pgvector-store` — pgvector embedding store (pursuit pattern)
 
-- **Package:** `@pipeline-kit/store-pgvector`.
+- **Package:** `@idriszade/store-pgvector`.
 - **Config:** `{ connectionString, dimension, distance: 'cosine'|'l2'|'inner_product', indexType: 'hnsw'|'ivfflat', schema: PgTable }`.
 - **Drizzle custom-type pattern**: kit ships `pgvectorColumn(dimension)`
   helper for table definition.
@@ -106,7 +106,7 @@
 
 ### 8. `extract-process` — LLM extraction with Zod schema validation + JSON-schema auto-derivation
 
-- **Package:** `@pipeline-kit/process-extract`.
+- **Package:** `@idriszade/process-extract`.
 - **Config:** `{ provider: 'openai'|'anthropic'|'gemini'|'router', model, prompt, schema: ZodSchema<O>, temperature?, maxRetriesOnSchemaFailure?: 2 }`.
 - **Behavior:** sends prompt + auto-derived JSON schema (`zod-to-json-schema`)
   to LLM. Parses response with `schema.safeParse` (boundary coercion via
@@ -120,7 +120,7 @@
 
 ### 9. `classify-process` — rule-based or LLM classifier
 
-- **Package:** `@pipeline-kit/process-classify`.
+- **Package:** `@idriszade/process-classify`.
 - **Config:** `{ mode: 'rules'|'llm', categories: string[], rules?: ClassifyRule[], llmConfig?: ExtractConfig }`.
 - **Rule mode:** declarative match expressions (`{ field: 'description', match: 'contains', value: 'urgent' }`).
 - **LLM mode:** uses `extract-process` underneath with `category: enum(...)`
@@ -129,7 +129,7 @@
 
 ### 10. `validate-process` — boundary coercion (per `feedback_pydantic_boundary_coercion.md`)
 
-- **Package:** `@pipeline-kit/process-validate`.
+- **Package:** `@idriszade/process-validate`.
 - **Config:** `{ schema: ZodSchema<O>, mode: 'coerce'|'strict' }`.
 - **Behavior:** runs `schema.safeParse(input)`. In `coerce` mode, applies
   `.catch(default)` per field — coerces malformed-but-recoverable values
@@ -139,7 +139,7 @@
 
 ### 11. `route-process` — basic single-priority routing
 
-- **Package:** `@pipeline-kit/process-route`.
+- **Package:** `@idriszade/process-route`.
 - **Config:** `{ predicate: (input: I) => string, branches: Record<string, Process<I, unknown>>, defaultBranch?: string, retryPolicy?: Partial<RetryPolicy>, id?: string }`.
 - **Behavior:** evaluates predicate, dispatches to named branch. v0 ships
   single-priority routing only (per Phase 1 brain Q5 — full route-policy
@@ -150,7 +150,7 @@
 
 ### 12. `reviewable-wrapper` — `Reviewable<I>` HRP gate as Process<I, I>
 
-- **Package:** `@pipeline-kit/process-reviewable`.
+- **Package:** `@idriszade/process-reviewable`.
 - **Behavior:** wraps any `Reviewable<I>` as a Process<I, I> for chaining via
   `Pipeline.through(reviewableWrapper(reviewable))`. Equivalent to
   `Pipeline.review(reviewable)` but exposes Process-level composition for
@@ -168,7 +168,7 @@
 
 ### 13. `email-serve` — SMTP / Postal / Resend
 
-- **Package:** `@pipeline-kit/serve-email`.
+- **Package:** `@idriszade/serve-email`.
 - **Config:** `{ provider: 'smtp'|'postal'|'resend', credentials, from, idempotencyHeader: 'Idempotency-Key' }`.
 - **Idempotency:** `required` (per ADR9). Adapter generates message-id from
   idempotency key; provider-side dedup where supported.
@@ -177,7 +177,7 @@
 
 ### 14. `slack-serve` — message + reaction-emoji approval (legacy gate alongside HRP)
 
-- **Package:** `@pipeline-kit/serve-slack`.
+- **Package:** `@idriszade/serve-slack`.
 - **Config:** `{ token, channel, idempotencyKey: string }`.
 - **Methods:** `emit(message: SlackMessage, ctx)` posts to channel.
   Idempotency via Slack's `unfurl_links: false` + per-channel + idempotency-
@@ -188,7 +188,7 @@
 
 ### 15. `webhook-serve` — outbound webhook with HMAC signing
 
-- **Package:** `@pipeline-kit/serve-webhook`.
+- **Package:** `@idriszade/serve-webhook`.
 - **Config:** `{ url, secret, auth: 'hmac'|'basic'|'bearer'|'apiKey', authValue?: string, idempotencyHeader: 'X-Webhook-Id' }`.
 - **Behavior:** signs payload via `pk.webhooks.sign` (single
   `X-Pipeline-Kit-Signature: t=<unix>,v1=<hex>` header per ADR21 Stripe
@@ -200,7 +200,7 @@
 
 ### 16. `mcp-tool-serve` — exposes pipeline output as MCP tool
 
-- **Package:** `@pipeline-kit/serve-mcp`.
+- **Package:** `@idriszade/serve-mcp`.
 - **Config:** `{ toolName, description, input: ZodSchema<I>, output: ZodSchema<RunResult>, pipeline: TerminalPipeline<unknown> }`.
 - **Behavior:** registers MCP tool; on tool call, executes pipeline.run() and
   returns RunResult. Auto-derived JSON schemas from Zod schemas.
@@ -219,7 +219,7 @@
 
 ## Composer + observability (built-in to kit core)
 
-Not separate adapters; ship as kit core (`@pipeline-kit/core`):
+Not separate adapters; ship as kit core (`@idriszade/core`):
 
 - **Retry wrapper** (per ADR13) — wraps every stage with `RetryPolicy`.
 - **Token-bucket rate-limit** (per ADR10) — wraps every Source/Serve.
@@ -229,7 +229,7 @@ Not separate adapters; ship as kit core (`@pipeline-kit/core`):
 - **Structured logs** (Pino-shaped JSON; emits to stderr by default; replaced
   via OTel logs in prod).
 - **Memory adapter** — interface only in core; orchestr8-backed impl in
-  `@pipeline-kit/memory-orchestr8` (peerDep on `orchestr8-mcp`).
+  `@idriszade/memory-orchestr8` (peerDep on `orchestr8-mcp`).
 
 ---
 

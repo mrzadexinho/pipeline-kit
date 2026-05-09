@@ -639,7 +639,7 @@ TS twin uses Drizzle.
 **Consequences:** Hard deps: `drizzle-orm`, `drizzle-kit` (devDep), database
 drivers (`postgres`, `better-sqlite3`, `bun:sqlite` per runtime). Migrations
 ship alongside Store adapter packages (e.g.,
-`@pipeline-kit/store-postgres/migrations/`). Auto-derived Zod schemas in
+`@idriszade/store-postgres/migrations/`). Auto-derived Zod schemas in
 Store interface signatures (see §1, §2).
 
 ---
@@ -1366,14 +1366,14 @@ Concrete implications:
   fails mid-execution, kit reports failure to caller; caller decides retry
   semantics (within kit's retry policy, ADR13). No intra-stage interrupt;
   no LangGraph-style checkpoint inside Process functions.
-- **v1 reference integration: opt-in `@pipeline-kit/composer-inngest`
+- **v1 reference integration: opt-in `@idriszade/composer-inngest`
   package** (~30-line thin wrapper). Industry standard for cross-package
   integrations is opt-in helper packages, not docs-only patterns: Drizzle
   ships per-provider packages (`drizzle-orm/postgres`, `drizzle-orm/bun-sqlite`,
   `drizzle-orm/d1`, etc.); LangChain ships per-integration packages. Kit
   ships a thin Inngest helper exporting `inngestPipeline(pipeline, options)`
   that wraps `pipeline.run()` inside `step.run()` with idiomatic Inngest
-  retry/idempotency config. Trigger.dev gets `@pipeline-kit/composer-trigger`
+  retry/idempotency config. Trigger.dev gets `@idriszade/composer-trigger`
   in v1 too. Users can still bypass and write their own; the helper just
   ships the canonical pattern.
 
@@ -1392,8 +1392,8 @@ durable function"). outline §1 ("not a runtime; not a framework").
 
 **Consequences:** kit's package size + dep count stays minimal (no event
 infra); v0 ships with `p-retry`, `zod`, `drizzle-orm`, OTel peerDeps, and
-adapter-specific deps only. v1 ships opt-in `@pipeline-kit/composer-inngest`
-+ `@pipeline-kit/composer-trigger` thin wrapper packages (industry-standard
+adapter-specific deps only. v1 ships opt-in `@idriszade/composer-inngest`
++ `@idriszade/composer-trigger` thin wrapper packages (industry-standard
 integration-package pattern), each with peerDep on the target durable
 runtime. v2 may add a `pipeline-kit-cloud` companion product (separate
 package) that hosts Composer for users who don't want to run their own —

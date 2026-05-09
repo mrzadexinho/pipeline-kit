@@ -130,7 +130,7 @@ TBD in Phase 0).
 ## gatewerk (TypeScript + Python SDKs)
 
 **What it is:** open-source human oversight station. Reviewable<I> reference
-impl already in M0 (`@pipeline-kit/process-reviewable`). Multi-framework SDK
+impl already in M0 (`@idriszade/process-reviewable`). Multi-framework SDK
 precedent (LangChain, CrewAI, AutoGen, OpenAI Agents, Vercel AI SDK, n8n,
 Claude/Cursor/Windsurf via MCP, Dify).
 

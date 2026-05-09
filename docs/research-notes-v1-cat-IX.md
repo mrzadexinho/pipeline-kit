@@ -29,7 +29,7 @@
 ## Spike #1 — single-atom stdio JSON round-trip
 
 ### What was built
-TS emits one `Result<Atom<Job>[], E>`; Python validates with Pydantic v2, mutates one field, re-emits; TS validates round-trip. No `@pipeline-kit/*` imports. Stdio bare-JSON, single-shot.
+TS emits one `Result<Atom<Job>[], E>`; Python validates with Pydantic v2, mutates one field, re-emits; TS validates round-trip. No `@idriszade/*` imports. Stdio bare-JSON, single-shot.
 
 ### What it revealed
 1. **Result<T,E> is convention-not-tag.** Discriminator `error == null` works structurally but is reimplemented at every cross-runtime hop. One typo silently turns ERR into OK. (Q1)

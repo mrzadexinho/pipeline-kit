@@ -65,7 +65,7 @@ Docker, VPS-deployed. TS-primary with parallel TS + Python SDKs. Apache 2.0.
   with TTL — gatewerk built it bespoke.
 
 **Friction (cross-project):**
-- **F-X-1:** gatewerk ↔ kit: `@pipeline-kit/process-reviewable` already
+- **F-X-1:** gatewerk ↔ kit: `@idriszade/process-reviewable` already
   wraps gatewerk for TS, but Python kit users have no equivalent. Cat IX
   cross-runtime would close the gap; until then, Python pursuit can't reach
   gatewerk through kit.
@@ -183,7 +183,7 @@ MCP-server pairs in `actors/` (apify-store-intel, bbb-scraper, etc.).
 - **F-DURABILITY-3:** workflow runs span days; VPS-reboot recovery
   undesigned.
 - **F-OBSERVE-3:** Langfuse already running on VPS — kit's
-  `@pipeline-kit/observe` Langfuse adapter would plug in immediately.
+  `@idriszade/observe` Langfuse adapter would plug in immediately.
 - **F-AUTH-3:** ≥7 credential surfaces (Apify / Supabase / Anthropic /
   Pydantic AI / Tailscale / Nous MCP / Langfuse).
 
@@ -269,7 +269,7 @@ Docker.
   in its own service. Cat I durability + Cat IV trigger evidence (chunk +
   embed = scheduled jobs).
 - OpenAI-compatible API surface is a Serve adapter shape that kit could
-  ship as `@pipeline-kit/serve-openai-compat` (lets any OpenAI-client tool
+  ship as `@idriszade/serve-openai-compat` (lets any OpenAI-client tool
   consume any kit pipeline).
 - Vertical-slice architecture maps cleanly to kit's stage-per-package
   pattern.
@@ -311,7 +311,7 @@ scanline + migratoor + docguard + orchestr8 as one MCP server (5 modules,
   library and as MCP server. This is the **kit pack pattern in the wild** —
   proves the shape works.
 - **devshield as meta-pack** — bundles five smaller MCP-shaped tools as
-  one. Direct precedent for `@pipeline-kit/observe` etc. bundling several
+  one. Direct precedent for `@idriszade/observe` etc. bundling several
   vendor-implementations.
 - All four are linear pipelines (parse → analyse → report). Kit Composer
   wrap would add retry / OTel / idempotency for free.

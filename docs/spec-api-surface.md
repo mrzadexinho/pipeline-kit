@@ -1,7 +1,7 @@
 # pipeline-kit — Phase 2 Spec — §1 API Surface (v0)
 
 > Drilldown for [spec.md](spec.md). Concrete TypeScript signatures for all
-> exported types in `@pipeline-kit/core`. Authoritative for kit's public
+> exported types in `@idriszade/core`. Authoritative for kit's public
 > v0 API. Anchors back to the ADRs that drove each decision.
 >
 > **Author:** Brain — 2026-05-06.
@@ -153,9 +153,9 @@ export interface RunResult<O> {
 > **Lock 1 (M0 + M0.5):** `Reviewable<I>` is a peer of `Process<I, O>`, not a
 > generalisation of it. Position-locked at `.review()` in the pipeline DSL;
 > for Process-shaped composition use `reviewableToProcess(reviewable)` (ships
-> in `@pipeline-kit/core`). The decision union (`approved | rejected | retry
+> in `@idriszade/core`). The decision union (`approved | rejected | retry
 > | ignored`) and the orchestrator semantics around each decision are
-> stable across M0 / M0.5 — adapters under `@pipeline-kit/process-reviewable`
+> stable across M0 / M0.5 — adapters under `@idriszade/process-reviewable`
 > are wrappers, not redefinitions.
 
 ```typescript

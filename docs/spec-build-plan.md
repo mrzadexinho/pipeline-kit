@@ -148,7 +148,7 @@ reviews L4 conceptual + design issues, not what tests already cover.
 
 **M0 — Composer + Reviewable<I> + GatewerkReviewable reference impl.**
 - Validates loop α (kit dogfoods Gatewerk).
-- Ships `@pipeline-kit/core` + `@pipeline-kit/process-reviewable` packages.
+- Ships `@idriszade/core` + `@idriszade/process-reviewable` packages.
 - 50+ unit tests pass.
 
 **M0.5 — All 16 reference adapters published.**
@@ -165,7 +165,7 @@ reviews L4 conceptual + design issues, not what tests already cover.
 
 **M2 — Audited<I,O> + Gatewerk audit log integration.**
 - Compliance feature for regulated trades verticals.
-- Ships `@pipeline-kit/audit-gatewerk` adapter.
+- Ships `@idriszade/audit-gatewerk` adapter.
 - v1 spec adds new ADRs (see §5 deferred + ADR-C / ADR-D / ArkType eval).
 
 **M3 — `EditableField<T>` flows through pipeline; downstream Process consumes.**
@@ -255,7 +255,7 @@ These are explicitly NOT in v0; documented for Phase 3 + v1 spec authoring.
    Inngest, Pydantic AI). v1 spec adds `pk.adapters` if marketplace surface
    or dynamic-registration emerges.
 
-8. **`@pipeline-kit/composer-inngest` + `@pipeline-kit/composer-trigger`
+8. **`@idriszade/composer-inngest` + `@idriszade/composer-trigger`
    thin wrapper packages** (industry-alignment redline ADR22). Per
    industry-standard integration-package pattern (Drizzle dialects, LangChain
    integrations). v1 ships these alongside the M2 milestone work; v0 omits

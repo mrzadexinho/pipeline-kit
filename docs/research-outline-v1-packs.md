@@ -72,43 +72,43 @@ do). Launch tier ≈10 packs; expand tier ≈7; domain tier ≈9.
 
 | Cluster | Pack | Domain / Vendors |
 |---------|------|------------------|
-| Communication | `@pipeline-kit/notify` | email / telegram / slack / discord / sms / push |
-| Observability | `@pipeline-kit/observe` | langfuse / helicone / otel / sentry / posthog |
-| Identity | `@pipeline-kit/secrets` | doppler / infisical / sops / age / env |
-| Runtime | `@pipeline-kit/durable` | pg-boss / inngest / trigger.dev / bullmq / hatchet |
-| AI providers | `@pipeline-kit/llm` | anthropic / openai / google / groq / mistral / ollama / bedrock |
-| Embeddings | `@pipeline-kit/embed` | openai / cohere / voyage / sentence-transformers / ollama |
-| Memory | `@pipeline-kit/memory` | orchestr8 / mem0 / zep / langmem |
-| Cost | `@pipeline-kit/cost` | provider usage / langfuse / helicone / budget caps |
-| DX | `@pipeline-kit/cli` | pk run / inspect / trace / dry-run / new / gen |
-| DX | `@pipeline-kit/config` | PRP / JSON / YAML loaders |
+| Communication | `@idriszade/notify` | email / telegram / slack / discord / sms / push |
+| Observability | `@idriszade/observe` | langfuse / helicone / otel / sentry / posthog |
+| Identity | `@idriszade/secrets` | doppler / infisical / sops / age / env |
+| Runtime | `@idriszade/durable` | pg-boss / inngest / trigger.dev / bullmq / hatchet |
+| AI providers | `@idriszade/llm` | anthropic / openai / google / groq / mistral / ollama / bedrock |
+| Embeddings | `@idriszade/embed` | openai / cohere / voyage / sentence-transformers / ollama |
+| Memory | `@idriszade/memory` | orchestr8 / mem0 / zep / langmem |
+| Cost | `@idriszade/cost` | provider usage / langfuse / helicone / budget caps |
+| DX | `@idriszade/cli` | pk run / inspect / trace / dry-run / new / gen |
+| DX | `@idriszade/config` | PRP / JSON / YAML loaders |
 
 ### Expand tier (v2 — once stage primitives stabilise)
 
 | Cluster | Pack | Domain / Vendors |
 |---------|------|------------------|
-| Information | `@pipeline-kit/search` | tavily / serper / brave / exa / perplexity / algolia / meilisearch |
-| Information | `@pipeline-kit/scrape` | playwright / firecrawl / scrapingbee / apify-actors |
-| Information | `@pipeline-kit/parse` | pdf (pymupdf / marker) / office / ocr / whisper / deepgram |
-| Compute | `@pipeline-kit/sandbox` | e2b / modal / replit / daytona / cloudflare-workers |
-| AI patterns | `@pipeline-kit/rag` | chunking / retrieval / reranking / RRF / hybrid search |
-| AI patterns | `@pipeline-kit/browser` | stagehand / browserbase / browser-use / hyperbrowser |
-| Cross-runtime | `@pipeline-kit/python` | Python binding (Cat IX output) |
-| Quality | `@pipeline-kit/eval` | LLM-pipeline eval harness (NEW v1 must-have, see §5.1) |
+| Information | `@idriszade/search` | tavily / serper / brave / exa / perplexity / algolia / meilisearch |
+| Information | `@idriszade/scrape` | playwright / firecrawl / scrapingbee / apify-actors |
+| Information | `@idriszade/parse` | pdf (pymupdf / marker) / office / ocr / whisper / deepgram |
+| Compute | `@idriszade/sandbox` | e2b / modal / replit / daytona / cloudflare-workers |
+| AI patterns | `@idriszade/rag` | chunking / retrieval / reranking / RRF / hybrid search |
+| AI patterns | `@idriszade/browser` | stagehand / browserbase / browser-use / hyperbrowser |
+| Cross-runtime | `@idriszade/python` | Python binding (Cat IX output) |
+| Quality | `@idriszade/eval` | LLM-pipeline eval harness (NEW v1 must-have, see §5.1) |
 
 ### Domain tier (v3+ — ship when real demand surfaces)
 
 | Cluster | Pack | Domain / Vendors |
 |---------|------|------------------|
-| Workspace | `@pipeline-kit/workspace` | notion / airtable / linear / github / trello / asana |
-| Time | `@pipeline-kit/calendar` | google / outlook / calendly / cal.com / iCal |
-| Money | `@pipeline-kit/payments` | stripe / paddle / polar / lemon-squeezy |
-| Realtime | `@pipeline-kit/voice` | elevenlabs / openai-realtime / livekit / pipecat / daily |
-| Media | `@pipeline-kit/media` | cloudinary / dall-e / sd / replicate / fal.ai / runway |
-| Auth | `@pipeline-kit/auth` | oauth (auth0 / clerk / workos / supabase-auth) |
-| Analytics | `@pipeline-kit/analytics` | posthog / mixpanel / amplitude / segment |
-| Data | `@pipeline-kit/sync` | bidirectional sync / CDC / conflict resolution |
-| Distribution | `@pipeline-kit/publish` | apify actors / npm / docker / helm / vercel |
+| Workspace | `@idriszade/workspace` | notion / airtable / linear / github / trello / asana |
+| Time | `@idriszade/calendar` | google / outlook / calendly / cal.com / iCal |
+| Money | `@idriszade/payments` | stripe / paddle / polar / lemon-squeezy |
+| Realtime | `@idriszade/voice` | elevenlabs / openai-realtime / livekit / pipecat / daily |
+| Media | `@idriszade/media` | cloudinary / dall-e / sd / replicate / fal.ai / runway |
+| Auth | `@idriszade/auth` | oauth (auth0 / clerk / workos / supabase-auth) |
+| Analytics | `@idriszade/analytics` | posthog / mixpanel / amplitude / segment |
+| Data | `@idriszade/sync` | bidirectional sync / CDC / conflict resolution |
+| Distribution | `@idriszade/publish` | apify actors / npm / docker / helm / vercel |
 
 ---
 
@@ -123,7 +123,7 @@ do). Launch tier ≈10 packs; expand tier ≈7; domain tier ≈9.
 │                                                                      │
 │  RULE 2 — Optional dependency                                       │
 │  Core kit never depends on a pack. Packs may depend on each other   │
-│  (e.g. @pipeline-kit/rag depends on /embed + /memory). Users        │
+│  (e.g. @idriszade/rag depends on /embed + /memory). Users        │
 │  install only the packs they need.                                  │
 │                                                                      │
 │  RULE 3 — Owns the common 80%, ducks the bespoke 20%                │
@@ -234,7 +234,7 @@ plain English and proposes a pipeline using available packs.
        → process.llm.summarise({ model: 'claude-sonnet-4-6' })
        → serve.telegram({ chat: env.TG_CHAT })
 
-   Packs needed: @pipeline-kit/durable, /source-web, /llm, /notify
+   Packs needed: @idriszade/durable, /source-web, /llm, /notify
    Estimated cost: ~$0.02 / week
    Generate code? (y/n)
 ```
@@ -263,7 +263,7 @@ not output quality.
    3/4 metrics pass · 1 regression · suggest revert
 ```
 
-Ships as `@pipeline-kit/eval` (expand tier promoted to v1). Composes Cat X
+Ships as `@idriszade/eval` (expand tier promoted to v1). Composes Cat X
 (cost) + Cat I (durable replay over a dataset) + observability. **Without
 this, every LLM pipeline silently rots.**
 
@@ -331,16 +331,16 @@ ship to core; some feed packs; some packs need no research at all.
 
 | v1 Research Category | Primary Pack(s) / Output |
 |----------------------|--------------------------|
-| Cat I Durable Execution | `@pipeline-kit/durable` |
-| Cat II Agent Protocols | `@pipeline-kit/agent` (subset of `/llm`) |
+| Cat I Durable Execution | `@idriszade/durable` |
+| Cat II Agent Protocols | `@idriszade/agent` (subset of `/llm`) |
 | Cat III DAG Composition | core kit (no pack) |
-| Cat IV Trigger / Schedule | `@pipeline-kit/durable` (overlap) |
-| Cat V Memory / Feedback | `@pipeline-kit/memory` |
+| Cat IV Trigger / Schedule | `@idriszade/durable` (overlap) |
+| Cat V Memory / Feedback | `@idriszade/memory` |
 | Cat VI Stage Model Extension | core kit (no pack) |
-| Cat VII Config / DX | `@pipeline-kit/cli` + `/config` |
-| Cat VIII Identity / Secrets | `@pipeline-kit/secrets` + redaction (§5.3) |
-| Cat IX Cross-Runtime | core wire + `@pipeline-kit/python` |
-| Cat X Cost / Usage | `@pipeline-kit/cost` |
+| Cat VII Config / DX | `@idriszade/cli` + `/config` |
+| Cat VIII Identity / Secrets | `@idriszade/secrets` + redaction (§5.3) |
+| Cat IX Cross-Runtime | core wire + `@idriszade/python` |
+| Cat X Cost / Usage | `@idriszade/cost` |
 
 Packs without a research category (well-understood — just ship): `notify`,
 `observe`, `embed`, `llm`, `source-web`, `store-extra`, `rag`, `parse`,
