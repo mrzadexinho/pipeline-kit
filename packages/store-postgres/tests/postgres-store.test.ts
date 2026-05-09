@@ -1,4 +1,4 @@
-import type { Atom, PipelineContext, TraceContext } from '@pipeline-kit/core';
+import type { Atom, PipelineContext, TraceContext } from '@idriszade/core';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';

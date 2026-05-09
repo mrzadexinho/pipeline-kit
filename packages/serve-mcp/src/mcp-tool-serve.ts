@@ -8,7 +8,7 @@ import {
   type Serve,
   type ServeError,
   type TerminalPipeline,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import { toJSONSchema, type ZodType } from 'zod';
 
 // ---------------------------------------------------------------------------

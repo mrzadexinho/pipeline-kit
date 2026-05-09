@@ -9,7 +9,7 @@ import {
   type ServeError,
   sign,
   type TokenBucketConfig,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import ipaddr from 'ipaddr.js';
 import type { ZodType } from 'zod';
 

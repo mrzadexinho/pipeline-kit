@@ -13,7 +13,7 @@ import {
   type SourceQuery,
   src,
   type TokenBucketConfig,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import { type ZodType, z } from 'zod';
 import { deriveZodFromJsonSchema } from './schema-derive.js';
 

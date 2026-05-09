@@ -7,7 +7,7 @@
  * but aren't yet hit: timeout, unique violation (validation), auth,
  * non-Error throw fallback, and the empty-list path.
  */
-import type { Atom, PipelineContext, TraceContext } from '@pipeline-kit/core';
+import type { Atom, PipelineContext, TraceContext } from '@idriszade/core';
 import Database from 'better-sqlite3';
 import { type BetterSQLite3Database, drizzle } from 'drizzle-orm/better-sqlite3';
 import { describe, expect, it } from 'vitest';

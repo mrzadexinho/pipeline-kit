@@ -1,4 +1,4 @@
-export type { SourceError as ApiSourceError } from '@pipeline-kit/core';
+export type { SourceError as ApiSourceError } from '@idriszade/core';
 export type {
   ApiSourceConfig,
   AuthConfig,

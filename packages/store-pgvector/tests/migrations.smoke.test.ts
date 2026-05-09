@@ -5,7 +5,7 @@
  * exercises put/get/list plus all three KNN distance operators against the
  * canonical embedding table. Skipped on CI and when Docker is unreachable.
  */
-import type { Atom, PipelineContext, TraceContext } from '@pipeline-kit/core';
+import type { Atom, PipelineContext, TraceContext } from '@idriszade/core';
 import { PostgreSqlContainer, type StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 import postgres from 'postgres';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

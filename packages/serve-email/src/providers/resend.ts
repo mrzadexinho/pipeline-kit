@@ -5,7 +5,7 @@ import {
   type PipelineContext,
   type Result,
   type ServeError,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import type { CreateEmailOptions, CreateEmailRequestOptions } from 'resend';
 import type { EmailMessage, EmailServeConfigResend } from '../email-serve.js';
 import { generateEmitId, makeServeError } from '../internal.js';

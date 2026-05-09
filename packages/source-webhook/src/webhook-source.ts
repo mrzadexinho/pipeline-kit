@@ -10,7 +10,7 @@ import {
   type SourceQuery,
   src as srcId,
   verify,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import { Hono } from 'hono';
 import type { ZodType } from 'zod';
 import { AsyncQueue } from './async-queue.js';

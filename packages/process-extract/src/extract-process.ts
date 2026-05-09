@@ -7,7 +7,7 @@ import {
   proc,
   type Result,
   type RetryPolicy,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import type { ZodType } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import { withExtractSpan } from './otel.js';

@@ -1,4 +1,4 @@
-import type { ServeError } from '@pipeline-kit/core';
+import type { ServeError } from '@idriszade/core';
 
 export function makeServeError(
   type: ServeError['type'],

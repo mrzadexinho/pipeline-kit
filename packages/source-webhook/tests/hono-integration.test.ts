@@ -1,4 +1,4 @@
-import { sign } from '@pipeline-kit/core';
+import { sign } from '@idriszade/core';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { createWebhookSource } from '../src/webhook-source.js';

@@ -1,4 +1,4 @@
-import type { Atom, PipelineContext, TraceContext } from '@pipeline-kit/core';
+import type { Atom, PipelineContext, TraceContext } from '@idriszade/core';
 import Database from 'better-sqlite3';
 import { type BetterSQLite3Database, drizzle } from 'drizzle-orm/better-sqlite3';
 import fc from 'fast-check';

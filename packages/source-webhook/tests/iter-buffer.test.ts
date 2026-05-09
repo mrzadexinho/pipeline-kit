@@ -1,5 +1,5 @@
-import type { PipelineContext } from '@pipeline-kit/core';
-import { sign } from '@pipeline-kit/core';
+import type { PipelineContext } from '@idriszade/core';
+import { sign } from '@idriszade/core';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { createWebhookSource } from '../src/webhook-source.js';

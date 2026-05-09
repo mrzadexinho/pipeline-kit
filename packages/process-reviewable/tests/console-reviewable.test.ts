@@ -1,4 +1,4 @@
-import type { PipelineContext } from '@pipeline-kit/core';
+import type { PipelineContext } from '@idriszade/core';
 import { describe, expect, it } from 'vitest';
 import { ConsoleReviewable } from '../src/console-reviewable.js';
 

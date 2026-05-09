@@ -1,5 +1,5 @@
 import { ROOT_CONTEXT } from '@opentelemetry/api';
-import type { PipelineContext } from '@pipeline-kit/core';
+import type { PipelineContext } from '@idriszade/core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 import { createExtractProcess } from '../src/extract-process.js';

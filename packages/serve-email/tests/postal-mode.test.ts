@@ -1,4 +1,4 @@
-import type { PipelineContext, TraceContext } from '@pipeline-kit/core';
+import type { PipelineContext, TraceContext } from '@idriszade/core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createEmailServe } from '../src/email-serve.js';
 

@@ -1,1 +1,1 @@
-export { reviewableToProcess as reviewableWrapper } from '@pipeline-kit/core';
+export { reviewableToProcess as reviewableWrapper } from '@idriszade/core';

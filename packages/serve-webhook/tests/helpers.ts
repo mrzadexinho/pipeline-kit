@@ -1,4 +1,4 @@
-import type { PipelineContext, TraceContext } from '@pipeline-kit/core';
+import type { PipelineContext, TraceContext } from '@idriszade/core';
 
 // Stub TraceContext: tests don't exercise OTel propagation
 export function makeCtx(idempotencyKey?: string): PipelineContext {

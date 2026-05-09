@@ -4,7 +4,7 @@ import type {
   RunResult,
   TerminalPipeline,
   TraceContext,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 
 export function makeCtx(idempotencyKey?: string): PipelineContext {
   const meta: Record<string, unknown> = {};

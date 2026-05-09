@@ -1,4 +1,4 @@
-import type { SourceError } from '@pipeline-kit/core';
+import type { SourceError } from '@idriszade/core';
 
 export function httpStatusToSourceError(status: number, body: string): SourceError {
   if (status === 401 || status === 403) {

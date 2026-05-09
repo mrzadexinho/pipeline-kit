@@ -1,6 +1,6 @@
 import { ROOT_CONTEXT } from '@opentelemetry/api';
-import type { PipelineContext, Process } from '@pipeline-kit/core';
-import { err, ok } from '@pipeline-kit/core';
+import type { PipelineContext, Process } from '@idriszade/core';
+import { err, ok } from '@idriszade/core';
 import { describe, expect, it } from 'vitest';
 import { createRouteProcess } from '../src/index.js';
 

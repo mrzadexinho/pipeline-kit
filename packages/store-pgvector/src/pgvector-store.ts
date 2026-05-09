@@ -1,4 +1,4 @@
-import type { Atom, PipelineContext, RetryPolicy, StoreError } from '@pipeline-kit/core';
+import type { Atom, PipelineContext, RetryPolicy, StoreError } from '@idriszade/core';
 import {
   err,
   type ListResult,
@@ -6,7 +6,7 @@ import {
   type Result,
   type Store,
   type StoreFilters,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import { eq, sql } from 'drizzle-orm';
 import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import type { ZodType } from 'zod';

@@ -1,4 +1,4 @@
-import { ok, type PipelineContext } from '@pipeline-kit/core';
+import { ok, type PipelineContext } from '@idriszade/core';
 import fc from 'fast-check';
 import { describe, it } from 'vitest';
 import { reviewableWrapper } from '../src/reviewable-wrapper.js';

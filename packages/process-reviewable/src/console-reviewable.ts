@@ -8,7 +8,7 @@ import {
   type ReviewError,
   type ReviewResponse,
   review as reviewId,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 
 export interface ConsoleReviewableOpts<I> {
   config?: Partial<ReviewableConfig>;

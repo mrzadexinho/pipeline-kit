@@ -11,7 +11,7 @@ import {
   type SourceQuery,
   src,
   type TokenBucketConfig,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import { ApifyClient } from 'apify-client';
 import type { ZodType } from 'zod';
 import { paginateDataset } from './dataset-paginate.js';

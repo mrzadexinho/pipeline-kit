@@ -11,7 +11,7 @@ import {
   type SourceQuery,
   src,
   type TokenBucketConfig,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import { type ZodType, z } from 'zod';
 import { httpStatusToSourceError, networkError, parseRetryAfter } from './errors.js';
 import {

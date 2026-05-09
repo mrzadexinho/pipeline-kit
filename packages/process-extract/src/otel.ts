@@ -1,6 +1,6 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 
-const TRACER_NAME = '@pipeline-kit/process-extract';
+const TRACER_NAME = '@idriszade/process-extract';
 
 export async function withExtractSpan<T>(
   provider: string,

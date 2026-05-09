@@ -4,7 +4,7 @@ import {
   InMemorySpanExporter,
   SimpleSpanProcessor,
 } from '@opentelemetry/sdk-trace-base';
-import { type ComposerStep, ok, runComposer } from '@pipeline-kit/core';
+import { type ComposerStep, ok, runComposer } from '@idriszade/core';
 import fc from 'fast-check';
 import { beforeAll, beforeEach, describe, it } from 'vitest';
 

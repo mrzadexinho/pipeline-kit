@@ -5,7 +5,7 @@ import type {
   Store,
   StoreError,
   TraceContext,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ---------------------------------------------------------------------------

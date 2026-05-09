@@ -11,7 +11,7 @@ import {
   type ServeError,
   type Store,
   type TokenBucketConfig,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import { WebClient } from '@slack/web-api';
 import { z } from 'zod';
 

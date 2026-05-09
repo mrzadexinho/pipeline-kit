@@ -1,1 +1,1 @@
-export type { ReviewError } from '@pipeline-kit/core';
+export type { ReviewError } from '@idriszade/core';

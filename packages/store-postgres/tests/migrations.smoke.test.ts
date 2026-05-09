@@ -6,7 +6,7 @@
  * Postgres adapter emits at runtime — i.e. put/get/list/idempotency all
  * round-trip against the schema in `migrations/0001_init.sql`.
  */
-import type { Atom, PipelineContext, TraceContext } from '@pipeline-kit/core';
+import type { Atom, PipelineContext, TraceContext } from '@idriszade/core';
 import { PostgreSqlContainer, type StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 import postgres from 'postgres';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

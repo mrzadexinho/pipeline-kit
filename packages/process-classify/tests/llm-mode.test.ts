@@ -1,4 +1,4 @@
-import type { PipelineContext, Process, ProcessError, TraceContext } from '@pipeline-kit/core';
+import type { PipelineContext, Process, ProcessError, TraceContext } from '@idriszade/core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createClassifyProcess } from '../src/index.js';
 

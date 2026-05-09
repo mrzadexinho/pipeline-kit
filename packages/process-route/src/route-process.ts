@@ -1,5 +1,5 @@
-import type { PipelineContext, Process, ProcessError, Result } from '@pipeline-kit/core';
-import { err } from '@pipeline-kit/core';
+import type { PipelineContext, Process, ProcessError, Result } from '@idriszade/core';
+import { err } from '@idriszade/core';
 
 export interface RouteProcessConfig<I, O> {
   readonly id?: string;

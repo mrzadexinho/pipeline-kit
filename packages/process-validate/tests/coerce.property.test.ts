@@ -1,4 +1,4 @@
-import type { PipelineContext, TraceContext } from '@pipeline-kit/core';
+import type { PipelineContext, TraceContext } from '@idriszade/core';
 import fc from 'fast-check';
 import { describe, it } from 'vitest';
 import { z } from 'zod';

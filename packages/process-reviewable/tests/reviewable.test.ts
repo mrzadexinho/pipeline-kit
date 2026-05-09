@@ -1,4 +1,4 @@
-import { createPipelineKit, ok, type Reviewable, runComposer } from '@pipeline-kit/core';
+import { createPipelineKit, ok, type Reviewable, runComposer } from '@idriszade/core';
 import { describe, expect, it } from 'vitest';
 
 describe('Reviewable<I> interface conformance', () => {

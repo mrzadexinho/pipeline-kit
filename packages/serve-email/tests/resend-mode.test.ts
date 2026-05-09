@@ -1,4 +1,4 @@
-import type { PipelineContext, TraceContext } from '@pipeline-kit/core';
+import type { PipelineContext, TraceContext } from '@idriszade/core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 function makeCtx(idempotencyKey?: string): PipelineContext {

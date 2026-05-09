@@ -12,7 +12,7 @@ export interface SpanAttributes {
   [key: string]: unknown;
 }
 
-const TRACER_NAME = '@pipeline-kit/core';
+const TRACER_NAME = '@idriszade/core';
 
 export function getTracer(): Tracer {
   return trace.getTracer(TRACER_NAME);

@@ -6,7 +6,7 @@
  * web-standards Request/Response runtime (e.g. Cloudflare Workers, Deno Deploy)
  * can use it directly without pulling in Hono.
  */
-import { verify } from '@pipeline-kit/core';
+import { verify } from '@idriszade/core';
 import type { ZodType } from 'zod';
 
 const DEFAULT_HEADER_NAME = 'X-Pipeline-Kit-Signature';

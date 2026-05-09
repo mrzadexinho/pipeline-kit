@@ -6,7 +6,7 @@ import {
   type ProcessError,
   type Result,
   type RetryPolicy,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import { z } from 'zod';
 import { type ClassifyRule, evalRule } from './rule-eval.js';
 

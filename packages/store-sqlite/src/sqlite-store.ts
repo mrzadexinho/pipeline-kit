@@ -1,4 +1,4 @@
-import type { Atom, PipelineContext, RetryPolicy, StoreError } from '@pipeline-kit/core';
+import type { Atom, PipelineContext, RetryPolicy, StoreError } from '@idriszade/core';
 import {
   err,
   type ListResult,
@@ -6,7 +6,7 @@ import {
   type Result,
   type Store,
   type StoreFilters,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import Database from 'better-sqlite3';
 import { eq } from 'drizzle-orm';
 import { type BetterSQLite3Database, drizzle } from 'drizzle-orm/better-sqlite3';

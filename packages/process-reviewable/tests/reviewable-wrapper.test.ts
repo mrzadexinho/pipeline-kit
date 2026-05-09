@@ -4,7 +4,7 @@ import {
   type PipelineContext,
   type Reviewable,
   reviewableToProcess,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import { describe, expect, it } from 'vitest';
 import { reviewableWrapper } from '../src/reviewable-wrapper.js';
 

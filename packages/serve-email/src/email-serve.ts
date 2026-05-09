@@ -7,7 +7,7 @@ import {
   type RetryPolicy,
   type Serve,
   type ServeError,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import { z } from 'zod';
 import { generateEmitId, makeServeError } from './internal.js';
 import { sendPostal } from './providers/postal.js';

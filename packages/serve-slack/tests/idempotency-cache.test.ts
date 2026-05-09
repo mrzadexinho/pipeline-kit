@@ -7,7 +7,7 @@ import type {
   StoreError,
   StoreFilters,
   TraceContext,
-} from '@pipeline-kit/core';
+} from '@idriszade/core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 

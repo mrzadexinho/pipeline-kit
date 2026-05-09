@@ -1,4 +1,4 @@
-import type { PipelineContext, ReviewableConfig } from '@pipeline-kit/core';
+import type { PipelineContext, ReviewableConfig } from '@idriszade/core';
 import { describe, expect, it, vi } from 'vitest';
 import { GatewerkReviewable } from '../src/gatewerk-reviewable.js';
 
