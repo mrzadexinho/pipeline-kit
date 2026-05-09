@@ -1,3 +1,7 @@
+> NOTE 2026-05-09: kit packages renamed @pipeline-kit/* →
+> @idriszade/* in M0.5b. Brief text below is the spec at the time
+> of writing — package names there are historical.
+
 # M0.5 Executor Session Kickoff
 
 > Self-contained kickoff prompt for a fresh executor session.

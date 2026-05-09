@@ -1,3 +1,7 @@
+> NOTE 2026-05-09: kit packages renamed @pipeline-kit/* →
+> @idriszade/* in M0.5b. Brief text below is the spec at the time
+> of writing — package names there are historical.
+
 # M0 Report-Back — Composer + Reviewable<I> + GatewerkReviewable
 
 > Executor session, 2026-05-06. Branch `m0-composer-reviewable` at tip

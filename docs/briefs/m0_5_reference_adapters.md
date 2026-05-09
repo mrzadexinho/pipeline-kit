@@ -1,3 +1,7 @@
+> NOTE 2026-05-09: kit packages renamed @pipeline-kit/* →
+> @idriszade/* in M0.5b. Brief text below is the spec at the time
+> of writing — package names there are historical.
+
 # Brief — M0.5 Reference Adapters (15 packages) + Composer fan-out
 
 > **Branch:** `m0-5-reference-adapters`

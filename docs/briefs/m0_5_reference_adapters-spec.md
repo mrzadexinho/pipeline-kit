@@ -1,3 +1,7 @@
+> NOTE 2026-05-09: kit packages renamed @pipeline-kit/* →
+> @idriszade/* in M0.5b. Brief text below is the spec at the time
+> of writing — package names there are historical.
+
 # M0.5 — Per-Adapter Signature Spec (15 packages)
 
 > Drilldown for [m0_5_reference_adapters.md](m0_5_reference_adapters.md).
