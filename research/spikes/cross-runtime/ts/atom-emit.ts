@@ -1,6 +1,6 @@
 // Cat IX spike #1 — TS Source-equivalent.
 // Builds 1 fake Atom<Job>, wraps it in Result<Atom[], Error>, prints JSON to stdout.
-// Self-contained: no @pipeline-kit/* imports. Mirrors Atom<T> + Result<T,E> shapes inline.
+// Self-contained: no @idriszade/* imports. Mirrors Atom<T> + Result<T,E> shapes inline.
 
 // --- Result<T, E> (ADR4 mirror) ---
 type Ok<T> = { data: T; error: null };

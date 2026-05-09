@@ -13,7 +13,7 @@ validates against a hand-written Pydantic v2 model, mutates one field
 (`data.title` → uppercase) plus stamps a metadata trace, and re-emits the
 same Result envelope; `node ts/result-validate.ts` reads the round-tripped
 JSON, validates against the hand-rolled TS validator (zod was unresolvable
-from repo root), and exits 0 on success. No imports from `@pipeline-kit/*`.
+from repo root), and exits 0 on success. No imports from `@idriszade/*`.
 No new deps in root `package.json`. Pydantic pulled via `uv run --with`.
 
 ## How to reproduce

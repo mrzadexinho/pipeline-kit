@@ -22,8 +22,8 @@ validation.
 ## Quickstart
 
 ```typescript
-import { Pipeline } from '@pipeline-kit/core';
-import { GatewerkReviewable } from '@pipeline-kit/process-reviewable';
+import { Pipeline } from '@idriszade/core';
+import { GatewerkReviewable } from '@idriszade/process-reviewable';
 import { createClient } from 'gatewerk';
 
 const reviewable = new GatewerkReviewable<MyData>({
@@ -57,11 +57,11 @@ factory.
 
 ## Packages shipped in M0
 
-- `@pipeline-kit/core` — orchestration kernel: stage interfaces,
+- `@idriszade/core` — orchestration kernel: stage interfaces,
   Composer (retry + rate-limit + OTel + idempotency + cancellation),
   Pipeline chainable factory, webhook sign/verify (Stripe canon),
   `createPipelineKit` SDK factory.
-- `@pipeline-kit/process-reviewable` — HRP gate adapters:
+- `@idriszade/process-reviewable` — HRP gate adapters:
   `GatewerkReviewable`, `ConsoleReviewable`, `reviewableWrapper`,
   `EditableField<T>` + `Field.{unedited, edited, rejected}` helpers.
 

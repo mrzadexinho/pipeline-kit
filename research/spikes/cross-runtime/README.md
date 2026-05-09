@@ -1,7 +1,7 @@
 # Cat IX Spike #1 — Cross-Runtime Single-Atom Round-Trip
 
 **Throwaway code.** This spike is not a binding, not a reusable adapter,
-not a packaged Python sibling to `@pipeline-kit/core`. It exists to surface
+not a packaged Python sibling to `@idriszade/core`. It exists to surface
 friction in pipeline-kit primitives crossing a runtime boundary, before
 brain commits to any v1 ADR.
 
@@ -24,7 +24,7 @@ See `FINDINGS.md` for the answers.
 - `PipelineContext` (signal, trace, idempotencyKey) — TS-side only
 - envelope shootout (JSON-RPC, MCP, HTTP) — pure stdio
 - a `pipeline_kit_py` package — no setup.py / pyproject.toml
-- importing real `@pipeline-kit/core` — schemas inlined for spike isolation
+- importing real `@idriszade/core` — schemas inlined for spike isolation
 
 ## How to run
 
