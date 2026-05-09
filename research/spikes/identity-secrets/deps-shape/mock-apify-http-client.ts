@@ -19,7 +19,7 @@
 // headers so harness traces are observable.
 
 import { createHmac } from 'node:crypto';
-import { type Result, err, ok } from './mock-secrets-resolver.ts';
+import { err, ok, type Result } from './mock-secrets-resolver.ts';
 
 export interface ApifyHttpRequestOpts {
   // actorId removed from per-request opts — now construction-time only.

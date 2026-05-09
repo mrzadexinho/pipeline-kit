@@ -21,20 +21,20 @@
 //   - B.2 shows reads=N+1 (one factory-time + one per atom)
 
 import {
-  type Result,
-  type SecretsError,
-  type SecretsResolver,
-  type SecretStats,
-  createMockSecretsResolver,
-  err,
-  ok,
-} from './mock-secrets-resolver.ts';
-import {
   type ApifyHttpClient,
   type ApifyHttpError,
   createApifyHttpClient,
   mintCallId,
 } from './mock-apify-http-client.ts';
+import {
+  createMockSecretsResolver,
+  err,
+  ok,
+  type Result,
+  type SecretStats,
+  type SecretsError,
+  type SecretsResolver,
+} from './mock-secrets-resolver.ts';
 
 // --- Shared kit primitives ---
 interface Atom<T> {
@@ -212,7 +212,10 @@ async function runB1(): Promise<boolean> {
   const real = createMockSecretsResolver();
   console.log(statsLine('initial (real)', real.stats('apify-token')));
 
-  const built = await createApifySourceCloseOver({ actorId: 'apify/web-scraper' }, { secrets: real });
+  const built = await createApifySourceCloseOver(
+    { actorId: 'apify/web-scraper' },
+    { secrets: real },
+  );
   if (built.error !== null) {
     console.log(`[variant-b] B.1 factory ERR ${built.error.code}: ${built.error.message}`);
     return false;
@@ -239,7 +242,10 @@ async function runB2(): Promise<boolean> {
   const real = createMockSecretsResolver();
   console.log(statsLine('initial (real)', real.stats('apify-token')));
 
-  const built = await createApifySourceReResolve({ actorId: 'apify/web-scraper' }, { secrets: real });
+  const built = await createApifySourceReResolve(
+    { actorId: 'apify/web-scraper' },
+    { secrets: real },
+  );
   if (built.error !== null) {
     console.log(`[variant-b] B.2 factory ERR ${built.error.code}: ${built.error.message}`);
     return false;

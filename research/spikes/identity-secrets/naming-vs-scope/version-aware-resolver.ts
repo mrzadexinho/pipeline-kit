@@ -30,11 +30,11 @@
 // cache; hyphen joiner) is documented here so synthesis can reason about it.
 
 import {
+  ok,
   type Result,
   type SecretStats,
   type SecretsError,
   type SecretsResolver,
-  ok,
 } from './mock-secrets-resolver.ts';
 
 interface CacheEntry {

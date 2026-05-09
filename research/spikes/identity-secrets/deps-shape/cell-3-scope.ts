@@ -19,20 +19,23 @@
 // purely call-site ergonomics + discoverability + composition tax.
 
 import {
-  type SecretsError,
-  type SecretStats,
-  type Result,
-  createMockSecretsResolver,
-  err,
-  ok,
-} from './mock-secrets-resolver.ts';
-import {
   type ApifyHttpClient,
   type ApifyHttpError,
   createApifyHttpClient,
   mintCallId,
 } from './mock-apify-http-client.ts';
-import { type ScopedSecretsResolver, createVersionAwareResolver } from './version-aware-resolver.ts';
+import {
+  createMockSecretsResolver,
+  err,
+  ok,
+  type Result,
+  type SecretStats,
+  type SecretsError,
+} from './mock-secrets-resolver.ts';
+import {
+  createVersionAwareResolver,
+  type ScopedSecretsResolver,
+} from './version-aware-resolver.ts';
 
 interface PipelineContext {
   run_id: string;
@@ -64,9 +67,9 @@ function statsLine(label: string, name: string, s: Result<SecretStats, SecretsEr
 }
 
 // --- Source(apify) factory — SCOPED sub-resolver in deps ---
-async function createApifySource(
-  deps: { apifySecrets: ScopedSecretsResolver },
-): Promise<Result<ApifySource, ApifySourceError>> {
+async function createApifySource(deps: {
+  apifySecrets: ScopedSecretsResolver;
+}): Promise<Result<ApifySource, ApifySourceError>> {
   const { apifySecrets } = deps;
 
   // Three factory-time reads, all on the scoped sub-view. Suffix names
@@ -151,7 +154,8 @@ export async function runCell3(): Promise<boolean> {
     return false;
   }
 
-  for (const name of REAL_NAMES) console.log(statsLine('post-factory (real)', name, real.stats(name)));
+  for (const name of REAL_NAMES)
+    console.log(statsLine('post-factory (real)', name, real.stats(name)));
 
   const ctx: PipelineContext = { run_id: 'run_cell_3', signal: new AbortController().signal };
 
@@ -166,7 +170,8 @@ export async function runCell3(): Promise<boolean> {
     }
     const atom = result.data;
     console.log(`[cell-3] atom ${i} source OK id=${atom.id} call_id=${atom.metadata.call_id_seen}`);
-    for (const name of REAL_NAMES) console.log(statsLine(`after-atom-${i} (real)`, name, real.stats(name)));
+    for (const name of REAL_NAMES)
+      console.log(statsLine(`after-atom-${i} (real)`, name, real.stats(name)));
   }
 
   for (const name of REAL_NAMES) console.log(statsLine('final (real)', name, real.stats(name)));

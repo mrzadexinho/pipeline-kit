@@ -3,12 +3,12 @@
 // Secrets injected at construction; no ctx coupling. Source carries the resolver.
 
 import {
-  type Result,
-  type SecretsError,
-  type SecretsResolver,
   err,
   mockSecretsResolver,
   ok,
+  type Result,
+  type SecretsError,
+  type SecretsResolver,
 } from './mock-secrets-resolver.ts';
 
 // --- Atom envelope ---

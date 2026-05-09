@@ -16,20 +16,20 @@
 //     the cross-run staleness leak observed in spike #2 §6 for B-CoA?
 
 import {
-  type Result,
-  type SecretsError,
-  type SecretsResolver,
-  type SecretStats,
-  createMockSecretsResolver,
-  err,
-  ok,
-} from './mock-secrets-resolver.ts';
-import {
   type ApifyHttpClient,
   type ApifyHttpError,
   createApifyHttpClient,
   mintCallId,
 } from './mock-apify-http-client.ts';
+import {
+  createMockSecretsResolver,
+  err,
+  ok,
+  type Result,
+  type SecretStats,
+  type SecretsError,
+  type SecretsResolver,
+} from './mock-secrets-resolver.ts';
 import { createVersionAwareResolver } from './version-aware-resolver.ts';
 
 // --- Shared kit primitives ---
@@ -157,7 +157,10 @@ export async function runCellA(): Promise<boolean> {
   const wrapped = createVersionAwareResolver(real);
   console.log(statsLine('initial (real)', real.stats('apify-token')));
 
-  const built = await createTwoSiteCloseOver({ actorId: 'apify/web-scraper' }, { secrets: wrapped });
+  const built = await createTwoSiteCloseOver(
+    { actorId: 'apify/web-scraper' },
+    { secrets: wrapped },
+  );
   if (built.error !== null) {
     console.log(`[variant-b1-va] cell-a factory ERR ${built.error.code}: ${built.error.message}`);
     return false;

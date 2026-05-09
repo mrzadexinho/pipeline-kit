@@ -10,7 +10,7 @@
 // same cache entry by construction) and closes over a "client" which is
 // just the bearer string echoed back in the ingest console.log.
 
-import { type Result, ok } from './mock-secrets-resolver.ts';
+import { ok, type Result } from './mock-secrets-resolver.ts';
 
 export interface SupabaseAtom {
   id: string;
@@ -38,10 +38,7 @@ export interface StoreContext {
 
 export interface SupabaseStore {
   readonly id: string;
-  put(
-    atom: SupabaseAtom,
-    ctx: StoreContext,
-  ): Promise<Result<SupabaseAtom, SupabaseStoreError>>;
+  put(atom: SupabaseAtom, ctx: StoreContext): Promise<Result<SupabaseAtom, SupabaseStoreError>>;
 }
 
 export interface SupabaseStoreFactoryOpts {

@@ -13,11 +13,11 @@
 // keep landing on the underlying real resolver.
 
 import {
+  ok,
   type Result,
   type SecretStats,
   type SecretsError,
   type SecretsResolver,
-  ok,
 } from './mock-secrets-resolver.ts';
 
 interface CacheEntry {

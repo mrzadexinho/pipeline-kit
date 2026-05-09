@@ -26,7 +26,11 @@ interface Classified {
 
 const HEADER_TERMINATOR = Buffer.from('\r\n\r\n', 'ascii');
 
-interface Frame { body: Buffer; advance: number; headerText: string; }
+interface Frame {
+  body: Buffer;
+  advance: number;
+  headerText: string;
+}
 
 function nextFrame(buf: Buffer, offset: number): Frame | { error: string } | null {
   if (offset >= buf.length) return null;
@@ -38,7 +42,8 @@ function nextFrame(buf: Buffer, offset: number): Frame | { error: string } | nul
   const n = parseInt(m[1], 10);
   const bodyStart = term + HEADER_TERMINATOR.length;
   const bodyEnd = bodyStart + n;
-  if (bodyEnd > buf.length) return { error: `truncated body (need ${n} bytes, have ${buf.length - bodyStart})` };
+  if (bodyEnd > buf.length)
+    return { error: `truncated body (need ${n} bytes, have ${buf.length - bodyStart})` };
   const body = buf.slice(bodyStart, bodyEnd);
   return { body, advance: bodyEnd - offset, headerText };
 }
@@ -46,7 +51,11 @@ function nextFrame(buf: Buffer, offset: number): Frame | { error: string } | nul
 function classify(body: Buffer, index: number): Classified {
   const text = body.toString('utf8');
   let parsed: unknown;
-  try { parsed = JSON.parse(text); } catch { return { index, kind: 'malformed', raw: text }; }
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return { index, kind: 'malformed', raw: text };
+  }
   if (typeof parsed !== 'object' || parsed === null) return { index, kind: 'malformed', raw: text };
   const r = parsed as Partial<ResultMsg>;
   if (!('data' in r) || !('error' in r)) return { index, kind: 'malformed', raw: text };
@@ -71,7 +80,9 @@ function classify(body: Buffer, index: number): Classified {
     const f = nextFrame(buf, offset);
     if (f === null) break;
     if ('error' in f) {
-      process.stderr.write(`result-validate-rpc: frame parse error at offset ${offset}: ${f.error}\n`);
+      process.stderr.write(
+        `result-validate-rpc: frame parse error at offset ${offset}: ${f.error}\n`,
+      );
       for (const c of classified) process.stderr.write(`  prior frame ${c.index}: ${c.kind}\n`);
       process.exit(3);
     }
@@ -82,8 +93,10 @@ function classify(body: Buffer, index: number): Classified {
 
   process.stdout.write(`result-validate-rpc: read ${classified.length} frame(s)\n`);
   for (const c of classified) {
-    if (c.kind === 'ok') process.stdout.write(`  frame ${c.index}: OK   atom=${c.atomId ?? '<no id>'}\n`);
-    else if (c.kind === 'err') process.stdout.write(`  frame ${c.index}: ERR  type=${c.errType} code=${c.errCode}\n`);
+    if (c.kind === 'ok')
+      process.stdout.write(`  frame ${c.index}: OK   atom=${c.atomId ?? '<no id>'}\n`);
+    else if (c.kind === 'err')
+      process.stdout.write(`  frame ${c.index}: ERR  type=${c.errType} code=${c.errCode}\n`);
     else process.stdout.write(`  frame ${c.index}: MALFORMED  raw=${c.raw.slice(0, 80)}...\n`);
   }
 
@@ -91,20 +104,31 @@ function classify(body: Buffer, index: number): Classified {
   const errs = classified.filter((c) => c.kind === 'err');
   const expectedTotal = 3;
   if (classified.length !== expectedTotal) {
-    process.stderr.write(`result-validate-rpc: expected ${expectedTotal} frames, got ${classified.length}\n`);
+    process.stderr.write(
+      `result-validate-rpc: expected ${expectedTotal} frames, got ${classified.length}\n`,
+    );
     process.exit(4);
   }
   if (oks.length !== 1 || errs.length !== 2) {
-    process.stderr.write(`result-validate-rpc: expected 1 OK + 2 ERR, got ${oks.length} OK + ${errs.length} ERR\n`);
+    process.stderr.write(
+      `result-validate-rpc: expected 1 OK + 2 ERR, got ${oks.length} OK + ${errs.length} ERR\n`,
+    );
     process.exit(5);
   }
-  if (classified[0].kind !== 'ok') { process.stderr.write(`result-validate-rpc: frame 1 must be OK\n`); process.exit(6); }
+  if (classified[0].kind !== 'ok') {
+    process.stderr.write(`result-validate-rpc: frame 1 must be OK\n`);
+    process.exit(6);
+  }
   if (classified[1].kind !== 'err' || classified[1].errType !== 'schema') {
-    process.stderr.write(`result-validate-rpc: frame 2 must be ERR(schema), got ${classified[1].kind}/${classified[1].errType}\n`);
+    process.stderr.write(
+      `result-validate-rpc: frame 2 must be ERR(schema), got ${classified[1].kind}/${classified[1].errType}\n`,
+    );
     process.exit(7);
   }
   if (classified[2].kind !== 'err' || classified[2].errType !== 'business_rule') {
-    process.stderr.write(`result-validate-rpc: frame 3 must be ERR(business_rule), got ${classified[2].kind}/${classified[2].errType}\n`);
+    process.stderr.write(
+      `result-validate-rpc: frame 3 must be ERR(business_rule), got ${classified[2].kind}/${classified[2].errType}\n`,
+    );
     process.exit(8);
   }
 

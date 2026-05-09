@@ -19,13 +19,13 @@
 // staleness window directly off the run output.
 
 import {
-  type Result,
-  type SecretsError,
-  type SecretsResolver,
-  type SecretStats,
   createMockSecretsResolver,
   err,
   ok,
+  type Result,
+  type SecretStats,
+  type SecretsError,
+  type SecretsResolver,
 } from './mock-secrets-resolver.ts';
 
 // --- Shared kit primitives (kept identical to variant A for honest diffing). ---
@@ -62,7 +62,11 @@ function statsLine(label: string, s: Result<SecretStats, SecretsError>): string 
   return `[variant-b] ${label} reads=${s.data.reads} current_version=v${s.data.current_version}`;
 }
 
-async function emitOnce(source: Source<ApifyJobItem>, ctx: PipelineContext, label: string): Promise<void> {
+async function emitOnce(
+  source: Source<ApifyJobItem>,
+  ctx: PipelineContext,
+  label: string,
+): Promise<void> {
   for await (const result of source.iter(ctx)) {
     if (result.error !== null) {
       console.log(`[variant-b] ${label} ERR ${result.error.code}: ${result.error.message}`);
@@ -228,7 +232,9 @@ async function mainBcacheOnResolver(): Promise<void> {
 
   // Run #2 — fresh ctx, SAME adapter (and so SAME caching wrapper).
   const ctx2: PipelineContext = { run_id: 'run_2', signal: new AbortController().signal };
-  console.log('--- B-CoR: RUN #2 atom 1 (fresh ctx, REUSED adapter+wrapper → expect STALE LEAK) ---');
+  console.log(
+    '--- B-CoR: RUN #2 atom 1 (fresh ctx, REUSED adapter+wrapper → expect STALE LEAK) ---',
+  );
   await emitOnce(apifySource, ctx2, 'run2.atom1');
   console.log(statsLine('run2.atom1 (real)', real.stats('apify-token')));
 }

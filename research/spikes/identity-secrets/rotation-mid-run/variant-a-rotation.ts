@@ -6,13 +6,13 @@
 // `ctx.secrets` itself — i.e. the resolver caches at the run scope".)
 
 import {
-  type Result,
-  type SecretsError,
-  type SecretsResolver,
-  type SecretStats,
   createMockSecretsResolver,
   err,
   ok,
+  type Result,
+  type SecretStats,
+  type SecretsError,
+  type SecretsResolver,
 } from './mock-secrets-resolver.ts';
 
 // --- Atom envelope (kit ADR mirror) ---
@@ -95,7 +95,11 @@ function statsLine(label: string, s: Result<SecretStats, SecretsError>): string 
   return `[variant-a] ${label} reads=${s.data.reads} current_version=v${s.data.current_version}`;
 }
 
-async function emitOnce(source: Source<ApifyJobItem>, ctx: PipelineContext, label: string): Promise<void> {
+async function emitOnce(
+  source: Source<ApifyJobItem>,
+  ctx: PipelineContext,
+  label: string,
+): Promise<void> {
   for await (const result of source.iter(ctx)) {
     if (result.error !== null) {
       console.log(`[variant-a] ${label} ERR ${result.error.code}: ${result.error.message}`);

@@ -8,26 +8,29 @@
 // hyphen joiner). Empirical signal is purely ergonomics + tax.
 
 import {
-  type SecretsError,
-  type SecretStats,
-  type Result,
-  createMockSecretsResolver,
-  err,
-  ok,
-} from './mock-secrets-resolver.ts';
-import {
   type ApifyHttpClient,
   type ApifyHttpError,
   createApifyHttpClient,
   mintCallId,
 } from './mock-apify-http-client.ts';
 import {
+  createMockSecretsResolver,
+  err,
+  ok,
+  type Result,
+  type SecretStats,
+  type SecretsError,
+} from './mock-secrets-resolver.ts';
+import {
+  createMockSupabaseStore,
+  type StoreContext,
   type SupabaseAtom,
   type SupabaseStore,
-  type StoreContext,
-  createMockSupabaseStore,
 } from './mock-supabase-store.ts';
-import { type ScopedSecretsResolver, createVersionAwareResolver } from './version-aware-resolver.ts';
+import {
+  createVersionAwareResolver,
+  type ScopedSecretsResolver,
+} from './version-aware-resolver.ts';
 
 interface PipelineContext {
   run_id: string;
@@ -107,9 +110,9 @@ async function createApifySource(
 }
 
 // --- Store(supabase) factory — STRUCTURAL scope ---
-async function createSupabaseStore(
-  deps: { secrets: ScopedSecretsResolver },
-): Promise<Result<SupabaseStore, SecretsError>> {
+async function createSupabaseStore(deps: {
+  secrets: ScopedSecretsResolver;
+}): Promise<Result<SupabaseStore, SecretsError>> {
   const supabaseSecrets = deps.secrets.scope('supabase');
   const keyResult = await supabaseSecrets.resolve('service-role'); // factory-time (SCOPED)
   if (keyResult.error !== null) return err(keyResult.error);
@@ -123,11 +126,18 @@ export async function runCellF(): Promise<boolean> {
   const wrapped = createVersionAwareResolver(real);
 
   console.log(statsLine('initial (real)', 'apify-token', real.stats('apify-token')));
-  console.log(statsLine('initial (real)', 'supabase-service-role', real.stats('supabase-service-role')));
+  console.log(
+    statsLine('initial (real)', 'supabase-service-role', real.stats('supabase-service-role')),
+  );
 
-  const sourceBuilt = await createApifySource({ actorId: 'apify/web-scraper' }, { secrets: wrapped });
+  const sourceBuilt = await createApifySource(
+    { actorId: 'apify/web-scraper' },
+    { secrets: wrapped },
+  );
   if (sourceBuilt.error !== null) {
-    console.log(`[cell-f] source factory ERR ${sourceBuilt.error.code}: ${sourceBuilt.error.message}`);
+    console.log(
+      `[cell-f] source factory ERR ${sourceBuilt.error.code}: ${sourceBuilt.error.message}`,
+    );
     return false;
   }
   const storeBuilt = await createSupabaseStore({ secrets: wrapped });
@@ -137,7 +147,9 @@ export async function runCellF(): Promise<boolean> {
   }
 
   console.log(statsLine('post-factory (real)', 'apify-token', real.stats('apify-token')));
-  console.log(statsLine('post-factory (real)', 'supabase-service-role', real.stats('supabase-service-role')));
+  console.log(
+    statsLine('post-factory (real)', 'supabase-service-role', real.stats('supabase-service-role')),
+  );
 
   const ctx: PipelineContext = { run_id: 'run_cell_f', signal: new AbortController().signal };
   const storeCtx: StoreContext = { run_id: ctx.run_id, signal: ctx.signal };
@@ -162,12 +174,18 @@ export async function runCellF(): Promise<boolean> {
     }
     console.log(statsLine(`after-atom-${i} (real)`, 'apify-token', real.stats('apify-token')));
     console.log(
-      statsLine(`after-atom-${i} (real)`, 'supabase-service-role', real.stats('supabase-service-role')),
+      statsLine(
+        `after-atom-${i} (real)`,
+        'supabase-service-role',
+        real.stats('supabase-service-role'),
+      ),
     );
   }
 
   console.log(statsLine('final (real)', 'apify-token', real.stats('apify-token')));
-  console.log(statsLine('final (real)', 'supabase-service-role', real.stats('supabase-service-role')));
+  console.log(
+    statsLine('final (real)', 'supabase-service-role', real.stats('supabase-service-role')),
+  );
   return true;
 }
 

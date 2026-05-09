@@ -1,5 +1,5 @@
 // Cat IX spike #1 — TS sink: read JSON Result<Atom[], E> from stdin, validate, exit code.
-import { validateAtom, type ValidationError } from './validate.ts';
+import { type ValidationError, validateAtom } from './validate.ts';
 
 async function readStdin(): Promise<string> {
   const chunks: Buffer[] = [];
@@ -43,7 +43,9 @@ async function readStdin(): Promise<string> {
     allErrs.push(...errs);
   });
   if (allErrs.length > 0) {
-    process.stderr.write(`result-validate: validation failed:\n${JSON.stringify(allErrs, null, 2)}\n`);
+    process.stderr.write(
+      `result-validate: validation failed:\n${JSON.stringify(allErrs, null, 2)}\n`,
+    );
     process.exit(8);
   }
   process.stdout.write(`result-validate: OK — ${r.data.length} atom(s) validated round-trip\n`);

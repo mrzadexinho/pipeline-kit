@@ -68,7 +68,9 @@ function classify(line: string, index: number): Classified {
 
   const malformed = classified.filter((c) => c.kind === 'malformed');
   if (malformed.length > 0) {
-    process.stderr.write(`result-validate-stream: ${malformed.length} malformed line(s) — framing broken\n`);
+    process.stderr.write(
+      `result-validate-stream: ${malformed.length} malformed line(s) — framing broken\n`,
+    );
     process.exit(3);
   }
 
@@ -110,6 +112,8 @@ function classify(line: string, index: number): Classified {
     process.exit(8);
   }
 
-  process.stdout.write('result-validate-stream: PATTERN OK — 1 OK + 2 ERR(schema, business_rule)\n');
+  process.stdout.write(
+    'result-validate-stream: PATTERN OK — 1 OK + 2 ERR(schema, business_rule)\n',
+  );
   process.exit(0);
 })();

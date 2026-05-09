@@ -26,20 +26,20 @@
 // observable can be compared 1:1 with variant B's read counts.
 
 import {
-  type Result,
-  type SecretsError,
-  type SecretsResolver,
-  type SecretStats,
-  createMockSecretsResolver,
-  err,
-  ok,
-} from './mock-secrets-resolver.ts';
-import {
   type ApifyHttpClient,
   type ApifyHttpError,
   createApifyHttpClient,
   mintCallId,
 } from './mock-apify-http-client.ts';
+import {
+  createMockSecretsResolver,
+  err,
+  ok,
+  type Result,
+  type SecretStats,
+  type SecretsError,
+  type SecretsResolver,
+} from './mock-secrets-resolver.ts';
 
 // --- Atom envelope (kit ADR mirror) ---
 interface Atom<T> {
@@ -128,9 +128,7 @@ function createApifySource(args: { actorId: string }): Source<ApifyJobResult> {
 
         const after = ctx.secrets.stats('apify-token');
         const afterReads = after.error !== null ? -1 : after.data.reads;
-        console.log(
-          `[variant-a] post-request ${atomId} signer_resolved_count(*)=${afterReads}`,
-        );
+        console.log(`[variant-a] post-request ${atomId} signer_resolved_count(*)=${afterReads}`);
 
         yield ok({
           id: atomId,
@@ -142,10 +140,13 @@ function createApifySource(args: { actorId: string }): Source<ApifyJobResult> {
             call_id_seen: resp.data.headers_seen['x-apify-call-id'],
             bearer_seen: resp.data.headers_seen['Authorization'],
           },
-          data: { jobId: resp.data.body && typeof resp.data.body === 'object' && 'runId' in resp.data.body
-            ? String((resp.data.body as { runId: unknown }).runId)
-            : 'unknown',
-            status: resp.data.status },
+          data: {
+            jobId:
+              resp.data.body && typeof resp.data.body === 'object' && 'runId' in resp.data.body
+                ? String((resp.data.body as { runId: unknown }).runId)
+                : 'unknown',
+            status: resp.data.status,
+          },
         });
       }
     },

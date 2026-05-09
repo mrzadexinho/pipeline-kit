@@ -3,11 +3,11 @@
 // Secret resolution is its own pre-stage; Source takes the resolved secret as INPUT.
 
 import {
-  type Result,
-  type SecretsError,
   err,
   mockSecretsResolver,
   ok,
+  type Result,
+  type SecretsError,
 } from './mock-secrets-resolver.ts';
 
 // --- Atom envelope ---

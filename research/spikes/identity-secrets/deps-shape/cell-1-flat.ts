@@ -14,20 +14,20 @@
 // call-site ergonomics + discoverability + composition tax + import count.
 
 import {
-  type SecretsError,
-  type SecretsResolver,
-  type SecretStats,
-  type Result,
-  createMockSecretsResolver,
-  err,
-  ok,
-} from './mock-secrets-resolver.ts';
-import {
   type ApifyHttpClient,
   type ApifyHttpError,
   createApifyHttpClient,
   mintCallId,
 } from './mock-apify-http-client.ts';
+import {
+  createMockSecretsResolver,
+  err,
+  ok,
+  type Result,
+  type SecretStats,
+  type SecretsError,
+  type SecretsResolver,
+} from './mock-secrets-resolver.ts';
 import { createVersionAwareResolver } from './version-aware-resolver.ts';
 
 interface PipelineContext {
@@ -61,9 +61,9 @@ function statsLine(label: string, name: string, s: Result<SecretStats, SecretsEr
 }
 
 // --- Source(apify) factory — FLAT / single resolver, multi-resolve ---
-async function createApifySource(
-  deps: { secrets: SecretsResolver },
-): Promise<Result<ApifySource, ApifySourceError>> {
+async function createApifySource(deps: {
+  secrets: SecretsResolver;
+}): Promise<Result<ApifySource, ApifySourceError>> {
   const { secrets } = deps;
 
   // Three factory-time reads, all on the same flat resolver. Names are
@@ -161,7 +161,8 @@ export async function runCell1(): Promise<boolean> {
     }
     const atom = result.data;
     console.log(`[cell-1] atom ${i} source OK id=${atom.id} call_id=${atom.metadata.call_id_seen}`);
-    for (const name of NAMES) console.log(statsLine(`after-atom-${i} (real)`, name, real.stats(name)));
+    for (const name of NAMES)
+      console.log(statsLine(`after-atom-${i} (real)`, name, real.stats(name)));
   }
 
   for (const name of NAMES) console.log(statsLine('final (real)', name, real.stats(name)));

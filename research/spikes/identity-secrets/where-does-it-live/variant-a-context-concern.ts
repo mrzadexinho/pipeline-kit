@@ -3,12 +3,12 @@
 // Secrets ride the run-scoped PipelineContext; Source is unaware at construction.
 
 import {
-  type Result,
-  type SecretsError,
-  type SecretsResolver,
   err,
   mockSecretsResolver,
   ok,
+  type Result,
+  type SecretsError,
+  type SecretsResolver,
 } from './mock-secrets-resolver.ts';
 
 // --- Atom envelope (kit ADR mirror) ---

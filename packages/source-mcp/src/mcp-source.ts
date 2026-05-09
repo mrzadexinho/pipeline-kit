@@ -1,5 +1,3 @@
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import {
   type Atom,
   atom,
@@ -14,6 +12,8 @@ import {
   src,
   type TokenBucketConfig,
 } from '@idriszade/core';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { type ZodType, z } from 'zod';
 import { deriveZodFromJsonSchema } from './schema-derive.js';
 

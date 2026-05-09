@@ -19,20 +19,20 @@
 //     comes in?
 
 import {
-  type Result,
-  type SecretsError,
-  type SecretsResolver,
-  type SecretStats,
-  createMockSecretsResolver,
-  err,
-  ok,
-} from './mock-secrets-resolver.ts';
-import {
   type ApifyHttpClient,
   type ApifyHttpError,
   createApifyHttpClient,
   mintCallId,
 } from './mock-apify-http-client.ts';
+import {
+  createMockSecretsResolver,
+  err,
+  ok,
+  type Result,
+  type SecretStats,
+  type SecretsError,
+  type SecretsResolver,
+} from './mock-secrets-resolver.ts';
 import { createVersionAwareResolver } from './version-aware-resolver.ts';
 
 // --- Shared kit primitives ---
@@ -171,7 +171,10 @@ export async function runCellB(): Promise<boolean> {
   const wrapped = createVersionAwareResolver(real);
   console.log(statsLine('initial (real)', real.stats('apify-token')));
 
-  const built = await createTwoSiteReResolve({ actorId: 'apify/web-scraper' }, { secrets: wrapped });
+  const built = await createTwoSiteReResolve(
+    { actorId: 'apify/web-scraper' },
+    { secrets: wrapped },
+  );
   if (built.error !== null) {
     console.log(`[variant-b2-va] cell-b factory ERR ${built.error.code}: ${built.error.message}`);
     return false;
