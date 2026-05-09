@@ -102,3 +102,27 @@ pnpm run format
 ```
 
 (Tooling specifics locked in Phase 2 spec.)
+
+## Release flow (locked 2026-05-09 in M0.5b)
+
+Kit ships under npm scope **`@idriszade/*`** (NOT `@pipeline-kit/*` — that
+scope was taken). Repo identity stays `pipeline-kit`; only npm scope is
+`@idriszade`. Babel pattern: repo `babel/babel` ships `@babel/*`.
+
+Version bumps go through **changesets**. Before merging any change that
+warrants a publish:
+
+1. `pnpm changeset` — interactive: select packages + bump type + summary
+2. Commit the resulting `.changeset/<random>.md` with the change
+3. Push to master
+4. `.github/workflows/release.yml` auto-runs changesets/action — bumps
+   versions, generates CHANGELOGs, publishes to npm
+
+Workflow auth requires both `NPM_TOKEN` AND `NODE_AUTH_TOKEN` env vars
+(setup-node interpolates the latter into `~/.npmrc`). Both already wired
+in `release.yml`; do NOT remove either.
+
+**Trusted Publishing (SLSA provenance)** queued for v0.2.0+ — configure
+per-package on npmjs.com after v0.1.0 packages exist on registry. Then
+re-enable `NPM_CONFIG_PROVENANCE: true` in release.yml (currently
+commented out with `TODO(post-v0.1.0)`).
