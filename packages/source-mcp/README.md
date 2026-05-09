@@ -1,11 +1,11 @@
-# @pipeline-kit/source-mcp
+# @idriszade/source-mcp
 
 Source adapter for consuming any MCP tool output as a Source<O>. Auto-derives a Zod schema from the MCP tool's output schema if `schema` is not provided.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/source-mcp
+pnpm add @idriszade/source-mcp
 ```
 
 `@modelcontextprotocol/sdk` is bundled as a direct dependency.
@@ -13,7 +13,7 @@ pnpm add @pipeline-kit/source-mcp
 ## Usage
 
 ```typescript
-import { createMcpToolSource } from '@pipeline-kit/source-mcp';
+import { createMcpToolSource } from '@idriszade/source-mcp';
 import { z } from 'zod';
 
 const mcp = createMcpToolSource({

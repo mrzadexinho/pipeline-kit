@@ -1,8 +1,8 @@
-# `@pipeline-kit/serve-mcp` — Provider wiring
+# `@idriszade/serve-mcp` — Provider wiring
 
 ## ADR22: Library, not runtime
 
-`@pipeline-kit/serve-mcp` exposes a tool **registration object** that you wire
+`@idriszade/serve-mcp` exposes a tool **registration object** that you wire
 into your own MCP `Server`. It does **not** spawn or own an MCP runtime. The
 durable runtime — process supervision, transport selection, lifecycle — is
 the application's concern, not the kit's. This keeps pipeline-kit a library
@@ -24,10 +24,10 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { createMcpToolServe } from '@pipeline-kit/serve-mcp';
+import { createMcpToolServe } from '@idriszade/serve-mcp';
 
 // 1. Build your pipeline (source -> ... -> terminal)
-declare const myPipeline: import('@pipeline-kit/core').TerminalPipeline<{
+declare const myPipeline: import('@idriszade/core').TerminalPipeline<{
   reply: string;
 }>;
 

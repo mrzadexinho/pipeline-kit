@@ -1,11 +1,11 @@
-# @pipeline-kit/source-apify
+# @idriszade/source-apify
 
 Source adapter for ingesting Apify Actor run results — launches the actor, polls for completion, and emits dataset items as Atoms.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/source-apify
+pnpm add @idriszade/source-apify
 ```
 
 `apify-client` is bundled as a direct dependency.
@@ -13,7 +13,7 @@ pnpm add @pipeline-kit/source-apify
 ## Usage
 
 ```typescript
-import { createApifySource } from '@pipeline-kit/source-apify';
+import { createApifySource } from '@idriszade/source-apify';
 import { z } from 'zod';
 
 const apify = createApifySource({

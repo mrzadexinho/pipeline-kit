@@ -1,11 +1,11 @@
-# @pipeline-kit/store-postgres
+# @idriszade/store-postgres
 
 Store adapter for persisting pipeline atoms to PostgreSQL via Drizzle ORM. Auto-derives Zod schemas via `drizzle-orm/zod`; opens a transaction per `put` for idempotency-key checks against the cache table.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/store-postgres
+pnpm add @idriszade/store-postgres
 ```
 
 `drizzle-orm` and `postgres` are bundled as direct dependencies.
@@ -13,7 +13,7 @@ pnpm add @pipeline-kit/store-postgres
 ## Usage
 
 ```typescript
-import { createPostgresStore } from '@pipeline-kit/store-postgres';
+import { createPostgresStore } from '@idriszade/store-postgres';
 import { z } from 'zod';
 
 const store = createPostgresStore({

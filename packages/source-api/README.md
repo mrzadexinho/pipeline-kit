@@ -1,17 +1,17 @@
-# @pipeline-kit/source-api
+# @idriszade/source-api
 
 Source adapter for polling and streaming HTTP/REST APIs — supports cursor / offset / page pagination plus bearer / API-key / basic auth.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/source-api
+pnpm add @idriszade/source-api
 ```
 
 ## Usage
 
 ```typescript
-import { createApiSource } from '@pipeline-kit/source-api';
+import { createApiSource } from '@idriszade/source-api';
 import { z } from 'zod';
 
 const api = createApiSource({

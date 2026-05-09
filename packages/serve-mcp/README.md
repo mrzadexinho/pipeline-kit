@@ -1,11 +1,11 @@
-# @pipeline-kit/serve-mcp
+# @idriszade/serve-mcp
 
 Serve adapter for exposing a TerminalPipeline as an MCP tool — userland wires the returned `toolRegistration` into its own MCP `Server` instance.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/serve-mcp
+pnpm add @idriszade/serve-mcp
 ```
 
 Peer dependency:
@@ -14,7 +14,7 @@ Peer dependency:
 ## Usage
 
 ```typescript
-import { createMcpToolServe } from '@pipeline-kit/serve-mcp';
+import { createMcpToolServe } from '@idriszade/serve-mcp';
 import { z } from 'zod';
 
 const tool = createMcpToolServe({

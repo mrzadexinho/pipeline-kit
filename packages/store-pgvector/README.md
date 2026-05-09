@@ -1,11 +1,11 @@
-# @pipeline-kit/store-pgvector
+# @idriszade/store-pgvector
 
 Store adapter for vector similarity search via pgvector and Drizzle ORM. Ships a `pgvectorColumn(dimension)` Drizzle custom-type helper and supports `cosine`, `l2`, and `inner_product` distances with `hnsw` or `ivfflat` indexes.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/store-pgvector
+pnpm add @idriszade/store-pgvector
 ```
 
 Postgres server-side requirement: `CREATE EXTENSION IF NOT EXISTS vector;`
@@ -13,7 +13,7 @@ Postgres server-side requirement: `CREATE EXTENSION IF NOT EXISTS vector;`
 ## Usage
 
 ```typescript
-import { createPgvectorStore } from '@pipeline-kit/store-pgvector';
+import { createPgvectorStore } from '@idriszade/store-pgvector';
 import { z } from 'zod';
 
 const store = createPgvectorStore({

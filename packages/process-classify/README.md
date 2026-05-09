@@ -1,20 +1,20 @@
-# @pipeline-kit/process-classify
+# @idriszade/process-classify
 
 Process adapter for label classification of pipeline atoms — rule-based or LLM-backed.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/process-classify
+pnpm add @idriszade/process-classify
 ```
 
 Optional peer dependency (only required for `mode: 'llm'`):
-- `@pipeline-kit/process-extract`
+- `@idriszade/process-extract`
 
 ## Usage
 
 ```typescript
-import { createClassifyProcess } from '@pipeline-kit/process-classify';
+import { createClassifyProcess } from '@idriszade/process-classify';
 
 const classify = createClassifyProcess<{ description: string }>({
   mode: 'rules',

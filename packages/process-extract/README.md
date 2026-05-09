@@ -1,11 +1,11 @@
-# @pipeline-kit/process-extract
+# @idriszade/process-extract
 
 Process adapter for LLM-powered structured data extraction with Zod schema validation and JSON-schema auto-derivation.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/process-extract
+pnpm add @idriszade/process-extract
 ```
 
 Peer dependencies (install whichever provider you use):
@@ -16,7 +16,7 @@ Peer dependencies (install whichever provider you use):
 ## Usage
 
 ```typescript
-import { createExtractProcess } from '@pipeline-kit/process-extract';
+import { createExtractProcess } from '@idriszade/process-extract';
 import { z } from 'zod';
 
 const extract = createExtractProcess({

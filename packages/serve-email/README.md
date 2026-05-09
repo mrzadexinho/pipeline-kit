@@ -1,11 +1,11 @@
-# @pipeline-kit/serve-email
+# @idriszade/serve-email
 
 Serve adapter for delivering pipeline results via email — supports SMTP (Nodemailer), Postal, and Resend providers.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/serve-email
+pnpm add @idriszade/serve-email
 ```
 
 Peer dependencies (install whichever provider you use):
@@ -17,7 +17,7 @@ Postal uses `fetch` and needs no extra peer dep.
 ## Usage
 
 ```typescript
-import { createEmailServe } from '@pipeline-kit/serve-email';
+import { createEmailServe } from '@idriszade/serve-email';
 
 const email = createEmailServe({
   provider: 'resend',

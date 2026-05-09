@@ -1,11 +1,11 @@
-# @pipeline-kit/process-reviewable
+# @idriszade/process-reviewable
 
 Reviewable<I> HRP gate adapters — `GatewerkReviewable`, `ConsoleReviewable`, plus a `reviewableWrapper` that bridges any Reviewable into a Process<I, I> for direct `.through()` composition.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/process-reviewable
+pnpm add @idriszade/process-reviewable
 ```
 
 Optional peer dependency:
@@ -14,8 +14,8 @@ Optional peer dependency:
 ## Usage
 
 ```typescript
-import { ConsoleReviewable, reviewableWrapper } from '@pipeline-kit/process-reviewable';
-import { Pipeline } from '@pipeline-kit/core';
+import { ConsoleReviewable, reviewableWrapper } from '@idriszade/process-reviewable';
+import { Pipeline } from '@idriszade/core';
 
 const reviewable = new ConsoleReviewable<Order>();
 

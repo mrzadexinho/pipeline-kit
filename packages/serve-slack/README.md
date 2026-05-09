@@ -1,11 +1,11 @@
-# @pipeline-kit/serve-slack
+# @idriszade/serve-slack
 
 Serve adapter for posting pipeline results to Slack channels and DMs via `chat.postMessage`, with idempotency-key derived `client_msg_id` and optional cache for cross-run dedup.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/serve-slack
+pnpm add @idriszade/serve-slack
 ```
 
 `@slack/web-api` is bundled as a direct dependency.
@@ -13,7 +13,7 @@ pnpm add @pipeline-kit/serve-slack
 ## Usage
 
 ```typescript
-import { createSlackServe } from '@pipeline-kit/serve-slack';
+import { createSlackServe } from '@idriszade/serve-slack';
 
 const slack = createSlackServe({
   token: process.env.SLACK_BOT_TOKEN!,
@@ -21,7 +21,7 @@ const slack = createSlackServe({
 });
 ```
 
-Pair with `SlackEmojiReviewable` (in `@pipeline-kit/process-reviewable`) for reaction-emoji HRP gates.
+Pair with `SlackEmojiReviewable` (in `@idriszade/process-reviewable`) for reaction-emoji HRP gates.
 
 ## Reference
 

@@ -1,17 +1,17 @@
-# @pipeline-kit/process-validate
+# @idriszade/process-validate
 
 Process adapter for schema-driven validation of pipeline atoms via Zod — supports `coerce` (boundary recovery) and `strict` modes.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/process-validate
+pnpm add @idriszade/process-validate
 ```
 
 ## Usage
 
 ```typescript
-import { createValidateProcess } from '@pipeline-kit/process-validate';
+import { createValidateProcess } from '@idriszade/process-validate';
 import { z } from 'zod';
 
 const validate = createValidateProcess({

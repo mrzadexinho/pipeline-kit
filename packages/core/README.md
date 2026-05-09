@@ -1,11 +1,11 @@
-# @pipeline-kit/core
+# @idriszade/core
 
 Pipeline-kit orchestration kernel — Source/Store/Process/Serve stages, Pipeline composer, Result<T,E>, retry/rate-limit policies, HMAC webhook sign/verify, and OpenTelemetry hooks.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/core
+pnpm add @idriszade/core
 ```
 
 Optional peer dependencies (install if you wire OTel exporters yourself):
@@ -16,7 +16,7 @@ Optional peer dependencies (install if you wire OTel exporters yourself):
 ## Usage
 
 ```typescript
-import { createPipelineKit, Pipeline, webhooks } from '@pipeline-kit/core';
+import { createPipelineKit, Pipeline, webhooks } from '@idriszade/core';
 
 const kit = createPipelineKit({ apiKey: process.env.PIPELINE_KIT_API_KEY });
 

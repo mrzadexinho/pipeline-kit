@@ -1,17 +1,17 @@
-# @pipeline-kit/serve-webhook
+# @idriszade/serve-webhook
 
 Serve adapter for dispatching outbound webhook payloads with HMAC-SHA256 signing (Stripe-canon `X-Pipeline-Kit-Signature` header), SSRF guard, and four auth modes.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/serve-webhook
+pnpm add @idriszade/serve-webhook
 ```
 
 ## Usage
 
 ```typescript
-import { createWebhookServe } from '@pipeline-kit/serve-webhook';
+import { createWebhookServe } from '@idriszade/serve-webhook';
 import { z } from 'zod';
 
 const webhook = createWebhookServe({

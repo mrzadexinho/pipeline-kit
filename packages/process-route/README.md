@@ -1,17 +1,17 @@
-# @pipeline-kit/process-route
+# @idriszade/process-route
 
 Process adapter for predicate-based routing of atoms to downstream stages.
 
 ## Install
 
 ```bash
-pnpm add @pipeline-kit/process-route
+pnpm add @idriszade/process-route
 ```
 
 ## Usage
 
 ```typescript
-import { createRouteProcess } from '@pipeline-kit/process-route';
+import { createRouteProcess } from '@idriszade/process-route';
 
 const route = createRouteProcess<Ticket, Handled>({
   predicate: (ticket) => (ticket.priority === 'p0' ? 'urgent' : 'normal'),
