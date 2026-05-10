@@ -1,0 +1,13 @@
+{
+  "name": "spike-cat-v-deps-shape-lift",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Cat V spike #1 — does Cat VIII deps-shape lift to memory R+W? Throwaway.",
+  "scripts": {
+    "spike": "bun run spike.ts"
+  },
+  "dependencies": {
+    "orchestr8-mcp": "^0.1.0"
+  }
+}
