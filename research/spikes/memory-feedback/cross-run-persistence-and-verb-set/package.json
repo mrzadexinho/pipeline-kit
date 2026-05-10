@@ -1,0 +1,21 @@
+{
+  "name": "spike-cat-v-cross-run-persistence-and-verb-set",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Cat V spike #3 — cross-run persistence (cell alpha) + verb-growth-forced via Listable opt-in (cell beta). Real-disk SQLite via orchestr8-mcp; sequential bun-run process boundary. Throwaway.",
+  "scripts": {
+    "spike": "bash run-spike-3.sh",
+    "alpha-run-1": "bun run cell-alpha-minimum-verbs.ts run-1",
+    "alpha-run-2": "bun run cell-alpha-minimum-verbs.ts run-2",
+    "beta-run-1": "bun run cell-beta-verb-growth.ts run-1",
+    "beta-run-2": "bun run cell-beta-verb-growth.ts run-2"
+  },
+  "dependencies": {
+    "orchestr8-mcp": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.3"
+  }
+}
