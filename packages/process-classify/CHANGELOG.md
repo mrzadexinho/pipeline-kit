@@ -1,5 +1,12 @@
 # @idriszade/process-classify
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [9d57b38]
+  - @idriszade/process-extract@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
