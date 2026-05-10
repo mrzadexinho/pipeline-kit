@@ -1,0 +1,17 @@
+{
+  "name": "spike-cat-i-step-function-compose",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Cat I spike #1 — does kit's Composer atom-by-atom model map to Inngest per-step durability? Throwaway.",
+  "scripts": {
+    "serve": "bun run serve.ts",
+    "spike": "bun run spike.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.8",
+    "@inngest/test": "^1.0.0",
+    "hono": "^4.7.11",
+    "inngest": "^4.3.0"
+  }
+}
