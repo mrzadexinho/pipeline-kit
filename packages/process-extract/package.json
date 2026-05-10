@@ -29,8 +29,7 @@
   "dependencies": {
     "@opentelemetry/api": "^1.9.1",
     "@idriszade/core": "workspace:*",
-    "zod": "^4.4.3",
-    "zod-to-json-schema": "^3.24.0"
+    "zod": "^4.4.3"
   },
   "peerDependencies": {
     "@anthropic-ai/sdk": "*",

@@ -219,6 +219,44 @@ describe('process-extract / openai', () => {
     expect(result.data).toEqual({ name: 'Eve', age: 22 });
   });
 
+  it('strict-mode: Zod 4 outputSchema with .default() produces type=object schema', async () => {
+    // Regression: zod-to-json-schema (Zod 3 lib) emitted type:"None" at root for
+    // Zod 4 schemas, breaking OpenAI strict mode. Native toJSONSchema + applyStrictMode
+    // must produce a strict-mode-compliant root type:"object".
+    const SchemaWithDefaults = z.object({
+      name: z.string(),
+      tags: z.array(z.string()).default([]),
+      count: z.number().default(0),
+    });
+    mockCreate.mockResolvedValueOnce(makeOkResponse({ name: 'F', tags: ['a'], count: 1 }));
+
+    const proc = createExtractProcess({
+      provider: 'openai',
+      model: 'gpt-4o',
+      prompt: 'Extract',
+      outputSchema: SchemaWithDefaults,
+      apiKey: 'sk-test',
+    });
+
+    const result = await proc.run('input', fakeCtx());
+    expect(result.error).toBeNull();
+
+    const callArgs = mockCreate.mock.calls[0]?.[0] as {
+      response_format: {
+        type: string;
+        json_schema: { name: string; strict: boolean; schema: Record<string, unknown> };
+      };
+    };
+    const sentSchema = callArgs.response_format.json_schema.schema;
+    expect(sentSchema.type).toBe('object');
+    expect(sentSchema.additionalProperties).toBe(false);
+    expect(sentSchema.required).toEqual(['name', 'tags', 'count']);
+    // defaults must be stripped (OpenAI strict-mode requirement)
+    const props = sentSchema.properties as Record<string, Record<string, unknown>>;
+    expect(props.tags?.default).toBeUndefined();
+    expect(props.count?.default).toBeUndefined();
+  });
+
   it('content filter (null content) maps to content_filtered', async () => {
     // OpenAI returns null content with finish_reason 'content_filter' — provider wraps with code: 'content_filter'
     mockCreate.mockResolvedValueOnce({

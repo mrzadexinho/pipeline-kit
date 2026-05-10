@@ -8,10 +8,10 @@ import {
   type Result,
   type RetryPolicy,
 } from '@idriszade/core';
-import type { ZodType } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import { toJSONSchema, type ZodType } from 'zod';
 import { withExtractSpan } from './otel.js';
 import type { ProviderCallParams, ProviderResponse } from './providers/types.js';
+import { applyStrictMode } from './strict-mode.js';
 
 export interface ExtractProcessConfig<I, O> {
   id?: string;
@@ -161,9 +161,14 @@ export function createExtractProcess<I, O>(config: ExtractProcessConfig<I, O>): 
   async function run(input: I, _ctx: PipelineContext): Promise<Result<O, ProcessError>> {
     const promptStr = typeof config.prompt === 'function' ? config.prompt(input) : config.prompt;
 
-    // zod-to-json-schema is pinned to Zod v3 types; cast through unknown to satisfy its ZodSchema<any> param
-    const jsonSchemaRaw = zodToJsonSchema(config.outputSchema as never, { $refStrategy: 'none' });
-    const jsonSchema = jsonSchemaRaw as Record<string, unknown>;
+    // Zod 4's native toJSONSchema produces idiomatic JSON Schema typed correctly.
+    // OpenAI strict structured outputs require additional transformations
+    // (see strict-mode.ts); Anthropic + Gemini accept idiomatic schema as-is.
+    const jsonSchemaRaw = toJSONSchema(config.outputSchema) as Record<string, unknown>;
+    const jsonSchema =
+      config.provider === 'openai'
+        ? (applyStrictMode(jsonSchemaRaw) as Record<string, unknown>)
+        : jsonSchemaRaw;
 
     const apiKey = resolveApiKey(config.provider, config.apiKey);
 
