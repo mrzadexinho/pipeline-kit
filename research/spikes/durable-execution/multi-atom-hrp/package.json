@@ -1,0 +1,14 @@
+{
+  "name": "spike-cat-i-multi-atom-hrp",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Cat I spike #2 — multi-atom dynamic step composition + HRP checkpoint via waitForEvent. Throwaway.",
+  "scripts": {
+    "spike": "bun run spike.ts"
+  },
+  "dependencies": {
+    "@inngest/test": "^1.0.0",
+    "inngest": "^4.3.0"
+  }
+}
