@@ -1,0 +1,21 @@
+{
+  "name": "spike-cat-iv-trigger-unification",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Cat IV spike #2 — does Trigger<O> collapse to Source<O>, or is it a distinct Tier-2 primitive? Throwaway.",
+  "scripts": {
+    "spike:shapes": "bun run src/probe-four-shapes.ts",
+    "spike:cloudevents": "bun run src/probe-cloudevents.ts",
+    "spike:source-vs-trigger": "bun run src/probe-source-vs-trigger.ts",
+    "spike:local-prod-seam": "bun run src/probe-local-prod-seam.ts"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
