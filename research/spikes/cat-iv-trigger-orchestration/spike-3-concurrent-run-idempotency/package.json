@@ -1,0 +1,21 @@
+{
+  "name": "spike-cat-iv-concurrent-run-idempotency",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Cat IV spike #3 — who owns deduplication and concurrent-run protection: kit core, adapter, or runtime? Throwaway.",
+  "scripts": {
+    "spike:concerns": "bun run src/probe-three-concerns.ts",
+    "spike:dedup-ownership": "bun run src/probe-dedup-key-ownership.ts",
+    "spike:temporal": "bun run src/probe-temporal-comparison.ts",
+    "spike:boundary": "bun run src/probe-kit-boundary.ts"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
