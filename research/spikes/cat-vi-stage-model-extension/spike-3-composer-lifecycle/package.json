@@ -1,0 +1,19 @@
+{
+  "name": "spike-cat-vi-composer-lifecycle",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Cat VI spike #3 — does Composer formalize pipeline-resource lifetime management (DisposableRegistry) and adapter composition conventions? Throwaway.",
+  "scripts": {
+    "spike:types": "bun run src/types.ts",
+    "spike:disposable-registry": "bun run src/probe-disposable-registry.ts",
+    "spike:reconstruction": "bun run src/probe-reconstruction.ts",
+    "spike:seam-convention": "bun run src/probe-seam-convention.ts",
+    "spike:abort-cleanup": "bun run src/probe-abort-during-cleanup.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
