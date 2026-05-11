@@ -1,0 +1,20 @@
+{
+  "name": "spike-cat-vi-gate-and-aggregate",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Cat VI spike #1 — do Gate<I> and Aggregate<I[],O> need new stage types or collapse to Process<I,O> + Composer config? Throwaway.",
+  "scripts": {
+    "spike:types": "bun run src/types.ts",
+    "spike:gate": "bun run src/probe-gate.ts",
+    "spike:aggregate": "bun run src/probe-aggregate.ts",
+    "spike:subtyping": "bun run src/probe-process-subtyping.ts",
+    "spike:reviewable": "bun run src/probe-reviewable-subsumption.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "zod": "^3.23.0"
+  }
+}
