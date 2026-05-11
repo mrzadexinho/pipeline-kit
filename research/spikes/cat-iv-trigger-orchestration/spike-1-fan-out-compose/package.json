@@ -1,0 +1,21 @@
+{
+  "name": "spike-cat-iv-fan-out-compose",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Cat IV spike #1 — does step.invoke() compose with kit's Composer fan-out pattern? Throwaway.",
+  "scripts": {
+    "spike:parent": "bun run src/parent-fan-out.ts",
+    "spike:local": "bun run src/probe-local-equivalent.ts",
+    "spike:concurrency": "bun run src/probe-concurrency.ts"
+  },
+  "dependencies": {
+    "@inngest/test": "^1.0.0",
+    "inngest": "^4.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
