@@ -11,18 +11,27 @@ export interface MemoryAdapter {
 }
 
 export interface PipelineContext {
+  /** @control */
   readonly runId: string;
+  /** @control */
   readonly pipelineId: string;
-  /** undefined means non-durable (no retry engine). Defined means attempt number within durable run. */
+  /** @control - undefined means non-durable (no retry engine). Defined means attempt number within durable run. */
   readonly attempt?: number;
+  /** @user */
   readonly metadata: Readonly<Record<string, unknown>>;
+  /** @control */
   readonly signal: AbortSignal;
+  /** @control */
   readonly trace: TraceContext;
+  /** @control */
   readonly idempotencyKey?: string;
-  /** @deprecated Use deps.memory instead */
+  /** @deprecated Use deps.memory instead. @data-adjacent */
   readonly memory?: MemoryAdapter;
+  /** @data-adjacent */
   readonly deps: Readonly<Record<string, unknown>>;
+  /** @control */
   readonly usage: UsageAccumulator;
+  /** @user */
   attachMetadata(key: string, value: unknown): void;
 }
 
