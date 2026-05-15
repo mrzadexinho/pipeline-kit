@@ -1,4 +1,5 @@
 import { createContext, deriveAtomCtx, type PipelineContext } from '../context.js';
+import type { DisposableRegistry } from '../disposable.js';
 import type { ProcessError } from '../errors/process.js';
 import type { RunError } from '../errors/run.js';
 import type { ServeError } from '../errors/serve.js';
@@ -8,6 +9,7 @@ import type { RetryPolicy } from '../policy.js';
 import { err, ok, type Result } from '../result.js';
 import type { Atom } from '../stages/atom.js';
 import type { Source, SourceQuery } from '../stages/source.js';
+import type { CostBudget } from '../usage.js';
 import { cancelledResult, isCancelled } from './cancellation.js';
 import { generateIdempotencyKey, scopedIdempotencyKey } from './idempotency.js';
 import { type StageName, withSpan } from './otel.js';
@@ -46,6 +48,9 @@ export interface ComposerOpts {
     adapter: Source<unknown>;
     query: SourceQuery;
   };
+  registry?: DisposableRegistry;
+  costBudget?: CostBudget[];
+  buffer?: { window: { type: 'count' | 'time' | 'all'; n?: number } };
 }
 
 export interface ComposerResult {
@@ -85,6 +90,13 @@ async function runFanOut(
   startTime: number,
   globalPolicy: RetryPolicy,
 ): Promise<Result<ComposerResult, RunError>> {
+  if (opts.buffer !== undefined) {
+    const bufType = opts.buffer.window.type;
+    if (bufType === 'count' || bufType === 'time') {
+      throw new Error(`Buffer window type '${bufType}' is deferred to M2`);
+    }
+  }
+
   const { adapter: sourceAdapter, query: sourceQuery } = opts.source;
   const budget = makeBudget(opts.globalRetryBudget, opts.steps.length, globalPolicy.maxAttempts);
 
@@ -95,44 +107,127 @@ async function runFanOut(
   try {
     iter = sourceAdapter.iter(sourceQuery, ctx);
   } catch (e) {
+    await opts.registry?.disposeAll();
     return err(sourceIterError(e, ctx.runId));
   }
 
+  let result: Result<ComposerResult, RunError> | undefined;
+
   try {
+    if (opts.buffer?.window.type === 'all') {
+      // Collect all atoms before running steps
+      const collected: unknown[] = [];
+      try {
+        for await (const atom of iter) {
+          collected.push(atom.data);
+        }
+      } catch (e) {
+        result = err(sourceIterError(e, ctx.runId));
+        return result;
+      }
+
+      if (collected.length === 0) {
+        result = err({
+          type: 'source_failed',
+          code: 'source_no_atoms',
+          message: 'Source produced no atoms',
+          request_id: ctx.runId,
+          cause: { type: 'unavailable', code: 'source_no_atoms', message: 'Source produced no atoms' },
+        });
+        return result;
+      }
+
+      if (isCancelled(ctx.signal)) {
+        result = cancelledResult();
+        return result;
+      }
+
+      let currentInput: unknown = collected;
+      for (const step of opts.steps) {
+        if (isCancelled(ctx.signal)) {
+          result = cancelledResult();
+          return result;
+        }
+
+        const stagePolicy = mergeRetryPolicy(globalPolicy, step.retryPolicy);
+        const stageOutcome = await runStage(step, currentInput, ctx, stagePolicy, budget);
+
+        if (stageOutcome.error !== null) {
+          result = err(toRunError(step, stageOutcome.error, ctx));
+          return result;
+        }
+        if (isCancelled(ctx.signal)) {
+          result = cancelledResult();
+          return result;
+        }
+        currentInput = stageOutcome.data;
+
+        const budgetErr = checkBudgets(opts.costBudget, ctx, ctx.runId);
+        if (budgetErr !== null) {
+          result = err(budgetErr);
+          return result;
+        }
+      }
+
+      result = ok({
+        runId: ctx.runId,
+        pipelineId: ctx.pipelineId,
+        output: currentInput,
+        atomCount: collected.length,
+        duration: Date.now() - startTime,
+        metadata: { ...ctx.metadata },
+        ctx,
+      });
+      return result;
+    }
+
     for await (const atom of iter) {
       if (isCancelled(ctx.signal)) {
-        return cancelledResult();
+        result = cancelledResult();
+        return result;
       }
 
       let currentInput: unknown = atom.data;
       for (const step of opts.steps) {
         if (isCancelled(ctx.signal)) {
-          return cancelledResult();
+          result = cancelledResult();
+          return result;
         }
 
         const stagePolicy = mergeRetryPolicy(globalPolicy, step.retryPolicy);
         const stageOutcome = await runStage(step, currentInput, ctx, stagePolicy, budget, atom.id);
 
         if (stageOutcome.error !== null) {
-          return err(
+          result = err(
             toRunError(step, stageOutcome.error, ctx, {
               atom_id: atom.id,
               atoms_attempted: atomCount + 1,
               atoms_completed: atomCount,
             }),
           );
+          return result;
         }
         if (isCancelled(ctx.signal)) {
-          return cancelledResult();
+          result = cancelledResult();
+          return result;
         }
         currentInput = stageOutcome.data;
+
+        const budgetErr = checkBudgets(opts.costBudget, ctx, ctx.runId);
+        if (budgetErr !== null) {
+          result = err(budgetErr);
+          return result;
+        }
       }
 
       lastOutput = currentInput;
       atomCount++;
     }
   } catch (e) {
-    return err(sourceIterError(e, ctx.runId));
+    result = err(sourceIterError(e, ctx.runId));
+    return result;
+  } finally {
+    await opts.registry?.disposeAll();
   }
 
   if (atomCount === 0) {
@@ -166,34 +261,49 @@ async function runSequential(
 
   let currentInput: unknown = opts.initialInput;
   let stagesCompleted = 0;
+  let result: Result<ComposerResult, RunError> | undefined;
 
-  for (const step of opts.steps) {
-    if (isCancelled(ctx.signal)) {
-      return cancelledResult();
+  try {
+    for (const step of opts.steps) {
+      if (isCancelled(ctx.signal)) {
+        result = cancelledResult();
+        return result;
+      }
+
+      const stagePolicy = mergeRetryPolicy(globalPolicy, step.retryPolicy);
+      const stageOutcome = await runStage(step, currentInput, ctx, stagePolicy, budget);
+
+      if (stageOutcome.error !== null) {
+        result = err(toRunError(step, stageOutcome.error, ctx));
+        return result;
+      }
+      if (isCancelled(ctx.signal)) {
+        result = cancelledResult();
+        return result;
+      }
+      currentInput = stageOutcome.data;
+      stagesCompleted++;
+
+      const budgetErr = checkBudgets(opts.costBudget, ctx, ctx.runId);
+      if (budgetErr !== null) {
+        result = err(budgetErr);
+        return result;
+      }
     }
 
-    const stagePolicy = mergeRetryPolicy(globalPolicy, step.retryPolicy);
-    const stageOutcome = await runStage(step, currentInput, ctx, stagePolicy, budget);
-
-    if (stageOutcome.error !== null) {
-      return err(toRunError(step, stageOutcome.error, ctx));
-    }
-    if (isCancelled(ctx.signal)) {
-      return cancelledResult();
-    }
-    currentInput = stageOutcome.data;
-    stagesCompleted++;
+    result = ok({
+      runId: ctx.runId,
+      pipelineId: ctx.pipelineId,
+      output: currentInput,
+      atomCount: stagesCompleted,
+      duration: Date.now() - startTime,
+      metadata: { ...ctx.metadata },
+      ctx,
+    });
+    return result;
+  } finally {
+    await opts.registry?.disposeAll();
   }
-
-  return ok({
-    runId: ctx.runId,
-    pipelineId: ctx.pipelineId,
-    output: currentInput,
-    atomCount: stagesCompleted,
-    duration: Date.now() - startTime,
-    metadata: { ...ctx.metadata },
-    ctx,
-  });
 }
 
 async function runStage(
@@ -234,6 +344,34 @@ async function runStage(
       { policy, signal: ctx.signal, globalBudget: budget },
     ),
   );
+}
+
+function checkBudgets(
+  budgets: CostBudget[] | undefined,
+  ctx: PipelineContext,
+  requestId: string,
+): RunError | null {
+  if (budgets === undefined || budgets.length === 0) return null;
+  for (const b of budgets) {
+    const current = ctx.usage.get(b.metric);
+    if (current >= b.limit) {
+      if (b.action === 'abort') {
+        return {
+          type: 'unknown',
+          code: 'runtime_budget_exceeded',
+          message: `Budget exceeded for ${b.metric}: ${current} >= ${b.limit}`,
+          request_id: requestId,
+        };
+      }
+      if (b.action === 'warn') {
+        console.warn(
+          `[pipeline-kit] budget warning: ${b.metric} usage ${current} >= limit ${b.limit}`,
+        );
+      }
+      // 'review' is a no-op stub for M1; Reviewable composition in M2
+    }
+  }
+  return null;
 }
 
 function sourceIterError(e: unknown, requestId: string): RunError {
