@@ -1,5 +1,5 @@
 import type { Result } from '@idriszade/core';
-import type { SecretsError, ScopedSecretsResolver, SecretsResolver, SecretStats } from './types.js';
+import type { ScopedSecretsResolver, SecretStats, SecretsError, SecretsResolver } from './types.js';
 
 export function scope(resolver: SecretsResolver, prefix: string): ScopedSecretsResolver {
   return {

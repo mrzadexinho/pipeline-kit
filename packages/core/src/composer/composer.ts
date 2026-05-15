@@ -136,7 +136,11 @@ async function runFanOut(
           code: 'source_no_atoms',
           message: 'Source produced no atoms',
           request_id: ctx.runId,
-          cause: { type: 'unavailable', code: 'source_no_atoms', message: 'Source produced no atoms' },
+          cause: {
+            type: 'unavailable',
+            code: 'source_no_atoms',
+            message: 'Source produced no atoms',
+          },
         });
         return result;
       }

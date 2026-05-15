@@ -1,5 +1,5 @@
 import { describe, expectTypeOf, it } from 'vitest';
-import type { Gate, Aggregate, AgentProcess } from '../src/patterns.js';
+import type { AgentProcess, Aggregate, Gate } from '../src/patterns.js';
 import type { Process } from '../src/stages/process.js';
 
 describe('Pattern type aliases', () => {

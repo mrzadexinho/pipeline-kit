@@ -1,5 +1,5 @@
 import { ok, type Result } from '@idriszade/core';
-import type { SecretsError, SecretsResolver, SecretStats } from './types.js';
+import type { SecretStats, SecretsError, SecretsResolver } from './types.js';
 
 interface CacheEntry {
   value: string;

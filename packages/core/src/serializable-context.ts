@@ -1,4 +1,4 @@
-import { ROOT_CONTEXT, propagation } from '@opentelemetry/api';
+import { propagation, ROOT_CONTEXT } from '@opentelemetry/api';
 import type { PipelineContext, TraceContext } from './context.js';
 
 /**
@@ -30,8 +30,8 @@ export function extractWireContext(ctx: PipelineContext): SerializableContext {
   return {
     runId: ctx.runId,
     trace: {
-      traceparent: carrier['traceparent'] ?? '',
-      ...(carrier['tracestate'] !== undefined ? { tracestate: carrier['tracestate'] } : {}),
+      traceparent: carrier.traceparent ?? '',
+      ...(carrier.tracestate !== undefined ? { tracestate: carrier.tracestate } : {}),
     },
     idempotencyKey: ctx.idempotencyKey ?? '',
   };
@@ -47,7 +47,7 @@ export function injectWireContext(
 ): PipelineContext {
   const carrier: WireCarrier = { traceparent: wireCtx.trace.traceparent };
   if (wireCtx.trace.tracestate !== undefined) {
-    carrier['tracestate'] = wireCtx.trace.tracestate;
+    carrier.tracestate = wireCtx.trace.tracestate;
   }
   const restoredTrace = propagation.extract(ROOT_CONTEXT, carrier);
 

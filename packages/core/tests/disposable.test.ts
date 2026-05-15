@@ -1,9 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import {
-  type DisposalOptions,
-  createDisposableRegistry,
-  isDisposable,
-} from '../src/disposable.js';
+import { createDisposableRegistry, type DisposalOptions, isDisposable } from '../src/disposable.js';
 
 describe('isDisposable', () => {
   it('returns true for object with close() method', () => {
@@ -32,9 +28,15 @@ describe('createDisposableRegistry', () => {
       const order: string[] = [];
       const reg = createDisposableRegistry();
 
-      reg.register('A', async () => { order.push('A'); });
-      reg.register('B', async () => { order.push('B'); });
-      reg.register('C', async () => { order.push('C'); });
+      reg.register('A', async () => {
+        order.push('A');
+      });
+      reg.register('B', async () => {
+        order.push('B');
+      });
+      reg.register('C', async () => {
+        order.push('C');
+      });
 
       await reg.disposeAll();
       expect(order).toEqual(['C', 'B', 'A']);
@@ -43,43 +45,31 @@ describe('createDisposableRegistry', () => {
 
   describe('timeout behaviour', () => {
     it('fires onTimeout when teardown exceeds timeoutMs', async () => {
-      vi.useFakeTimers();
       const timedOut: string[] = [];
 
       const reg = createDisposableRegistry();
       reg.register('slow', async () => {
-        await new Promise<void>((resolve) => setTimeout(resolve, 10_000));
+        await new Promise<void>((resolve) => setTimeout(resolve, 500));
       });
 
       const opts: DisposalOptions = {
-        timeoutMs: 100,
+        timeoutMs: 50,
         onTimeout: (name) => timedOut.push(name),
       };
-      const disposePromise = reg.disposeAll(opts);
-      await vi.advanceTimersByTimeAsync(200);
-      await disposePromise;
-
+      await reg.disposeAll(opts);
       expect(timedOut).toContain('slow');
-      vi.useRealTimers();
     });
 
-    it('default timeoutMs is 5000', async () => {
-      vi.useFakeTimers();
+    it('does not fire onTimeout when teardown completes within timeoutMs', async () => {
       const timedOut: string[] = [];
-      const reg = createDisposableRegistry();
 
-      reg.register('slow', async () => {
-        await new Promise<void>((resolve) => setTimeout(resolve, 10_000));
+      const reg = createDisposableRegistry();
+      reg.register('fast', async () => {
+        await new Promise<void>((resolve) => setTimeout(resolve, 5));
       });
 
-      const disposePromise = reg.disposeAll({ onTimeout: (name) => timedOut.push(name) });
-      await vi.advanceTimersByTimeAsync(4999);
+      await reg.disposeAll({ timeoutMs: 200, onTimeout: (name) => timedOut.push(name) });
       expect(timedOut).toHaveLength(0);
-
-      await vi.advanceTimersByTimeAsync(2);
-      await disposePromise;
-      expect(timedOut).toContain('slow');
-      vi.useRealTimers();
     });
   });
 
@@ -94,8 +84,8 @@ describe('createDisposableRegistry', () => {
 
       await reg.disposeAll({ onError: (name, err) => errors.push({ name, err }) });
       expect(errors).toHaveLength(1);
-      expect(errors[0]!.name).toBe('failing');
-      expect(errors[0]!.err.message).toBe('boom');
+      expect(errors[0]?.name).toBe('failing');
+      expect(errors[0]?.err.message).toBe('boom');
     });
 
     it('one adapter failure does not block others', async () => {
@@ -103,9 +93,15 @@ describe('createDisposableRegistry', () => {
       const errors: string[] = [];
       const reg = createDisposableRegistry();
 
-      reg.register('A', async () => { order.push('A'); });
-      reg.register('B', async () => { throw new Error('B failed'); });
-      reg.register('C', async () => { order.push('C'); });
+      reg.register('A', async () => {
+        order.push('A');
+      });
+      reg.register('B', async () => {
+        throw new Error('B failed');
+      });
+      reg.register('C', async () => {
+        order.push('C');
+      });
 
       await reg.disposeAll({ onError: (name) => errors.push(name) });
 

@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest';
 import * as fc from 'fast-check';
-import { createUsageAccumulator } from '../src/usage.js';
+import { describe, expect, it } from 'vitest';
 import { createDisposableRegistry } from '../src/disposable.js';
 import { isRetryable, RETRYABILITY_MAP } from '../src/stage-error.js';
+import { createUsageAccumulator } from '../src/usage.js';
 
 describe('UsageAccumulator properties', () => {
   it('accumulation is additive: sum of deltas equals get()', () => {
@@ -54,7 +54,9 @@ describe('DisposableRegistry properties', () => {
           const registry = createDisposableRegistry();
           const disposed: string[] = [];
           for (const name of unique) {
-            registry.register(name, async () => { disposed.push(name); });
+            registry.register(name, async () => {
+              disposed.push(name);
+            });
           }
           await registry.disposeAll();
           expect(disposed).toEqual([...unique].reverse());

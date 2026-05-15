@@ -1,22 +1,34 @@
 import { err, ok } from '@idriszade/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createTtlResolver, createVersionAwareResolver, scope } from '../src/index.js';
 import type { SecretsResolver } from '../src/index.js';
+import { createTtlResolver, createVersionAwareResolver, scope } from '../src/index.js';
 
-function mockResolver(secrets: Record<string, string>): SecretsResolver & { callCount(name: string): number } {
+function mockResolver(
+  secrets: Record<string, string>,
+): SecretsResolver & { callCount(name: string): number } {
   const callCounts = new Map<string, number>();
   return {
     async resolve(name) {
       callCounts.set(name, (callCounts.get(name) ?? 0) + 1);
       const value = secrets[name];
       if (value === undefined) {
-        return err({ type: 'secrets_error' as const, code: 'secret_not_found' as const, message: `Not found: ${name}` });
+        return err({
+          type: 'secrets_error' as const,
+          code: 'secret_not_found' as const,
+          message: `Not found: ${name}`,
+        });
       }
       return ok(value);
     },
-    invalidate(_name) { /* no-op for mock */ },
-    stats(name) { return { reads: callCounts.get(name) ?? 0 }; },
-    callCount(name) { return callCounts.get(name) ?? 0; },
+    invalidate(_name) {
+      /* no-op for mock */
+    },
+    stats(name) {
+      return { reads: callCounts.get(name) ?? 0 };
+    },
+    callCount(name) {
+      return callCounts.get(name) ?? 0;
+    },
   };
 }
 
@@ -159,7 +171,9 @@ describe('scope', () => {
         return ok('value');
       },
       invalidate(_name) {},
-      stats(_name) { return { reads: 0 }; },
+      stats(_name) {
+        return { reads: 0 };
+      },
     };
 
     const scoped = scope(inner, 'db');
@@ -172,9 +186,15 @@ describe('scope', () => {
   it('invalidate: forwards with prefix', () => {
     const invalidated: string[] = [];
     const inner: SecretsResolver = {
-      async resolve(_name) { return ok('v'); },
-      invalidate(name) { invalidated.push(name); },
-      stats(_name) { return { reads: 0 }; },
+      async resolve(_name) {
+        return ok('v');
+      },
+      invalidate(name) {
+        invalidated.push(name);
+      },
+      stats(_name) {
+        return { reads: 0 };
+      },
     };
 
     const scoped = scope(inner, 'svc');
@@ -185,9 +205,13 @@ describe('scope', () => {
 
   it('stats: forwards with prefix', () => {
     const inner: SecretsResolver = {
-      async resolve(_name) { return ok('v'); },
+      async resolve(_name) {
+        return ok('v');
+      },
       invalidate(_name) {},
-      stats(name) { return { reads: name === 'ns-key' ? 5 : 0 }; },
+      stats(name) {
+        return { reads: name === 'ns-key' ? 5 : 0 };
+      },
     };
 
     const scoped = scope(inner, 'ns');

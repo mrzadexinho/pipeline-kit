@@ -1,10 +1,8 @@
+import { ok } from '@idriszade/core';
 import { describe, expect, it } from 'vitest';
-import { ok, err } from '@idriszade/core';
-import type { MemoryAdapter, MemoryError } from '../src/types.js';
-import { isListable } from '../src/markers.js';
-import type { Listable } from '../src/markers.js';
 import { isDisposable } from '../src/index.js';
-import type { Disposable } from '../src/index.js';
+import { isListable } from '../src/markers.js';
+import type { MemoryAdapter, MemoryError } from '../src/types.js';
 
 // Mock adapter
 function createMockAdapter(): MemoryAdapter {

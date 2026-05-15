@@ -43,7 +43,9 @@ export function createDisposableRegistry(): DisposableRegistry {
 
       // LIFO: iterate in reverse
       for (let i = entries.length - 1; i >= 0; i--) {
-        const { name, teardown } = entries[i]!;
+        const entry = entries[i];
+        if (entry === undefined) continue;
+        const { name, teardown } = entry;
         const timeoutErr = new Error(`Disposal of "${name}" timed out after ${timeoutMs}ms`);
 
         let timedOut = false;

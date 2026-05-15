@@ -1,5 +1,5 @@
 import type { Result } from '@idriszade/core';
-import type { SecretsError, SecretsResolver, SecretStats } from './types.js';
+import type { SecretStats, SecretsError, SecretsResolver } from './types.js';
 
 export function createTtlResolver(inner: SecretsResolver, ttlMs: number): SecretsResolver {
   const lastResolved = new Map<string, number>();

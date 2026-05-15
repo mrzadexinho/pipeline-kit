@@ -1,10 +1,10 @@
+import type { TraceContext } from './context.js';
 import type { RunError } from './errors/run.js';
 import type { PipelineStep, RunResult, TerminalPipeline } from './pipeline-types.js';
 import type { RetryPolicy } from './policy.js';
 import type { Result } from './result.js';
-import type { TraceContext } from './context.js';
-import type { CostBudget } from './usage.js';
 import type { TriggerConfig } from './trigger.js';
+import type { CostBudget } from './usage.js';
 
 export interface ConcurrencyPolicy {
   limit: number;
@@ -46,7 +46,10 @@ export interface DefinedPipelineRunOptions {
 }
 
 export interface DefinedPipeline<O> {
-  run(input?: unknown, options?: DefinedPipelineRunOptions): Promise<Result<RunResult<O>, RunError>>;
+  run(
+    input?: unknown,
+    options?: DefinedPipelineRunOptions,
+  ): Promise<Result<RunResult<O>, RunError>>;
   describe(): PipelineDefinitionEnriched;
 }
 

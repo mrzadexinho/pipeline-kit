@@ -1,11 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
-import {
-  definePipeline,
-  type DefinedPipeline,
-  type PipelineDefinitionEnriched,
-} from '../src/define-pipeline.js';
-import { ok } from '../src/result.js';
+import { definePipeline, type PipelineDefinitionEnriched } from '../src/define-pipeline.js';
 import type { TerminalPipeline } from '../src/pipeline-types.js';
+import { ok } from '../src/result.js';
+import type { Reviewable } from '../src/reviewable.js';
+import type { Process } from '../src/stages/process.js';
+import type { Serve } from '../src/stages/serve.js';
+import type { Source } from '../src/stages/source.js';
+import type { Store } from '../src/stages/store.js';
 
 function mockTerminalPipeline(): TerminalPipeline<string> {
   return {
@@ -23,12 +24,12 @@ function mockTerminalPipeline(): TerminalPipeline<string> {
       return {
         pipelineId: 'pk_pipe_test',
         steps: [
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          { kind: 'source' as const, source: { id: 'pk_src_test' } as any },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          { kind: 'process' as const, process: { id: 'pk_proc_test' } as any },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          { kind: 'serve' as const, serve: { id: 'pk_serve_test' } as any },
+          { kind: 'source' as const, source: { id: 'pk_src_test' } as unknown as Source<unknown> },
+          {
+            kind: 'process' as const,
+            process: { id: 'pk_proc_test' } as unknown as Process<unknown, unknown>,
+          },
+          { kind: 'serve' as const, serve: { id: 'pk_serve_test' } as unknown as Serve<unknown> },
         ],
       };
     },
@@ -116,14 +117,13 @@ describe('definePipeline', () => {
           return {
             pipelineId: 'pk_pipe_x',
             steps: [
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              { kind: 'source' as const, source: { id: 'pk_src_a' } as any },
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              { kind: 'store' as const, store: { id: 'pk_store_a' } as any },
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              { kind: 'review' as const, reviewable: { id: 'pk_review_a' } as any },
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              { kind: 'serve' as const, serve: { id: 'pk_serve_a' } as any },
+              { kind: 'source' as const, source: { id: 'pk_src_a' } as unknown as Source<unknown> },
+              { kind: 'store' as const, store: { id: 'pk_store_a' } as unknown as Store<unknown> },
+              {
+                kind: 'review' as const,
+                reviewable: { id: 'pk_review_a' } as unknown as Reviewable<unknown>,
+              },
+              { kind: 'serve' as const, serve: { id: 'pk_serve_a' } as unknown as Serve<unknown> },
             ],
           };
         },

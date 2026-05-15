@@ -1,9 +1,9 @@
 import { describe, expectTypeOf, it } from 'vitest';
 import type { PipelineContext } from '../src/context.js';
-import type { UsageAccumulator } from '../src/usage.js';
-import type { Gate, Aggregate, AgentProcess } from '../src/patterns.js';
-import type { Process } from '../src/stages/process.js';
 import type { DefinedPipeline, PipelineDefinitionEnriched } from '../src/define-pipeline.js';
+import type { AgentProcess, Aggregate, Gate } from '../src/patterns.js';
+import type { Process } from '../src/stages/process.js';
+import type { UsageAccumulator } from '../src/usage.js';
 
 describe('PipelineContext v1 completeness', () => {
   it('has all v1 fields', () => {

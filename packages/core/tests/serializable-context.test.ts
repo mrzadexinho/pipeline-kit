@@ -1,5 +1,5 @@
-import { W3CTraceContextPropagator } from '@opentelemetry/core';
 import { propagation } from '@opentelemetry/api';
+import { W3CTraceContextPropagator } from '@opentelemetry/core';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createContext } from '../src/context.js';
 import {
@@ -69,11 +69,16 @@ describe('SerializableContext helpers', () => {
       const ctx = createContext({ pipelineId: 'pk_pipe_a' });
       const wireCtx: SerializableContext = {
         runId: ctx.runId,
-        trace: { traceparent: '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01', tracestate: 'vendor=value' },
+        trace: {
+          traceparent: '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01',
+          tracestate: 'vendor=value',
+        },
         idempotencyKey: '',
       };
       const wire = extractWireContext(injectWireContext(wireCtx, ctx));
-      expect(wire.trace.traceparent).toBe('00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01');
+      expect(wire.trace.traceparent).toBe(
+        '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01',
+      );
     });
   });
 });

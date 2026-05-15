@@ -1,6 +1,6 @@
 import { type Context, ROOT_CONTEXT } from '@opentelemetry/api';
 import { run } from './ids.js';
-import { type UsageAccumulator, createUsageAccumulator } from './usage.js';
+import { createUsageAccumulator, type UsageAccumulator } from './usage.js';
 
 export type TraceContext = Context;
 
