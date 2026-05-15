@@ -1,0 +1,246 @@
+import { describe, expect, it, vi } from 'vitest';
+import type { KitFunctionConfig, StepTools } from '../src/create-kit-function.js';
+import {
+  buildFunctionConfig,
+  createKitFunction,
+  mapTriggerConfig,
+} from '../src/create-kit-function.js';
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ──────────────────────────────────────────────────────────────────────────────
+
+function makeInngest() {
+  // Capture the handler so tests can invoke it directly.
+  let capturedHandler: ((args: { event: unknown; step: StepTools }) => Promise<unknown>) | null =
+    null;
+  let capturedConfig: Record<string, unknown> | null = null;
+  let capturedTrigger: unknown = null;
+
+  const createFunction = vi.fn(
+    (
+      config: Record<string, unknown>,
+      trigger: unknown,
+      handler: (args: { event: unknown; step: StepTools }) => Promise<unknown>,
+    ) => {
+      capturedConfig = config;
+      capturedTrigger = trigger;
+      capturedHandler = handler;
+      return { _inngestFunction: true };
+    },
+  );
+
+  return {
+    inngest: { createFunction } as unknown as { createFunction: (...args: unknown[]) => unknown },
+    createFunction,
+    getHandler: () => capturedHandler,
+    getConfig: () => capturedConfig,
+    getTrigger: () => capturedTrigger,
+  };
+}
+
+function makeStep(): StepTools {
+  return {
+    run: vi.fn(async (_id: string, fn: () => unknown) => fn()),
+    invoke: vi.fn(async () => ({})),
+    waitForEvent: vi.fn(async () => null),
+    sendEvent: vi.fn(async () => ({})),
+  };
+}
+
+function makeEvent(overrides: Partial<{ data: unknown; attempt: number }> = {}) {
+  return { data: {}, attempt: 0, ...overrides };
+}
+
+const BASE_CONFIG: KitFunctionConfig = {
+  id: 'test-pipeline',
+  trigger: { kind: 'event', name: 'app/user.created' },
+};
+
+// ──────────────────────────────────────────────────────────────────────────────
+// createKitFunction — integration behaviour
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('createKitFunction', () => {
+  it('calls inngest.createFunction with the correct id', () => {
+    const { inngest, createFunction } = makeInngest();
+    createKitFunction(inngest, BASE_CONFIG, async () => 'ok');
+    expect(createFunction).toHaveBeenCalledOnce();
+    const config = createFunction.mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(config['id']).toBe('test-pipeline');
+  });
+
+  it('returns the value from inngest.createFunction', () => {
+    const { inngest } = makeInngest();
+    const result = createKitFunction(inngest, BASE_CONFIG, async () => 'ok');
+    expect(result).toEqual({ _inngestFunction: true });
+  });
+
+  it('handler receives ctx with correct pipelineId', async () => {
+    const { inngest, getHandler } = makeInngest();
+
+    let receivedPipelineId: string | undefined;
+    createKitFunction(inngest, BASE_CONFIG, async ({ ctx }) => {
+      receivedPipelineId = ctx.pipelineId;
+    });
+
+    const handler = getHandler()!;
+    await handler({ event: makeEvent(), step: makeStep() });
+
+    expect(receivedPipelineId).toBe('test-pipeline');
+  });
+
+  it('handler receives ctx with attempt matching the event', async () => {
+    const { inngest, getHandler } = makeInngest();
+
+    let receivedAttempt: number | undefined;
+    createKitFunction(inngest, BASE_CONFIG, async ({ ctx }) => {
+      receivedAttempt = ctx.attempt;
+    });
+
+    const handler = getHandler()!;
+    await handler({ event: makeEvent({ attempt: 3 }), step: makeStep() });
+
+    expect(receivedAttempt).toBe(3);
+  });
+
+  it('handler receives ctx.runId prefixed with pk_run_', async () => {
+    const { inngest, getHandler } = makeInngest();
+
+    let receivedRunId: string | undefined;
+    createKitFunction(inngest, BASE_CONFIG, async ({ ctx }) => {
+      receivedRunId = ctx.runId;
+    });
+
+    const handler = getHandler()!;
+    await handler({ event: makeEvent(), step: makeStep() });
+
+    expect(receivedRunId).toMatch(/^pk_run_/);
+  });
+
+  it('disposes registry in finally block even when handler throws', async () => {
+    const { inngest, getHandler } = makeInngest();
+
+    createKitFunction(inngest, BASE_CONFIG, async () => {
+      throw new Error('handler blew up');
+    });
+
+    const handler = getHandler()!;
+    // Should not suppress the error — just ensure disposal runs.
+    await expect(handler({ event: makeEvent(), step: makeStep() })).rejects.toThrow(
+      'handler blew up',
+    );
+  });
+
+  it('handler receives the raw event object', async () => {
+    const { inngest, getHandler } = makeInngest();
+
+    let receivedEvent: unknown;
+    createKitFunction(inngest, BASE_CONFIG, async ({ event }) => {
+      receivedEvent = event;
+    });
+
+    const handler = getHandler()!;
+    const event = makeEvent({ data: { foo: 'bar' }, attempt: 1 });
+    await handler({ event, step: makeStep() });
+
+    expect((receivedEvent as { data: { foo: string } }).data.foo).toBe('bar');
+  });
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
+// mapTriggerConfig
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('mapTriggerConfig', () => {
+  it('maps cron → { cron: expr }', () => {
+    expect(mapTriggerConfig({ kind: 'cron', expr: '0 9 * * 1-5' })).toEqual({
+      cron: '0 9 * * 1-5',
+    });
+  });
+
+  it('maps webhook → { event: "webhook<path>" }', () => {
+    expect(mapTriggerConfig({ kind: 'webhook', path: '/payments/stripe' })).toEqual({
+      event: 'webhook/payments/stripe',
+    });
+  });
+
+  it('maps event → { event: name }', () => {
+    expect(mapTriggerConfig({ kind: 'event', name: 'app/order.placed' })).toEqual({
+      event: 'app/order.placed',
+    });
+  });
+
+  it('maps manual → { event: "manual/trigger" }', () => {
+    expect(mapTriggerConfig({ kind: 'manual' })).toEqual({ event: 'manual/trigger' });
+  });
+
+  it('maps mcp → { event: "mcp/<toolName>" }', () => {
+    expect(mapTriggerConfig({ kind: 'mcp', toolName: 'analyze-pr' })).toEqual({
+      event: 'mcp/analyze-pr',
+    });
+  });
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
+// buildFunctionConfig
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('buildFunctionConfig', () => {
+  it('always includes the id', () => {
+    const cfg = buildFunctionConfig({ id: 'my-fn', trigger: { kind: 'manual' } });
+    expect(cfg['id']).toBe('my-fn');
+  });
+
+  it('omits retries when not provided', () => {
+    const cfg = buildFunctionConfig({ id: 'x', trigger: { kind: 'manual' } });
+    expect(cfg['retries']).toBeUndefined();
+  });
+
+  it('includes retries when provided', () => {
+    const cfg = buildFunctionConfig({ id: 'x', trigger: { kind: 'manual' }, retries: 5 });
+    expect(cfg['retries']).toBe(5);
+  });
+
+  it('maps RunGuard.concurrency (queue overflow) to Inngest concurrency array without key', () => {
+    const cfg = buildFunctionConfig({
+      id: 'x',
+      trigger: { kind: 'manual' },
+      runGuard: { concurrency: { limit: 10, overflow: 'queue' } },
+    });
+    expect(cfg['concurrency']).toEqual([{ limit: 10 }]);
+  });
+
+  it('maps RunGuard.concurrency (reject overflow) to Inngest concurrency array with key', () => {
+    const cfg = buildFunctionConfig({
+      id: 'x',
+      trigger: { kind: 'manual' },
+      runGuard: { concurrency: { limit: 3, overflow: 'reject' } },
+    });
+    expect(cfg['concurrency']).toEqual([{ limit: 3, key: 'event.data.pipelineId' }]);
+  });
+
+  it('maps RunGuard.concurrency (no overflow) without key', () => {
+    const cfg = buildFunctionConfig({
+      id: 'x',
+      trigger: { kind: 'manual' },
+      runGuard: { concurrency: { limit: 5 } },
+    });
+    expect(cfg['concurrency']).toEqual([{ limit: 5 }]);
+  });
+
+  it('maps RunGuard.dedup to Inngest idempotency expression', () => {
+    const cfg = buildFunctionConfig({
+      id: 'x',
+      trigger: { kind: 'manual' },
+      runGuard: { dedup: { period: '24h' } },
+    });
+    expect(cfg['idempotency']).toBe('event.data.dedupKey');
+  });
+
+  it('omits concurrency and idempotency when no runGuard', () => {
+    const cfg = buildFunctionConfig({ id: 'x', trigger: { kind: 'manual' } });
+    expect(cfg['concurrency']).toBeUndefined();
+    expect(cfg['idempotency']).toBeUndefined();
+  });
+});
