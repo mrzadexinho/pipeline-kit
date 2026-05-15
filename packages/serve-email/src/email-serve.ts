@@ -1,7 +1,6 @@
 import {
   type EmitResult,
   err,
-  ok,
   type PipelineContext,
   type Result,
   type RetryPolicy,

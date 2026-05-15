@@ -109,10 +109,10 @@ describe('McpToolServe — toolRegistration', () => {
     });
 
     const jsonSchema = serve.toolRegistration.inputSchema;
-    expect(jsonSchema['type']).toBe('object');
+    expect(jsonSchema.type).toBe('object');
     expect('properties' in jsonSchema).toBe(true);
-    const props = jsonSchema['properties'] as Record<string, unknown>;
-    expect(props['name']).toBeDefined();
-    expect(props['age']).toBeDefined();
+    const props = jsonSchema.properties as Record<string, unknown>;
+    expect(props.name).toBeDefined();
+    expect(props.age).toBeDefined();
   });
 });

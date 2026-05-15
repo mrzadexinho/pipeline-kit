@@ -44,9 +44,9 @@ describe('inspectCommand', () => {
     expect(logSpy).toHaveBeenCalledOnce();
     const output = logSpy.mock.calls[0]?.[0] as string;
     const parsed = JSON.parse(output) as Record<string, unknown>;
-    expect(parsed['id']).toBe('pk_pipe_alpha');
-    expect(parsed['version']).toBe('1.0.0');
-    expect(parsed['steps']).toEqual([]);
+    expect(parsed.id).toBe('pk_pipe_alpha');
+    expect(parsed.version).toBe('1.0.0');
+    expect(parsed.steps).toEqual([]);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(process.exitCode).toBeUndefined();
 
@@ -55,10 +55,7 @@ describe('inspectCommand', () => {
   });
 
   it('prints formatted JSON (2-space indent)', async () => {
-    await writeFile(
-      join(pipelinesDir, 'beta.pipeline.mjs'),
-      makePipelineFixture('pk_pipe_beta'),
-    );
+    await writeFile(join(pipelinesDir, 'beta.pipeline.mjs'), makePipelineFixture('pk_pipe_beta'));
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
 
@@ -100,10 +97,7 @@ describe('inspectCommand', () => {
   });
 
   it('does not print error when pipeline is found', async () => {
-    await writeFile(
-      join(pipelinesDir, 'gamma.pipeline.mjs'),
-      makePipelineFixture('pk_pipe_gamma'),
-    );
+    await writeFile(join(pipelinesDir, 'gamma.pipeline.mjs'), makePipelineFixture('pk_pipe_gamma'));
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);

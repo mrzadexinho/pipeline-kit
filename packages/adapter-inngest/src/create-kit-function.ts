@@ -1,7 +1,7 @@
-import { createDisposableRegistry } from '@idriszade/core';
 import type { PipelineContext, RunGuard, TriggerConfig } from '@idriszade/core';
-import { mapInngestContext } from './context-mapping.js';
+import { createDisposableRegistry } from '@idriszade/core';
 import type { MapContextOptions } from './context-mapping.js';
+import { mapInngestContext } from './context-mapping.js';
 
 // Structural StepTools type — do NOT import from inngest internals.
 export interface StepTools {
@@ -56,13 +56,7 @@ export function createKitFunction<T>(
   return inngest.createFunction(
     inngestConfig,
     inngestTrigger,
-    async ({
-      event,
-      step,
-    }: {
-      event: { data: unknown; attempt: number };
-      step: StepTools;
-    }) => {
+    async ({ event, step }: { event: { data: unknown; attempt: number }; step: StepTools }) => {
       const registry = createDisposableRegistry();
       const runId = `pk_run_${crypto.randomUUID()}`;
 
@@ -93,9 +87,7 @@ export function createKitFunction<T>(
  * Map a kit TriggerConfig to an Inngest trigger shape.
  * Exported for unit testing.
  */
-export function mapTriggerConfig(
-  trigger: TriggerConfig,
-): { event: string } | { cron: string } {
+export function mapTriggerConfig(trigger: TriggerConfig): { event: string } | { cron: string } {
   switch (trigger.kind) {
     case 'cron':
       return { cron: trigger.expr };
@@ -118,20 +110,20 @@ export function buildFunctionConfig(config: KitFunctionConfig): Record<string, u
   const fnConfig: Record<string, unknown> = { id: config.id };
 
   if (config.retries !== undefined) {
-    fnConfig['retries'] = config.retries;
+    fnConfig.retries = config.retries;
   }
 
   if (config.runGuard?.concurrency !== undefined) {
     const { limit, overflow } = config.runGuard.concurrency;
     if (overflow === 'reject') {
-      fnConfig['concurrency'] = [{ limit, key: 'event.data.pipelineId' }];
+      fnConfig.concurrency = [{ limit, key: 'event.data.pipelineId' }];
     } else {
-      fnConfig['concurrency'] = [{ limit }];
+      fnConfig.concurrency = [{ limit }];
     }
   }
 
   if (config.runGuard?.dedup !== undefined) {
-    fnConfig['idempotency'] = 'event.data.dedupKey';
+    fnConfig.idempotency = 'event.data.dedupKey';
   }
 
   return fnConfig;

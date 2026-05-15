@@ -33,7 +33,7 @@ vi.mock('nodemailer', () => {
 const { createEmailServe } = await import('../src/email-serve.js');
 const nodemailer = await import('nodemailer');
 
-function getSendMail() {
+function _getSendMail() {
   // Get the sendMail mock from the transport created by createTransport
   const createTransportMock = (
     nodemailer as unknown as { default: { createTransport: ReturnType<typeof vi.fn> } }

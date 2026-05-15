@@ -133,11 +133,11 @@ export function createWebhookServe<I>(config: WebhookServeConfig<I>): Serve<I> {
           break;
         }
         case 'bearer': {
-          headers['Authorization'] = 'Bearer ' + (config.authValue ?? '');
+          headers.Authorization = `Bearer ${config.authValue ?? ''}`;
           break;
         }
         case 'basic': {
-          headers['Authorization'] = 'Basic ' + btoa(config.authValue ?? '');
+          headers.Authorization = `Basic ${btoa(config.authValue ?? '')}`;
           break;
         }
         case 'apiKey': {

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
+import { devCommand } from './commands/dev.js';
 import { inspectCommand } from './commands/inspect.js';
 import { runCommand } from './commands/run.js';
-import { devCommand } from './commands/dev.js';
 
 const USAGE = `Usage: pk <command> [args] [options]
 

@@ -1,8 +1,8 @@
 import { NonRetriableError } from 'inngest';
 import { describe, expect, it, vi } from 'vitest';
-import { createHrpCheckpoint } from '../src/hrp-bridge.js';
-import type { HrpCheckpointOptions } from '../src/hrp-bridge.js';
 import type { StepTools } from '../src/create-kit-function.js';
+import type { HrpCheckpointOptions } from '../src/hrp-bridge.js';
+import { createHrpCheckpoint } from '../src/hrp-bridge.js';
 
 function makeStep(reviewEventResult: unknown | null): {
   step: StepTools;

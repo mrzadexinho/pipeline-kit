@@ -1,6 +1,6 @@
-import { propagation, ROOT_CONTEXT } from '@opentelemetry/api';
-import { createUsageAccumulator } from '@idriszade/core';
 import type { PipelineContext } from '@idriszade/core';
+import { createUsageAccumulator } from '@idriszade/core';
+import { propagation, ROOT_CONTEXT } from '@opentelemetry/api';
 
 /**
  * Minimal shape of the Inngest event object relevant to context mapping.

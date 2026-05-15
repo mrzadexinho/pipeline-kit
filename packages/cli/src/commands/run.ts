@@ -1,7 +1,7 @@
 import { findPipelineById } from '../discover.js';
 
 export interface RunCommandOptions {
-  input?: string;   // JSON string from --input flag
+  input?: string; // JSON string from --input flag
   baseDir?: string; // override CWD
   pattern?: string; // override pipelines subdir (for tests)
 }
@@ -15,10 +15,7 @@ export interface RunCommandOptions {
  *   - the --input value is not valid JSON
  *   - the pipeline returns an error result
  */
-export async function runCommand(
-  pipelineId: string,
-  opts: RunCommandOptions = {},
-): Promise<void> {
+export async function runCommand(pipelineId: string, opts: RunCommandOptions = {}): Promise<void> {
   const found = await findPipelineById(pipelineId, opts.baseDir, opts.pattern);
   if (!found) {
     console.error(`Pipeline not found: ${pipelineId}`);

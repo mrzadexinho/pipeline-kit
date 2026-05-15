@@ -1,7 +1,7 @@
-import { join } from 'node:path';
 import { watch } from 'node:fs';
-import { discoverPipelines } from '../discover.js';
+import { join } from 'node:path';
 import type { DiscoveredPipeline } from '../discover.js';
+import { discoverPipelines } from '../discover.js';
 
 export interface DevCommandOptions {
   baseDir?: string;
@@ -34,7 +34,7 @@ export async function devCommand(opts: DevCommandOptions = {}): Promise<{
 
     for (const p of pipelineList) {
       const desc = p.pipeline.describe() as Record<string, unknown>;
-      const trigger = desc['trigger'] as { kind: string; expr?: string } | undefined;
+      const trigger = desc.trigger as { kind: string; expr?: string } | undefined;
       if (trigger?.kind === 'cron' && trigger.expr) {
         const ms = parseCronInterval(trigger.expr);
         if (ms > 0) {
@@ -62,7 +62,7 @@ export async function devCommand(opts: DevCommandOptions = {}): Promise<{
   let watcher: ReturnType<typeof watch> | null = null;
   try {
     watcher = watch(watchDir, { recursive: true }, async (_eventType, filename) => {
-      if (!filename || !filename.includes('.pipeline.')) return;
+      if (!filename?.includes('.pipeline.')) return;
       console.log(`[watch] Change detected: ${filename}`);
       pipelines = await discoverPipelines(opts.baseDir, opts.pattern);
       console.log(`[watch] Re-discovered ${pipelines.length} pipeline(s)`);

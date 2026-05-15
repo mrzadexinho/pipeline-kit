@@ -1,4 +1,9 @@
-import type { KitTriggerEnvelope, TriggerAdapter, TriggerConfig, TriggerHandler } from '@idriszade/core';
+import type {
+  KitTriggerEnvelope,
+  TriggerAdapter,
+  TriggerConfig,
+  TriggerHandler,
+} from '@idriszade/core';
 import { mapTriggerConfig } from './create-kit-function.js';
 
 type InngestClient = {
@@ -23,18 +28,17 @@ export class InngestTriggerAdapter implements TriggerAdapter {
       { id: fnId },
       inngestTrigger,
       async ({ event }: { event: Record<string, unknown> }) => {
-        const eventData = event['data'] as Record<string, unknown> | undefined;
+        const eventData = event.data as Record<string, unknown> | undefined;
         const envelope: KitTriggerEnvelope<T> = {
-          id: typeof event['id'] === 'string' ? event['id'] : crypto.randomUUID(),
+          id: typeof event.id === 'string' ? event.id : crypto.randomUUID(),
           type: config.kind,
           source: 'inngest',
-          time: typeof event['ts'] === 'number'
-            ? new Date(event['ts']).toISOString()
-            : new Date().toISOString(),
+          time:
+            typeof event.ts === 'number'
+              ? new Date(event.ts).toISOString()
+              : new Date().toISOString(),
           data: (eventData ?? {}) as T,
-          ...(typeof eventData?.['dedupKey'] === 'string'
-            ? { dedupKey: eventData['dedupKey'] }
-            : {}),
+          ...(typeof eventData?.dedupKey === 'string' ? { dedupKey: eventData.dedupKey } : {}),
         };
         await handler(envelope);
       },

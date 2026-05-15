@@ -203,6 +203,6 @@ describe('SlackServe', () => {
     expect(postMessageMock).toHaveBeenCalledOnce();
 
     const callArg = postMessageMock.mock.calls[0]?.[0] as Record<string, unknown>;
-    expect(callArg['thread_ts']).toBe('1234567890.000001');
+    expect(callArg.thread_ts).toBe('1234567890.000001');
   });
 });

@@ -1,7 +1,7 @@
+import type { StageError, StageErrorCode } from '@idriszade/core';
+import { RETRYABILITY_MAP } from '@idriszade/core';
 import { NonRetriableError } from 'inngest';
 import { describe, expect, it } from 'vitest';
-import { RETRYABILITY_MAP } from '@idriszade/core';
-import type { StageError, StageErrorCode } from '@idriszade/core';
 import { mapToNonRetryable } from '../src/non-retryable.js';
 
 function makeError(code: StageErrorCode): StageError {
@@ -51,13 +51,21 @@ describe('mapToNonRetryable', () => {
   });
 
   it('error message includes original message', () => {
-    const error: StageError = { type: 'stage_error', code: 'gate_rejected', message: 'denied by reviewer' };
+    const error: StageError = {
+      type: 'stage_error',
+      code: 'gate_rejected',
+      message: 'denied by reviewer',
+    };
     const result = mapToNonRetryable(error);
     expect(result.message).toContain('denied by reviewer');
   });
 
   it('error message follows kit:<code>: <message> format', () => {
-    const error: StageError = { type: 'stage_error', code: 'runtime_budget_exceeded', message: 'over budget' };
+    const error: StageError = {
+      type: 'stage_error',
+      code: 'runtime_budget_exceeded',
+      message: 'over budget',
+    };
     const result = mapToNonRetryable(error);
     expect(result.message).toBe('kit:runtime_budget_exceeded: over budget');
   });

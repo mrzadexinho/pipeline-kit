@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
 import type { KitTriggerEnvelope, TriggerConfig } from '@idriszade/core';
+import { describe, expect, it, vi } from 'vitest';
 import { InngestTriggerAdapter } from '../src/inngest-trigger-adapter.js';
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -98,7 +98,7 @@ describe('InngestTriggerAdapter — KitTriggerEnvelope', () => {
       received = env;
     });
 
-    await calls[0]!.handler({ event: makeEvent({ id: 'evt_abc' }) });
+    await calls[0]?.handler({ event: makeEvent({ id: 'evt_abc' }) });
     expect(received?.id).toBe('evt_abc');
   });
 
@@ -112,10 +112,10 @@ describe('InngestTriggerAdapter — KitTriggerEnvelope', () => {
     });
 
     const event = makeEvent();
-    delete event['id'];
-    await calls[0]!.handler({ event });
+    delete event.id;
+    await calls[0]?.handler({ event });
     expect(typeof received?.id).toBe('string');
-    expect(received!.id.length).toBeGreaterThan(0);
+    expect(received?.id.length).toBeGreaterThan(0);
   });
 
   it('sets type from trigger kind', async () => {
@@ -127,7 +127,7 @@ describe('InngestTriggerAdapter — KitTriggerEnvelope', () => {
       received = env;
     });
 
-    await calls[0]!.handler({ event: makeEvent() });
+    await calls[0]?.handler({ event: makeEvent() });
     expect(received?.type).toBe('manual');
   });
 
@@ -140,7 +140,7 @@ describe('InngestTriggerAdapter — KitTriggerEnvelope', () => {
       received = env;
     });
 
-    await calls[0]!.handler({ event: makeEvent() });
+    await calls[0]?.handler({ event: makeEvent() });
     expect(received?.source).toBe('inngest');
   });
 
@@ -154,7 +154,7 @@ describe('InngestTriggerAdapter — KitTriggerEnvelope', () => {
     });
 
     const ts = 1700000000000;
-    await calls[0]!.handler({ event: makeEvent({ ts }) });
+    await calls[0]?.handler({ event: makeEvent({ ts }) });
     expect(received?.time).toBe(new Date(ts).toISOString());
   });
 
@@ -167,7 +167,7 @@ describe('InngestTriggerAdapter — KitTriggerEnvelope', () => {
       received = env;
     });
 
-    await calls[0]!.handler({ event: makeEvent({ data: { foo: 'bar' } }) });
+    await calls[0]?.handler({ event: makeEvent({ data: { foo: 'bar' } }) });
     expect(received?.data.foo).toBe('bar');
   });
 
@@ -180,7 +180,7 @@ describe('InngestTriggerAdapter — KitTriggerEnvelope', () => {
       received = env;
     });
 
-    await calls[0]!.handler({ event: makeEvent({ data: { dedupKey: 'key-abc' } }) });
+    await calls[0]?.handler({ event: makeEvent({ data: { dedupKey: 'key-abc' } }) });
     expect(received?.dedupKey).toBe('key-abc');
   });
 
@@ -193,7 +193,7 @@ describe('InngestTriggerAdapter — KitTriggerEnvelope', () => {
       received = env;
     });
 
-    await calls[0]!.handler({ event: makeEvent({ data: {} }) });
+    await calls[0]?.handler({ event: makeEvent({ data: {} }) });
     expect(received?.dedupKey).toBeUndefined();
   });
 });
@@ -239,10 +239,7 @@ describe('InngestTriggerAdapter — functions getter', () => {
   it('returns registered functions after register()', async () => {
     const { inngest } = makeMockInngest();
     const adapter = new InngestTriggerAdapter(inngest);
-    const configs: TriggerConfig[] = [
-      { kind: 'event', name: 'a' },
-      { kind: 'manual' },
-    ];
+    const configs: TriggerConfig[] = [{ kind: 'event', name: 'a' }, { kind: 'manual' }];
     for (const cfg of configs) {
       await adapter.register(cfg, async () => {});
     }

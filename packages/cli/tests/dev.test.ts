@@ -84,10 +84,7 @@ describe('parseCronInterval', () => {
 
 describe('devCommand', () => {
   it('prints discovered pipelines on initial start', async () => {
-    await writeFile(
-      join(pipelinesDir, 'alpha.pipeline.mjs'),
-      makeSuccessFixture('pk_pipe_alpha'),
-    );
+    await writeFile(join(pipelinesDir, 'alpha.pipeline.mjs'), makeSuccessFixture('pk_pipe_alpha'));
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
 
@@ -161,10 +158,7 @@ describe('devCommand', () => {
   });
 
   it('does not schedule cron for a pipeline without a trigger', async () => {
-    await writeFile(
-      join(pipelinesDir, 'alpha.pipeline.mjs'),
-      makeSuccessFixture('pk_pipe_alpha'),
-    );
+    await writeFile(join(pipelinesDir, 'alpha.pipeline.mjs'), makeSuccessFixture('pk_pipe_alpha'));
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
 

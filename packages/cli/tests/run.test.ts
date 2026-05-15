@@ -44,10 +44,7 @@ afterEach(async () => {
 
 describe('runCommand', () => {
   it('prints JSON result when pipeline succeeds', async () => {
-    await writeFile(
-      join(pipelinesDir, 'alpha.pipeline.mjs'),
-      makeSuccessFixture('pk_pipe_alpha'),
-    );
+    await writeFile(join(pipelinesDir, 'alpha.pipeline.mjs'), makeSuccessFixture('pk_pipe_alpha'));
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
@@ -58,7 +55,7 @@ describe('runCommand', () => {
     expect(logSpy).toHaveBeenCalledOnce();
     const output = logSpy.mock.calls[0]?.[0] as string;
     const parsed = JSON.parse(output) as Record<string, unknown>;
-    expect(parsed['processed']).toBe('default');
+    expect(parsed.processed).toBe('default');
     expect(process.exitCode).toBeUndefined();
 
     logSpy.mockRestore();
@@ -66,10 +63,7 @@ describe('runCommand', () => {
   });
 
   it('passes parsed JSON input to the pipeline', async () => {
-    await writeFile(
-      join(pipelinesDir, 'alpha.pipeline.mjs'),
-      makeSuccessFixture('pk_pipe_alpha'),
-    );
+    await writeFile(join(pipelinesDir, 'alpha.pipeline.mjs'), makeSuccessFixture('pk_pipe_alpha'));
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
 
@@ -77,16 +71,13 @@ describe('runCommand', () => {
 
     const output = logSpy.mock.calls[0]?.[0] as string;
     const parsed = JSON.parse(output) as Record<string, unknown>;
-    expect(parsed['processed']).toEqual({ key: 'value' });
+    expect(parsed.processed).toEqual({ key: 'value' });
 
     logSpy.mockRestore();
   });
 
   it('runs with undefined input when no --input flag is supplied', async () => {
-    await writeFile(
-      join(pipelinesDir, 'alpha.pipeline.mjs'),
-      makeSuccessFixture('pk_pipe_alpha'),
-    );
+    await writeFile(join(pipelinesDir, 'alpha.pipeline.mjs'), makeSuccessFixture('pk_pipe_alpha'));
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
 
@@ -95,16 +86,13 @@ describe('runCommand', () => {
     const output = logSpy.mock.calls[0]?.[0] as string;
     const parsed = JSON.parse(output) as Record<string, unknown>;
     // No input → fixture returns 'default'
-    expect(parsed['processed']).toBe('default');
+    expect(parsed.processed).toBe('default');
 
     logSpy.mockRestore();
   });
 
   it('prints error and sets exitCode=1 when pipeline returns an error result', async () => {
-    await writeFile(
-      join(pipelinesDir, 'fail.pipeline.mjs'),
-      makeFailureFixture('pk_pipe_fail'),
-    );
+    await writeFile(join(pipelinesDir, 'fail.pipeline.mjs'), makeFailureFixture('pk_pipe_fail'));
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
@@ -139,10 +127,7 @@ describe('runCommand', () => {
   });
 
   it('prints error and sets exitCode=1 for invalid JSON input', async () => {
-    await writeFile(
-      join(pipelinesDir, 'alpha.pipeline.mjs'),
-      makeSuccessFixture('pk_pipe_alpha'),
-    );
+    await writeFile(join(pipelinesDir, 'alpha.pipeline.mjs'), makeSuccessFixture('pk_pipe_alpha'));
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
@@ -160,10 +145,7 @@ describe('runCommand', () => {
   });
 
   it('outputs formatted JSON (2-space indent) on success', async () => {
-    await writeFile(
-      join(pipelinesDir, 'alpha.pipeline.mjs'),
-      makeSuccessFixture('pk_pipe_alpha'),
-    );
+    await writeFile(join(pipelinesDir, 'alpha.pipeline.mjs'), makeSuccessFixture('pk_pipe_alpha'));
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
 

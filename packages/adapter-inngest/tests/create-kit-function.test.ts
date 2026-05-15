@@ -67,7 +67,7 @@ describe('createKitFunction', () => {
     createKitFunction(inngest, BASE_CONFIG, async () => 'ok');
     expect(createFunction).toHaveBeenCalledOnce();
     const config = createFunction.mock.calls[0]?.[0] as Record<string, unknown>;
-    expect(config['id']).toBe('test-pipeline');
+    expect(config.id).toBe('test-pipeline');
   });
 
   it('returns the value from inngest.createFunction', () => {
@@ -189,17 +189,17 @@ describe('mapTriggerConfig', () => {
 describe('buildFunctionConfig', () => {
   it('always includes the id', () => {
     const cfg = buildFunctionConfig({ id: 'my-fn', trigger: { kind: 'manual' } });
-    expect(cfg['id']).toBe('my-fn');
+    expect(cfg.id).toBe('my-fn');
   });
 
   it('omits retries when not provided', () => {
     const cfg = buildFunctionConfig({ id: 'x', trigger: { kind: 'manual' } });
-    expect(cfg['retries']).toBeUndefined();
+    expect(cfg.retries).toBeUndefined();
   });
 
   it('includes retries when provided', () => {
     const cfg = buildFunctionConfig({ id: 'x', trigger: { kind: 'manual' }, retries: 5 });
-    expect(cfg['retries']).toBe(5);
+    expect(cfg.retries).toBe(5);
   });
 
   it('maps RunGuard.concurrency (queue overflow) to Inngest concurrency array without key', () => {
@@ -208,7 +208,7 @@ describe('buildFunctionConfig', () => {
       trigger: { kind: 'manual' },
       runGuard: { concurrency: { limit: 10, overflow: 'queue' } },
     });
-    expect(cfg['concurrency']).toEqual([{ limit: 10 }]);
+    expect(cfg.concurrency).toEqual([{ limit: 10 }]);
   });
 
   it('maps RunGuard.concurrency (reject overflow) to Inngest concurrency array with key', () => {
@@ -217,7 +217,7 @@ describe('buildFunctionConfig', () => {
       trigger: { kind: 'manual' },
       runGuard: { concurrency: { limit: 3, overflow: 'reject' } },
     });
-    expect(cfg['concurrency']).toEqual([{ limit: 3, key: 'event.data.pipelineId' }]);
+    expect(cfg.concurrency).toEqual([{ limit: 3, key: 'event.data.pipelineId' }]);
   });
 
   it('maps RunGuard.concurrency (no overflow) without key', () => {
@@ -226,7 +226,7 @@ describe('buildFunctionConfig', () => {
       trigger: { kind: 'manual' },
       runGuard: { concurrency: { limit: 5 } },
     });
-    expect(cfg['concurrency']).toEqual([{ limit: 5 }]);
+    expect(cfg.concurrency).toEqual([{ limit: 5 }]);
   });
 
   it('maps RunGuard.dedup to Inngest idempotency expression', () => {
@@ -235,12 +235,12 @@ describe('buildFunctionConfig', () => {
       trigger: { kind: 'manual' },
       runGuard: { dedup: { period: '24h' } },
     });
-    expect(cfg['idempotency']).toBe('event.data.dedupKey');
+    expect(cfg.idempotency).toBe('event.data.dedupKey');
   });
 
   it('omits concurrency and idempotency when no runGuard', () => {
     const cfg = buildFunctionConfig({ id: 'x', trigger: { kind: 'manual' } });
-    expect(cfg['concurrency']).toBeUndefined();
-    expect(cfg['idempotency']).toBeUndefined();
+    expect(cfg.concurrency).toBeUndefined();
+    expect(cfg.idempotency).toBeUndefined();
   });
 });

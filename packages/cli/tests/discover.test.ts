@@ -49,10 +49,7 @@ describe('discoverPipelines', () => {
   });
 
   it('discovers a single pipeline file', async () => {
-    await writeFile(
-      join(pipelinesDir, 'alpha.pipeline.mjs'),
-      makePipelineFixture('pk_pipe_alpha'),
-    );
+    await writeFile(join(pipelinesDir, 'alpha.pipeline.mjs'), makePipelineFixture('pk_pipe_alpha'));
 
     const result = await discoverPipelines(tmpDir);
     expect(result).toHaveLength(1);
@@ -60,14 +57,8 @@ describe('discoverPipelines', () => {
   });
 
   it('discovers multiple pipeline files', async () => {
-    await writeFile(
-      join(pipelinesDir, 'alpha.pipeline.mjs'),
-      makePipelineFixture('pk_pipe_alpha'),
-    );
-    await writeFile(
-      join(pipelinesDir, 'beta.pipeline.mjs'),
-      makePipelineFixture('pk_pipe_beta'),
-    );
+    await writeFile(join(pipelinesDir, 'alpha.pipeline.mjs'), makePipelineFixture('pk_pipe_alpha'));
+    await writeFile(join(pipelinesDir, 'beta.pipeline.mjs'), makePipelineFixture('pk_pipe_beta'));
 
     const result = await discoverPipelines(tmpDir);
     const ids = result.map((p) => p.id).sort();
@@ -78,10 +69,7 @@ describe('discoverPipelines', () => {
   it('ignores non-pipeline files', async () => {
     await writeFile(join(pipelinesDir, 'helper.mjs'), makeNonPipelineFixture());
     await writeFile(join(pipelinesDir, 'README.md'), '# docs');
-    await writeFile(
-      join(pipelinesDir, 'real.pipeline.mjs'),
-      makePipelineFixture('pk_pipe_real'),
-    );
+    await writeFile(join(pipelinesDir, 'real.pipeline.mjs'), makePipelineFixture('pk_pipe_real'));
 
     const result = await discoverPipelines(tmpDir);
     expect(result).toHaveLength(1);
@@ -114,10 +102,7 @@ export const noId = {
   });
 
   it('returns filePath and pipeline reference alongside id', async () => {
-    await writeFile(
-      join(pipelinesDir, 'gamma.pipeline.mjs'),
-      makePipelineFixture('pk_pipe_gamma'),
-    );
+    await writeFile(join(pipelinesDir, 'gamma.pipeline.mjs'), makePipelineFixture('pk_pipe_gamma'));
 
     const result = await discoverPipelines(tmpDir);
     expect(result[0]?.filePath).toContain('gamma.pipeline.mjs');
@@ -129,10 +114,7 @@ export const noId = {
     const subDir = join(pipelinesDir, 'nested', 'deep');
     await mkdir(subDir, { recursive: true });
     await writeFile(join(subDir, 'deep.pipeline.mjs'), makePipelineFixture('pk_pipe_deep'));
-    await writeFile(
-      join(pipelinesDir, 'top.pipeline.mjs'),
-      makePipelineFixture('pk_pipe_top'),
-    );
+    await writeFile(join(pipelinesDir, 'top.pipeline.mjs'), makePipelineFixture('pk_pipe_top'));
 
     const result = await discoverPipelines(tmpDir);
     const ids = result.map((p) => p.id).sort();
@@ -142,10 +124,7 @@ export const noId = {
 
 describe('findPipelineById', () => {
   it('returns the pipeline when found by id', async () => {
-    await writeFile(
-      join(pipelinesDir, 'alpha.pipeline.mjs'),
-      makePipelineFixture('pk_pipe_alpha'),
-    );
+    await writeFile(join(pipelinesDir, 'alpha.pipeline.mjs'), makePipelineFixture('pk_pipe_alpha'));
 
     const found = await findPipelineById('pk_pipe_alpha', tmpDir);
     expect(found).toBeDefined();
@@ -153,10 +132,7 @@ describe('findPipelineById', () => {
   });
 
   it('returns undefined when id does not match any pipeline', async () => {
-    await writeFile(
-      join(pipelinesDir, 'alpha.pipeline.mjs'),
-      makePipelineFixture('pk_pipe_alpha'),
-    );
+    await writeFile(join(pipelinesDir, 'alpha.pipeline.mjs'), makePipelineFixture('pk_pipe_alpha'));
 
     const found = await findPipelineById('pk_pipe_missing', tmpDir);
     expect(found).toBeUndefined();
@@ -168,14 +144,8 @@ describe('findPipelineById', () => {
   });
 
   it('returns correct pipeline when multiple exist', async () => {
-    await writeFile(
-      join(pipelinesDir, 'alpha.pipeline.mjs'),
-      makePipelineFixture('pk_pipe_alpha'),
-    );
-    await writeFile(
-      join(pipelinesDir, 'beta.pipeline.mjs'),
-      makePipelineFixture('pk_pipe_beta'),
-    );
+    await writeFile(join(pipelinesDir, 'alpha.pipeline.mjs'), makePipelineFixture('pk_pipe_alpha'));
+    await writeFile(join(pipelinesDir, 'beta.pipeline.mjs'), makePipelineFixture('pk_pipe_beta'));
 
     const found = await findPipelineById('pk_pipe_beta', tmpDir);
     expect(found?.id).toBe('pk_pipe_beta');

@@ -78,7 +78,7 @@ function classifySlackError(e: unknown): ServeError {
 // ---------------------------------------------------------------------------
 
 export function createSlackServe(config: SlackServeConfig): Serve<SlackMessage> {
-  const token = config.token ?? process.env['SLACK_BOT_TOKEN'] ?? '';
+  const token = config.token ?? process.env.SLACK_BOT_TOKEN ?? '';
   if (!token) {
     throw new Error(
       'SlackServe: token is required. Pass config.token or set SLACK_BOT_TOKEN env var.',

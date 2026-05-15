@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createDisposableRegistry, type DisposalOptions, isDisposable } from '../src/disposable.js';
 
 describe('isDisposable', () => {

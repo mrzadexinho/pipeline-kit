@@ -4,9 +4,7 @@ import { kitFanOut } from '../src/kit-fan-out.js';
 
 const childFn = { id: 'child-function' } as unknown;
 
-function makeStep(opts?: {
-  invokeResults?: Array<unknown | Error>;
-}): StepTools {
+function makeStep(opts?: { invokeResults?: Array<unknown | Error> }): StepTools {
   const { invokeResults = [] } = opts ?? {};
   let invokeCallCount = 0;
 

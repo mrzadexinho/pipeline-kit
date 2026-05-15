@@ -23,7 +23,6 @@ vi.mock('resend', () => {
   class MockResend {
     emails = { send: sendMock };
     static __sendMock = sendMock;
-    constructor(_apiKey: string) {}
   }
   return { Resend: MockResend, __sendMock: sendMock };
 });

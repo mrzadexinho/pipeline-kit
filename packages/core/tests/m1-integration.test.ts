@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import {
+  type CostBudget,
   createDisposableRegistry,
   createUsageAccumulator,
   definePipeline,
+  type Gate,
   isRetryable,
   ok,
+  type Process,
   REDACT_TAG,
   RETRYABILITY_MAP,
   SECRET_TAG,
-  type CostBudget,
-  type Gate,
-  type Process,
   type StageErrorCode,
   type TriggerConfig,
 } from '../src/index.js';
@@ -72,7 +72,7 @@ describe('M1 cross-module integration', () => {
       { kind: 'mcp', toolName: 'extract' },
     ];
     expect(triggers).toHaveLength(5);
-    expect(triggers[0]!.kind).toBe('cron');
+    expect(triggers[0]?.kind).toBe('cron');
   });
 
   it('Gate<I> pattern is assignable as Process<I, I>', () => {
@@ -86,4 +86,3 @@ describe('M1 cross-module integration', () => {
     expect(process.id).toBe('pk_proc_gate');
   });
 });
-

@@ -1,10 +1,10 @@
+import type { StageError } from '@idriszade/core';
+import { err, ok } from '@idriszade/core';
 import { NonRetriableError } from 'inngest';
 import { describe, expect, it, vi } from 'vitest';
-import { err, ok } from '@idriszade/core';
-import type { StageError } from '@idriszade/core';
 import { kitStep } from '../src/kit-step.js';
 
-function makeStep<T>(returnValue: T) {
+function makeStep<T>(_returnValue: T) {
   const run = vi.fn(async (_id: string, fn: () => T | Promise<T>) => fn());
   return { run, step: { run } };
 }
@@ -43,37 +43,37 @@ describe('kitStep', () => {
 
   it('throws NonRetriableError on Result.err with a non-retryable code', async () => {
     const { step } = makeStep(err(nonRetryableError));
-    await expect(
-      kitStep(step, 'auth-step', async () => err(nonRetryableError)),
-    ).rejects.toThrow(NonRetriableError);
+    await expect(kitStep(step, 'auth-step', async () => err(nonRetryableError))).rejects.toThrow(
+      NonRetriableError,
+    );
   });
 
   it('NonRetriableError message includes code and message', async () => {
     const { step } = makeStep(err(nonRetryableError));
-    await expect(
-      kitStep(step, 'auth-step', async () => err(nonRetryableError)),
-    ).rejects.toThrow('kit:source_auth_failed: credentials rejected');
+    await expect(kitStep(step, 'auth-step', async () => err(nonRetryableError))).rejects.toThrow(
+      'kit:source_auth_failed: credentials rejected',
+    );
   });
 
   it('throws plain Error (not NonRetriableError) on Result.err with a retryable code', async () => {
     const { step } = makeStep(err(retryableError));
-    await expect(
-      kitStep(step, 'unavail-step', async () => err(retryableError)),
-    ).rejects.toSatisfy((e: unknown) => e instanceof Error && !(e instanceof NonRetriableError));
+    await expect(kitStep(step, 'unavail-step', async () => err(retryableError))).rejects.toSatisfy(
+      (e: unknown) => e instanceof Error && !(e instanceof NonRetriableError),
+    );
   });
 
   it('retryable Error message includes code and message', async () => {
     const { step } = makeStep(err(retryableError));
-    await expect(
-      kitStep(step, 'unavail-step', async () => err(retryableError)),
-    ).rejects.toThrow('kit:source_unavailable: upstream offline');
+    await expect(kitStep(step, 'unavail-step', async () => err(retryableError))).rejects.toThrow(
+      'kit:source_unavailable: upstream offline',
+    );
   });
 
   it('throws plain Error (not NonRetriableError) on Result.err with unknown retryability', async () => {
     const { step } = makeStep(err(unknownError));
-    await expect(
-      kitStep(step, 'process-step', async () => err(unknownError)),
-    ).rejects.toSatisfy((e: unknown) => e instanceof Error && !(e instanceof NonRetriableError));
+    await expect(kitStep(step, 'process-step', async () => err(unknownError))).rejects.toSatisfy(
+      (e: unknown) => e instanceof Error && !(e instanceof NonRetriableError),
+    );
   });
 
   it('passes through the fn result to step.run', async () => {

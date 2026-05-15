@@ -25,10 +25,7 @@ describe('mapInngestContext', () => {
   });
 
   it('passes idempotencyKey from opts when provided', () => {
-    const ctx = mapInngestContext(
-      { attempt: 0 },
-      { ...BASE_OPTS, idempotencyKey: 'idem-abc' },
-    );
+    const ctx = mapInngestContext({ attempt: 0 }, { ...BASE_OPTS, idempotencyKey: 'idem-abc' });
     expect(ctx.idempotencyKey).toBe('idem-abc');
   });
 
@@ -57,15 +54,15 @@ describe('mapInngestContext', () => {
   it('attachMetadata adds key to metadata', () => {
     const ctx = mapInngestContext({ attempt: 0 }, BASE_OPTS);
     ctx.attachMetadata('source', 'inngest');
-    expect(ctx.metadata['source']).toBe('inngest');
+    expect(ctx.metadata.source).toBe('inngest');
   });
 
   it('attachMetadata supports multiple keys', () => {
     const ctx = mapInngestContext({ attempt: 0 }, BASE_OPTS);
     ctx.attachMetadata('a', 1);
     ctx.attachMetadata('b', 2);
-    expect(ctx.metadata['a']).toBe(1);
-    expect(ctx.metadata['b']).toBe(2);
+    expect(ctx.metadata.a).toBe(1);
+    expect(ctx.metadata.b).toBe(2);
   });
 
   it('trace is defined (defaults to ROOT_CONTEXT) when no traceparent in event data', () => {
@@ -99,6 +96,6 @@ describe('mapInngestContext', () => {
     const ctx1 = mapInngestContext({ attempt: 0 }, BASE_OPTS);
     const ctx2 = mapInngestContext({ attempt: 1 }, BASE_OPTS);
     ctx1.attachMetadata('x', 'ctx1');
-    expect(ctx2.metadata['x']).toBeUndefined();
+    expect(ctx2.metadata.x).toBeUndefined();
   });
 });

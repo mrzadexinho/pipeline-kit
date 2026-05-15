@@ -52,7 +52,7 @@ describe('createWebhookServe', () => {
 
     const [, callOpts] = fetchMock.mock.calls[0] as [string, RequestInit];
     const headers = callOpts.headers as Record<string, string>;
-    expect(headers['Authorization']).toBe('Bearer token123');
+    expect(headers.Authorization).toBe('Bearer token123');
   });
 
   it('Case 3: basic auth — Authorization header base64 encoded', async () => {
@@ -71,7 +71,7 @@ describe('createWebhookServe', () => {
     const [, callOpts] = fetchMock.mock.calls[0] as [string, RequestInit];
     const headers = callOpts.headers as Record<string, string>;
     // btoa('user:pass') === 'dXNlcjpwYXNz'
-    expect(headers['Authorization']).toBe('Basic dXNlcjpwYXNz');
+    expect(headers.Authorization).toBe('Basic dXNlcjpwYXNz');
   });
 
   it('Case 4: 5xx response → transient error', async () => {

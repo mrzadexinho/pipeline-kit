@@ -32,7 +32,7 @@ export async function createHrpCheckpoint(
   // Step 1: Send review request (durable — replays on retry)
   if (opts.sendReviewRequest) {
     await step.run('hrp-send-review-request', async () => {
-      await opts.sendReviewRequest!(opts.runId);
+      await opts.sendReviewRequest?.(opts.runId);
     });
   }
 
@@ -54,9 +54,7 @@ export async function createHrpCheckpoint(
   }
 
   // Review completed
-  const data = (reviewEvent as Record<string, unknown>).data as
-    | Record<string, unknown>
-    | undefined;
+  const data = (reviewEvent as Record<string, unknown>).data as Record<string, unknown> | undefined;
   return {
     approved: Boolean(data?.approved),
     reviewer: typeof data?.reviewer === 'string' ? data.reviewer : undefined,

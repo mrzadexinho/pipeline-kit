@@ -1,6 +1,6 @@
-import { NonRetriableError } from 'inngest';
 import type { StageError } from '@idriszade/core';
 import { isRetryable } from '@idriszade/core';
+import { NonRetriableError } from 'inngest';
 
 /**
  * Maps a StageError to the appropriate Error subclass for Inngest retry behaviour:

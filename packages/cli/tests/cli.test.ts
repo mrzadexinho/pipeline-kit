@@ -14,9 +14,9 @@ vi.mock('../src/commands/dev.js', () => ({
   devCommand: vi.fn().mockResolvedValue({ stop: vi.fn() }),
 }));
 
+import { devCommand } from '../src/commands/dev.js';
 import { inspectCommand } from '../src/commands/inspect.js';
 import { runCommand } from '../src/commands/run.js';
-import { devCommand } from '../src/commands/dev.js';
 
 beforeEach(() => {
   vi.clearAllMocks();

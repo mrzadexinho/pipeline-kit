@@ -1,5 +1,5 @@
-import { readdir } from 'node:fs/promises';
 import type { Dirent } from 'node:fs';
+import { readdir } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
 export interface DiscoveredPipeline {
@@ -17,7 +17,7 @@ function isDuckPipeline(
 ): value is { run: (...args: unknown[]) => unknown; describe: () => unknown } {
   if (typeof value !== 'object' || value === null) return false;
   const v = value as Record<string, unknown>;
-  return typeof v['run'] === 'function' && typeof v['describe'] === 'function';
+  return typeof v.run === 'function' && typeof v.describe === 'function';
 }
 
 /**
@@ -87,7 +87,7 @@ export async function discoverPipelines(
       if (
         typeof description !== 'object' ||
         description === null ||
-        typeof (description as Record<string, unknown>)['id'] !== 'string'
+        typeof (description as Record<string, unknown>).id !== 'string'
       ) {
         continue;
       }

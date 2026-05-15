@@ -1,6 +1,6 @@
-import { NonRetriableError } from 'inngest';
 import type { Result, StageError } from '@idriszade/core';
 import { isRetryable } from '@idriszade/core';
+import { NonRetriableError } from 'inngest';
 
 export async function kitStep<T>(
   step: { run: <R>(id: string, fn: () => R | Promise<R>) => Promise<R> },
