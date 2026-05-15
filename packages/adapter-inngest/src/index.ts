@@ -9,3 +9,4 @@ export {
   mapTriggerConfig,
   buildFunctionConfig,
 } from './create-kit-function.js';
+export { InngestTriggerAdapter } from './inngest-trigger-adapter.js';
