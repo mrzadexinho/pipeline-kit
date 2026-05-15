@@ -9,6 +9,7 @@ export class InngestTriggerAdapter implements TriggerAdapter {
   private readonly _inngest: InngestClient;
   private readonly _functions: unknown[] = [];
   private _started = false;
+  private _counter = 0;
 
   constructor(inngest: InngestClient) {
     this._inngest = inngest;
@@ -16,7 +17,7 @@ export class InngestTriggerAdapter implements TriggerAdapter {
 
   async register<T = unknown>(config: TriggerConfig, handler: TriggerHandler<T>): Promise<void> {
     const inngestTrigger = mapTriggerConfig(config);
-    const fnId = `kit-trigger-${config.kind}`;
+    const fnId = `kit-trigger-${config.kind}-${this._counter++}`;
 
     const fn = this._inngest.createFunction(
       { id: fnId },
