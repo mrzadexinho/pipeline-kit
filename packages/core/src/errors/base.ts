@@ -23,4 +23,5 @@ export interface BaseError {
   doc_url?: string;
   request_id?: string;
   metadata?: Record<string, unknown>;
+  retryable?: boolean;
 }

@@ -1,5 +1,6 @@
 import { type Context, ROOT_CONTEXT } from '@opentelemetry/api';
 import { run } from './ids.js';
+import { type UsageAccumulator, createUsageAccumulator } from './usage.js';
 
 export type TraceContext = Context;
 
@@ -12,12 +13,16 @@ export interface MemoryAdapter {
 export interface PipelineContext {
   readonly runId: string;
   readonly pipelineId: string;
-  readonly attempt: number;
+  /** undefined means non-durable (no retry engine). Defined means attempt number within durable run. */
+  readonly attempt?: number;
   readonly metadata: Readonly<Record<string, unknown>>;
   readonly signal: AbortSignal;
   readonly trace: TraceContext;
   readonly idempotencyKey?: string;
+  /** @deprecated Use deps.memory instead */
   readonly memory?: MemoryAdapter;
+  readonly deps: Readonly<Record<string, unknown>>;
+  readonly usage: UsageAccumulator;
   attachMetadata(key: string, value: unknown): void;
 }
 
@@ -30,6 +35,8 @@ export interface CreateContextOpts {
   trace?: TraceContext;
   idempotencyKey?: string;
   memory?: MemoryAdapter;
+  deps?: Record<string, unknown>;
+  usage?: UsageAccumulator;
 }
 
 export function deriveAtomCtx(parent: PipelineContext, idempotencyKey: string): PipelineContext {
@@ -56,6 +63,12 @@ export function deriveAtomCtx(parent: PipelineContext, idempotencyKey: string): 
     get memory() {
       return parent.memory;
     },
+    get deps() {
+      return parent.deps;
+    },
+    get usage() {
+      return parent.usage;
+    },
     attachMetadata(key, value) {
       parent.attachMetadata(key, value);
     },
@@ -68,7 +81,7 @@ export function createContext(opts: CreateContextOpts): PipelineContext {
   return {
     runId: opts.runId ?? run(),
     pipelineId: opts.pipelineId,
-    attempt: opts.attempt ?? 1,
+    attempt: opts.attempt,
     get metadata() {
       return internalMetadata;
     },
@@ -76,6 +89,8 @@ export function createContext(opts: CreateContextOpts): PipelineContext {
     trace: opts.trace ?? ROOT_CONTEXT,
     idempotencyKey: opts.idempotencyKey,
     memory: opts.memory,
+    deps: Object.freeze({ ...opts.deps }),
+    usage: opts.usage ?? createUsageAccumulator(),
     attachMetadata(key, value) {
       internalMetadata[key] = value;
     },
