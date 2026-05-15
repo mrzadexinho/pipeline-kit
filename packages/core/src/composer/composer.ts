@@ -93,7 +93,11 @@ async function runFanOut(
   if (opts.buffer !== undefined) {
     const bufType = opts.buffer.window.type;
     if (bufType === 'count' || bufType === 'time') {
-      throw new Error(`Buffer window type '${bufType}' is deferred to M2`);
+      return err({
+        type: 'unknown',
+        code: 'buffer_not_implemented',
+        message: `Buffer window type '${bufType}' is deferred to M2`,
+      });
     }
   }
 

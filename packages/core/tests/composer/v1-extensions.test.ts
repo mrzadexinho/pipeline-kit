@@ -456,31 +456,35 @@ describe('Composer v1 — buffer all', () => {
 });
 
 describe('Composer v1 — buffer count/time deferred', () => {
-  it('throws a clear error for buffer window type count', async () => {
+  it('returns err for buffer window type count', async () => {
     const source = makeIterSource([buildAtom('x')]);
     const step = successStep(procId(), 'process', 'ok');
 
-    await expect(
-      runComposer({
-        pipelineId: 'pk_pipe_buffer_count',
-        steps: [step],
-        source: { adapter: source, query: undefined },
-        buffer: { window: { type: 'count', n: 5 } },
-      }),
-    ).rejects.toThrow(/count.*deferred.*M2/i);
+    const r = await runComposer({
+      pipelineId: 'pk_pipe_buffer_count',
+      steps: [step],
+      source: { adapter: source, query: undefined },
+      buffer: { window: { type: 'count', n: 5 } },
+    });
+
+    expect(r.error).not.toBeNull();
+    expect(r.error?.code).toBe('buffer_not_implemented');
+    expect(r.error?.message).toMatch(/count.*deferred.*M2/i);
   });
 
-  it('throws a clear error for buffer window type time', async () => {
+  it('returns err for buffer window type time', async () => {
     const source = makeIterSource([buildAtom('x')]);
     const step = successStep(procId(), 'process', 'ok');
 
-    await expect(
-      runComposer({
-        pipelineId: 'pk_pipe_buffer_time',
-        steps: [step],
-        source: { adapter: source, query: undefined },
-        buffer: { window: { type: 'time' } },
-      }),
-    ).rejects.toThrow(/time.*deferred.*M2/i);
+    const r = await runComposer({
+      pipelineId: 'pk_pipe_buffer_time',
+      steps: [step],
+      source: { adapter: source, query: undefined },
+      buffer: { window: { type: 'time' } },
+    });
+
+    expect(r.error).not.toBeNull();
+    expect(r.error?.code).toBe('buffer_not_implemented');
+    expect(r.error?.message).toMatch(/time.*deferred.*M2/i);
   });
 });
