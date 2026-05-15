@@ -1,4 +1,4 @@
-import type { PipelineContext } from './context.js';
+import type { PipelineContext, TraceContext } from './context.js';
 import type { RunError } from './errors/run.js';
 import type { Result } from './result.js';
 import type { Reviewable } from './reviewable.js';
@@ -6,12 +6,16 @@ import type { Process } from './stages/process.js';
 import type { Serve } from './stages/serve.js';
 import type { Source } from './stages/source.js';
 import type { Store } from './stages/store.js';
+import type { CostBudget } from './usage.js';
 
 export interface RunOptions {
   metadata?: Record<string, unknown>;
   signal?: AbortSignal;
   idempotencyKey?: string;
   context?: Partial<PipelineContext>;
+  parentTraceContext?: TraceContext;
+  costBudget?: CostBudget[];
+  deps?: Record<string, unknown>;
 }
 
 export interface RunResult<O> {
