@@ -1,7 +1,7 @@
 # Cat VII Spike — Configuration, Templates & Developer Experience
 
 > Spike: config-boundary-and-dx
-> Commit: [leave blank — brain fills post-merge]
+> Commit: 86feed3
 > Cells: 3 (A: config-boundary, B: cli-and-templates, C: describe-introspection)
 > Friction anchor: F-CONFIG (catalog #6; 4/9 projects)
 

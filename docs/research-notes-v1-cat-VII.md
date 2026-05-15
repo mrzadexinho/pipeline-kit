@@ -246,4 +246,4 @@ to OTel span attributes (~15 LOC); no separate observability config files.
 and describe() enrichment; 2 carry-forwards resolved, 2 lifted to spec phase. Cat X NEXT in
 spike order.*
 
-*Author: Brain — 2026-05-14. Inputs: spike `86feed3`. Branch: `master`. Master tip at synthesis: `86feed3`.*
+*Author: Brain — 2026-05-14. Inputs: spike `86feed3`. Branch: `master`. Master tip at synthesis: `f176749`.*
