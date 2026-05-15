@@ -48,7 +48,7 @@ export type { ServeError } from './errors/serve.js';
 export type { SourceError } from './errors/source.js';
 export type { StoreError } from './errors/store.js';
 export type { WebhookError } from './errors/webhook.js';
-export { atom, evt, ids, pipe, proc, review, run, serve, src } from './ids.js';
+export { atom, evt, ids, pipe, proc, review, run, serve, src, tev } from './ids.js';
 export { Pipeline } from './pipeline.js';
 export type {
   PipelineDefinition,
@@ -82,6 +82,14 @@ export type {
 export type { WebhooksResource } from './resources/webhooks.js';
 export type { Result } from './result.js';
 export { err, ok } from './result.js';
+export {
+  isRetryable,
+  RETRYABILITY_MAP,
+} from './stage-error.js';
+export type { StageError, StageErrorCode } from './stage-error.js';
+export type { TriggerAdapter, TriggerConfig, KitTriggerEnvelope, RunGuard } from './trigger.js';
+export { createUsageAccumulator } from './usage.js';
+export type { CostBudget, UsageAccumulator } from './usage.js';
 export type { Reviewable, ReviewableConfig, ReviewResponse } from './reviewable.js';
 export { reviewableToProcess } from './reviewable-to-process.js';
 export type { Atom } from './stages/atom.js';

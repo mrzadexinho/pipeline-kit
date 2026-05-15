@@ -13,6 +13,7 @@ export const src = (): string => `pk_src_${truncatedUuid()}`;
 export const proc = (): string => `pk_proc_${truncatedUuid()}`;
 export const serve = (): string => `pk_serve_${truncatedUuid()}`;
 export const review = (): string => `pk_review_${truncatedUuid()}`;
+export const tev = (): string => `pk_tev_${ulid()}`;
 
 export const ids = {
   run,
@@ -23,4 +24,5 @@ export const ids = {
   proc,
   serve,
   review,
+  tev,
 } as const;
