@@ -1,7 +1,7 @@
 # Cat X Spike — Cost, Usage & Rate Budgets
 
 > Spike: cost-metering-and-budget
-> Commit: [leave blank — brain fills post-merge]
+> Commit: a05aea2
 > Cells: 3 (A: usage-accumulator, B: cost-budget-guard, C: otel-cost-attribution)
 > Friction anchor: F-COST (catalog #8; 3/9 projects)
 
