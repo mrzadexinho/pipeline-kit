@@ -1,7 +1,7 @@
 # Cat II Spike — Agent Protocols & MCP Composition
 
 > Spike: agent-as-process-composition
-> Commit: [leave blank — brain fills post-merge]
+> Commit: 4695053
 > Cells: 3 (A: agent-as-process, B: mcp-composition, C: multi-agent-handoff)
 > Friction anchor: F-AGENT (catalog #12; 3/9 projects)
 

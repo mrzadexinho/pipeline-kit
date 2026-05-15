@@ -11,7 +11,7 @@
 
 ### Spike evidence (1 spike)
 
-**agent-as-process-composition** — commit [leave blank — brain fills post-merge].
+**agent-as-process-composition** — commit `4695053`.
 3 cells: A (agent-as-process, 5 observations), B (mcp-composition, 5 observations),
 C (multi-agent-handoff, 6 observations). 16/16 PASS. Probed: multi-turn loop
 placement, MCP Source/Serve fit, handoff-as-through-chain, protocol-internal
@@ -239,4 +239,4 @@ is explicitly deferred — prevents premature API surface lock.
 
 *End of v1 Cat II research notes. All 5 questions pre-answered by prior cats; 16/16 spike observations PASS; 5 ADRs lock confirmed directions; cf #1/#4/#5 closed, cf #2/#3 lifted to spec. Cat VII NEXT in spike order.*
 
-*Author: Brain — 2026-05-14. Inputs: spike `[commit placeholder]`. Branch: `master`.*
+*Author: Brain — 2026-05-14. Inputs: spike `4695053`. Branch: `master`. Master tip at synthesis: `b9a66ef`.*
