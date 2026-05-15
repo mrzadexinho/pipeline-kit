@@ -109,7 +109,7 @@ export type { Process } from './stages/process.js';
 export type { EmitResult, IdempotencySupport, Serve } from './stages/serve.js';
 export type { Source, SourceQuery } from './stages/source.js';
 export type { ListResult, Store, StoreFilters } from './stages/store.js';
-export type { KitTriggerEnvelope, RunGuard, TriggerAdapter, TriggerConfig } from './trigger.js';
+export type { KitTriggerEnvelope, RunGuard, TriggerAdapter, TriggerConfig, TriggerHandler } from './trigger.js';
 export type { CostBudget, UsageAccumulator } from './usage.js';
 export { createUsageAccumulator } from './usage.js';
 export type {

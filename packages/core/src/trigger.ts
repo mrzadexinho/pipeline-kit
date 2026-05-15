@@ -24,9 +24,12 @@ export interface KitTriggerEnvelope<T> {
   dedupKey?: string;
 }
 
+export type TriggerHandler<T = unknown> = (
+  envelope: KitTriggerEnvelope<T>,
+) => Promise<void>;
+
 export interface TriggerAdapter {
-  register(
-    config: TriggerConfig,
-    handler: (envelope: KitTriggerEnvelope<unknown>) => Promise<void>,
-  ): Promise<void>;
+  register<T = unknown>(config: TriggerConfig, handler: TriggerHandler<T>): Promise<void>;
+  start(): Promise<void>;
+  stop(): Promise<void>;
 }
