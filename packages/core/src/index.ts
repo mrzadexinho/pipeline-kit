@@ -90,6 +90,21 @@ export type { StageError, StageErrorCode } from './stage-error.js';
 export type { TriggerAdapter, TriggerConfig, KitTriggerEnvelope, RunGuard } from './trigger.js';
 export { createUsageAccumulator } from './usage.js';
 export type { CostBudget, UsageAccumulator } from './usage.js';
+export type { Disposable, DisposableRegistry, DisposalOptions } from './disposable.js';
+export { isDisposable, createDisposableRegistry } from './disposable.js';
+export type { SerializableContext } from './serializable-context.js';
+export { extractWireContext, injectWireContext } from './serializable-context.js';
+export type { Gate, Aggregate, AgentProcess } from './patterns.js';
+export type {
+  ConcurrencyPolicy,
+  DefinePipelineOpts,
+  DefinedPipeline,
+  DefinedPipelineRunOptions,
+  PipelineDefinitionEnriched,
+  StepDescriptor,
+} from './define-pipeline.js';
+export { definePipeline } from './define-pipeline.js';
+export { REDACT_TAG, SECRET_TAG } from './pii.js';
 export type { Reviewable, ReviewableConfig, ReviewResponse } from './reviewable.js';
 export { reviewableToProcess } from './reviewable-to-process.js';
 export type { Atom } from './stages/atom.js';
