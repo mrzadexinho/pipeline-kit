@@ -142,76 +142,51 @@ reviews L4 conceptual + design issues, not what tests already cover.
 
 ---
 
-## §4 — Roadmap (v0 / v1 / v2 with M0-M5)
+## §4 — Roadmap (M0 → M2 shipped; M3 current; M4+ deferred)
 
-### v0 — Ship the kit + Trades Outbound (validates loops α + γ)
+> Note: v0/v1/v2 version-tier framing removed. The canonical tiering is
+> core / primitives / packs / user-glue (4-tier rule). Milestones are
+> build increments, not product releases.
 
-**M0 — Composer + Reviewable<I> + GatewerkReviewable reference impl.**
-- Validates loop α (kit dogfoods Gatewerk).
-- Ships `@idriszade/core` + `@idriszade/process-reviewable` packages.
-- 50+ unit tests pass.
+### Status as of 2026-05-19
 
-**M0.5 — All 16 reference adapters published.**
-- 4 Source + 3 Store + 5 Process + 4 Serve.
-- Each individually publishable; monorepo for v0 testing.
-- 200+ unit + property tests pass.
+| Milestone | Ship date | Commit | Tests |
+|---|---|---|---|
+| M0 — Composer + Reviewable<I> + GatewerkReviewable kernel | 2026-05-06 | 7d8fd44 | 231 |
+| M0.5 — 15 reference adapters + Composer Source fan-out | 2026-05-07 | 1c340bc (tag: m0.5-shipped) | 435 |
+| M0.5b — npm publish; 17 pkgs at `@idriszade/*@0.1.0` via GHA | 2026-05-09 | — | — |
+| v0.1.1 — zod4 fix + changesets; process-extract + process-classify bumped | 2026-05-10 | — | — |
+| M1 — core v1 foundation: secrets + memory + core extensions; 29 ADRs ratified | 2026-05-15 | a331d6b | 562 |
+| M2 — Durable Execution + CLI DX: adapter-inngest + cli + TriggerAdapter; 11 ADRs | 2026-05-15 | 1d412d3 | 709 |
 
-**M1 — Reference project: Trades Outbound (outline §9 Project A) ships.**
-- Validates loop γ (full-stack dogfood).
-- First Alp Appliance Repair deployment (Phase 1 trigger pending).
-- README + ADR doc + 1 hero blog post on idriszade.com.
+### M3 (current) — Observability + Eval foundation
 
-### v1 — Multi-CRM Sync + Gatewerk dogfoods kit (validates loop β)
+See forthcoming `docs/briefs/m3_observability_eval.md` for the full executor
+brief. Scope summary:
 
-**M2 — Audited<I,O> + Gatewerk audit log integration.**
-- Compliance feature for regulated trades verticals.
-- Ships `@idriszade/audit-gatewerk` adapter.
-- v1 spec adds new ADRs (see §5 deferred + ADR-C / ADR-D / ArkType eval).
+- **Packages:** core extension + `@idriszade/observe` + `@idriszade/observe-vercel`
+  + cli (`pk trace` command) + `@idriszade/eval` + `@idriszade/eval-scorers`.
+- **ADRs in scope:** Cat X (X-1..X-5) + IX-4 + partial VII-1 + partial II.
+- **v1 must-haves closed by M3:** eval (1 of 3); local-prod seam completion
+  via `pk trace` (2 of 3 — partially shipped in M2 via `pk dev`).
+- **v1 must-have still open after M3:** PII redaction at Zod boundary
+  (Cat VIII-6 / VI cross-cut) — deferred to M4.
 
-**M3 — `EditableField<T>` flows through pipeline; downstream Process consumes.**
-- Edit-in-place propagation + cross-pipeline feedback memory.
-- `feedback-aware-process` adapter ships in v1.
-- Pursuit-MCP bridge expanded: `pursuit:demand_views_*` integration validated
-  via Internal Ops Kit reference project.
+### M4+ (deferred)
 
-**M4 — Gatewerk's internal flows refactored to use pipeline-kit.**
-- Validates loop β (Gatewerk dogfoods kit).
-- Gatewerk's review-routing, notification-fanout, audit-aggregation pipelines
-  are themselves pipeline-kit compositions (per outline §8 #16).
+Carry-forwards confirmed out-of-scope for M3:
 
-**v1 reference adapters added** (per outline §11 v1):
-- `enrich-process` (waterfall: Apollo → Hunter → Bricks).
-- `dedup-process` (migratoor-pattern dedup).
-- `summarize-process`.
-- `crm-serve` (HubSpot, Pipedrive, GHL, Attio).
-- `pursuit-demand-source` (full DB + MCP bridge).
-- `audit-process`.
-- `feedback-aware-process`.
-- `voice-serve` (Vapi, Twilio Voice).
-- `sms-serve` (Twilio SMS, GHL SMS).
-- `pdf-serve` (mediaflow PDF pattern).
+- Thin adapters: `secrets-env`, `secrets-sops`, `secrets-oidc`, `memory-map`.
+- `@idriszade/cost` pricing pack (ADR X-4; cross-attempt cumulative budget
+  tracking cf-X-4).
+- PII redaction at Zod boundary (Cat VIII-6 / VI cross-cut) — third v1 must-have.
+- Python wire codegen (ADR IX-2).
+- M2 CLI carry-forwards: `stdin` for `pk run`, webhook local trigger for
+  `pk dev`, full cron parsing, `pk scaffold`.
 
-### v2 — Durable execution + advanced patterns
-
-**M5 — Durable Composer reference integration with Inngest.**
-- Per ADR3 + ADR22 — kit ships docs, not custom adapter; Inngest is primary
-  reference, Trigger.dev second.
-- Saga-pattern multi-system writes (per outline §11 v2).
-- Effect.ts adoption re-evaluation (ADR1 trigger fires here; explicit
-  cascade-impact analysis).
-- Marketplace surface (community-contributed adapters).
-- Cloud-managed pipeline-kit hosting (parallel to Gatewerk Cloud).
-- `dashboard-serve` (Datasette / Retool / Supabase Dashboard).
-- `gatewerk-audit-source` (audit log → pipeline).
-
-### Portfolio project sequencing (outline §9)
-
-| Project | Milestone trigger | pipeline-kit version |
-|---|---|---|
-| **A. Trades Outbound** (OperatorOS productization) | M1 | v0 |
-| **B. Multi-CRM Operational Sync** (HubSpot ↔ Pipedrive) | post-M2 | v1 |
-| **C. Internal Ops Kit** (Idris's daily layer) | post-M3 | v1 |
-| **D. Atomic primitives** (5-7 published atoms) | post-v1 | v1 |
+Portfolio-project sequencing removed — kit is personal toolkit, not a launched
+product. Constellation projects are example use cases per the 4-tier rule, not
+milestone triggers.
 
 ---
 
