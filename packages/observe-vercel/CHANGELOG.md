@@ -1,16 +1,8 @@
-# @idriszade/core
+# @idriszade/observe-vercel
 
-## 0.2.0
+## 0.1.0
 
 ### Minor Changes
-
-- a331d6b: M1 Core v1 Foundation — 29 ADRs shipped
-
-  @idriszade/core: StageErrorCode 19-code taxonomy, UsageAccumulator + CostBudget, TriggerConfig + RunGuard, PipelineContext v1 fields (deps, usage, attempt optional), SerializableContext wire helpers, DisposableRegistry, Gate/Aggregate/AgentProcess patterns, definePipeline + PipelineDefinitionEnriched, PII annotation constants, Composer budget checks + disposal lifecycle + buffer 'all' mode.
-
-  @idriszade/secrets: SecretsResolver contract, createVersionAwareResolver (cache + version tracking), createTtlResolver (TTL-based invalidation), scope() namespace facade.
-
-  @idriszade/memory: MemoryAdapter v1 contract (read/write with LWW semantics), Listable + isListable guard, Disposable re-export from core.
 
 - 68d3766: M3 Observability + Eval Foundation — 7 ADRs (5 implemented, 2 no-impl)
 
@@ -60,11 +52,9 @@
   deferred to @idriszade/cost) and X-5 (rate-limit adapter-tier deferred to
   RunGuard). 824 tests passing.
 
-## 0.1.0
+### Patch Changes
 
-### Minor Changes
-
-- Initial public release — M0 + M0.5 reference adapters under @idriszade
-  scope. Composer + Pipeline factory + 4 Sources + 3 Stores + 5 Processes +
-  4 Serves. v0 contracts per spec.md ADRs 1-23. APIs may break before
-  1.0.0.
+- Updated dependencies [a331d6b]
+- Updated dependencies [68d3766]
+  - @idriszade/core@0.2.0
+  - @idriszade/observe@0.1.0
