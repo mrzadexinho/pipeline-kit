@@ -1,10 +1,7 @@
-import {
-  BasicTracerProvider,
-  SimpleSpanProcessor,
-} from '@opentelemetry/sdk-trace-base';
+import { BasicTracerProvider, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { KitSpanExporter } from '../src/exporter.js';
 import type { KitSpanRecord, SpanSink } from '../src/exporter.js';
+import { KitSpanExporter } from '../src/exporter.js';
 
 function makeMockSink(): SpanSink & { written: KitSpanRecord[][] } {
   const written: KitSpanRecord[][] = [];

@@ -1,9 +1,9 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import type { KitSpanRecord } from '@idriszade/observe';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { traceCommand } from '../src/commands/trace.js';
-import type { KitSpanRecord } from '@idriszade/observe';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -93,9 +93,7 @@ describe('traceCommand — path resolution', () => {
     const spans = [makeSpan({ spanId: 'span002', name: 'serve' })];
     await writeJSONL(testDir, 'run42.jsonl', spans);
 
-    const { stdout } = await captureIO(() =>
-      traceCommand({ runId: 'run42', dir: testDir }),
-    );
+    const { stdout } = await captureIO(() => traceCommand({ runId: 'run42', dir: testDir }));
 
     expect(process.exitCode).toBeUndefined();
     expect(stdout.join('\n')).toContain('serve');
@@ -150,11 +148,7 @@ describe('traceCommand — malformed JSONL', () => {
   it('skips malformed lines, emits stderr warning, and renders valid spans', async () => {
     const good = makeSpan({ spanId: 'span004', name: 'process' });
     const file = join(testDir, 'partial.jsonl');
-    await writeFile(
-      file,
-      `${JSON.stringify(good)}\n{INVALID_JSON}\n`,
-      'utf8',
-    );
+    await writeFile(file, `${JSON.stringify(good)}\n{INVALID_JSON}\n`, 'utf8');
 
     const { stdout, stderr } = await captureIO(() => traceCommand({ file }));
 

@@ -61,9 +61,7 @@ export async function runEval<I, O>(opts: RunEvalOpts<I, O>): Promise<EvalSummar
     };
   };
 
-  const results = await Promise.all(
-    opts.cases.map((c) => limit(() => runCase(c))),
-  );
+  const results = await Promise.all(opts.cases.map((c) => limit(() => runCase(c))));
 
   const totalAcc = createUsageAccumulator();
   let totalDurationMs = 0;
@@ -73,9 +71,7 @@ export async function runEval<I, O>(opts: RunEvalOpts<I, O>): Promise<EvalSummar
     totalAcc.merge(r.usage);
     totalDurationMs += r.durationMs;
     const allPass =
-      r.error === undefined &&
-      r.scores.length > 0 &&
-      r.scores.every((s) => s.score.pass);
+      r.error === undefined && r.scores.length > 0 && r.scores.every((s) => s.score.pass);
     if (allPass) allPassCount++;
   }
 

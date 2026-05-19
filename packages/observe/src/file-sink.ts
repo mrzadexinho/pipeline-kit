@@ -29,10 +29,7 @@ export class FileSinkExporter implements SpanSink {
 
   constructor(options: FileSinkOptions = {}) {
     this.#runId = options.runId;
-    this.#dir =
-      options.dir ??
-      process.env['PK_TRACE_DIR'] ??
-      join(process.cwd(), '.pk', 'traces');
+    this.#dir = options.dir ?? process.env['PK_TRACE_DIR'] ?? join(process.cwd(), '.pk', 'traces');
   }
 
   async write(records: ReadonlyArray<KitSpanRecord>): Promise<void> {

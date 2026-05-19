@@ -2,8 +2,8 @@ import { readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { FileSinkExporter } from '../src/file-sink.js';
 import type { KitSpanRecord } from '../src/exporter.js';
+import { FileSinkExporter } from '../src/file-sink.js';
 
 function makeRecord(overrides: Partial<KitSpanRecord> = {}): KitSpanRecord {
   return {
@@ -23,7 +23,10 @@ describe('FileSinkExporter', () => {
   let testDir: string;
 
   beforeEach(() => {
-    testDir = join(tmpdir(), `pk-file-sink-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    testDir = join(
+      tmpdir(),
+      `pk-file-sink-test-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    );
     delete process.env['PK_TRACE_DIR'];
   });
 

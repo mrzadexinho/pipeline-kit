@@ -34,7 +34,8 @@ export const GEN_AI_USAGE_INPUT_TOKENS_CACHE_READ = 'gen_ai.usage.input_tokens.c
  * separate counters. Vercel AI SDK v7 removed top-level
  * `cachedInputTokens` / `reasoningTokens` for the same reason.
  */
-export const GEN_AI_USAGE_INPUT_TOKENS_CACHE_WRITE = 'gen_ai.usage.input_tokens.cache_write' as const;
+export const GEN_AI_USAGE_INPUT_TOKENS_CACHE_WRITE =
+  'gen_ai.usage.input_tokens.cache_write' as const;
 
 /**
  * Sub-field of `gen_ai.usage.input_tokens`. NON-ADDITIVE — the parent total

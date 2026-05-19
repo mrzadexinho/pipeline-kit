@@ -23,8 +23,11 @@ function parseSpans(raw: string, filePath: string): KitSpanRecord[] {
   const spans: KitSpanRecord[] = [];
   raw.split('\n').forEach((line, i) => {
     if (!line.trim()) return;
-    try { spans.push(JSON.parse(line) as KitSpanRecord); }
-    catch { console.error(`Malformed JSONL at line ${i + 1} in ${filePath}`); }
+    try {
+      spans.push(JSON.parse(line) as KitSpanRecord);
+    } catch {
+      console.error(`Malformed JSONL at line ${i + 1} in ${filePath}`);
+    }
   });
   return spans;
 }
@@ -41,10 +44,16 @@ function rollupUsage(spans: KitSpanRecord[]): Record<string, number> {
 }
 
 function sumAttr(spans: KitSpanRecord[], key: string): number {
-  return spans.reduce((acc, s) => { const v = s.attributes[key]; return acc + (typeof v === 'number' ? v : 0); }, 0);
+  return spans.reduce((acc, s) => {
+    const v = s.attributes[key];
+    return acc + (typeof v === 'number' ? v : 0);
+  }, 0);
 }
 
-interface TreeNode { span: KitSpanRecord; children: TreeNode[]; }
+interface TreeNode {
+  span: KitSpanRecord;
+  children: TreeNode[];
+}
 
 function buildTree(spans: KitSpanRecord[]): TreeNode[] {
   const byId = new Map<string, TreeNode>(spans.map((s) => [s.spanId, { span: s, children: [] }]));
@@ -64,19 +73,24 @@ function renderTree(roots: TreeNode[]): string[] {
     const ms = ((node.span.endTimeNs - node.span.startTimeNs) / 1_000_000).toFixed(2);
     lines.push(
       `${prefix}${isLast ? '└─' : '├─'} ${node.span.name}` +
-      ` [${ms}ms] runId=${node.span.traceId.slice(0, 8)} stage=${node.span.spanId.slice(-6)}`,
+        ` [${ms}ms] runId=${node.span.traceId.slice(0, 8)} stage=${node.span.spanId.slice(-6)}`,
     );
     const cp = prefix + (isLast ? '   ' : '│  ');
-    node.children.forEach((c, i) => walk(c, cp, i === node.children.length - 1));
+    node.children.forEach((c, i) => {
+      walk(c, cp, i === node.children.length - 1);
+    });
   }
-  roots.forEach((r, i) => walk(r, '', i === roots.length - 1));
+  roots.forEach((r, i) => {
+    walk(r, '', i === roots.length - 1);
+  });
   return lines;
 }
 
 function renderUsageTable(spans: KitSpanRecord[]): string[] {
   return spans.flatMap((span) => {
-    const entries = Object.entries(span.attributes)
-      .filter(([k, v]) => k.startsWith('gen_ai.usage.') && typeof v === 'number' && (v as number) > 0);
+    const entries = Object.entries(span.attributes).filter(
+      ([k, v]) => k.startsWith('gen_ai.usage.') && typeof v === 'number' && (v as number) > 0,
+    );
     if (!entries.length) return [];
     const parts = entries.map(([k, v]) => `${k.replace('gen_ai.usage.', '')}=${v}`).join(' ');
     return [`  ${span.name}: ${parts}`];
@@ -92,8 +106,13 @@ export async function traceCommand(opts: TraceCommandOptions): Promise<void> {
   }
 
   let raw: string;
-  try { raw = await readFile(filePath, 'utf8'); }
-  catch { console.error(`Cannot read trace file: ${filePath}`); process.exitCode = 1; return; }
+  try {
+    raw = await readFile(filePath, 'utf8');
+  } catch {
+    console.error(`Cannot read trace file: ${filePath}`);
+    process.exitCode = 1;
+    return;
+  }
 
   const spans = parseSpans(raw, filePath);
   if (!spans.length) {
@@ -122,8 +141,8 @@ export async function traceCommand(opts: TraceCommandOptions): Promise<void> {
   console.log('');
   console.log(
     `Total: input=${totals['gen_ai.usage.input_tokens'] ?? 0}` +
-    ` output=${totals['gen_ai.usage.output_tokens'] ?? 0}` +
-    ` reasoning=${sumAttr(sorted, 'gen_ai.usage.output_tokens.reasoning')}` +
-    ` cache_read=${sumAttr(sorted, 'gen_ai.usage.input_tokens.cache_read')} *non-additive*`,
+      ` output=${totals['gen_ai.usage.output_tokens'] ?? 0}` +
+      ` reasoning=${sumAttr(sorted, 'gen_ai.usage.output_tokens.reasoning')}` +
+      ` cache_read=${sumAttr(sorted, 'gen_ai.usage.input_tokens.cache_read')} *non-additive*`,
   );
 }

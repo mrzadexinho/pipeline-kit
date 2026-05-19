@@ -1,5 +1,6 @@
 export type { CostBudget } from './usage.js';
-import type { UsageAccumulator, CostBudget } from './usage.js';
+
+import type { CostBudget, UsageAccumulator } from './usage.js';
 
 export type BudgetVerdict =
   | { action: 'ok' }

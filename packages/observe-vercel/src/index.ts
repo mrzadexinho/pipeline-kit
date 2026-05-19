@@ -1,7 +1,7 @@
 export type {
-  VercelUsageV7,
   VercelInputTokenDetails,
   VercelOutputTokenDetails,
+  VercelUsageV7,
 } from './types.js';
 
 import type { UsageAccumulator } from '@idriszade/core';
@@ -25,10 +25,7 @@ import type { VercelUsageV7 } from './types.js';
  *
  * Missing fields (undefined) are silently skipped; no zero records are emitted.
  */
-export function recordVercelUsage(
-  usage: VercelUsageV7,
-  accumulator: UsageAccumulator,
-): void {
+export function recordVercelUsage(usage: VercelUsageV7, accumulator: UsageAccumulator): void {
   // Top-level totals — already inclusive of all sub-fields.
   if (usage.inputTokens !== undefined) {
     accumulator.record(GEN_AI_USAGE_INPUT_TOKENS, usage.inputTokens);

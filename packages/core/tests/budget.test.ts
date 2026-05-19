@@ -16,9 +16,7 @@ describe('evaluateBudgets', () => {
   it('returns ok when no budget is breached', () => {
     const usage = createUsageAccumulator();
     usage.record('tokens', 400);
-    const result = evaluateBudgets(usage, [
-      { metric: 'tokens', limit: 500, action: 'abort' },
-    ]);
+    const result = evaluateBudgets(usage, [{ metric: 'tokens', limit: 500, action: 'abort' }]);
     expect(result).toEqual({ action: 'ok' });
   });
 

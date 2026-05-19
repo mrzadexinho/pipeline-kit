@@ -258,10 +258,26 @@ describe('Pipeline.run() — costBudget enforcement (A4 + A5)', () => {
       id: srcId(),
       schema: stringSchema,
       async *iter(_query, _ctx) {
-        yield { id: 'pk_atom_test', object: 'atom' as const, created_at: new Date().toISOString(), metadata: {}, data: 'hello', run_id: 'pk_run_test' };
+        yield {
+          id: 'pk_atom_test',
+          object: 'atom' as const,
+          created_at: new Date().toISOString(),
+          metadata: {},
+          data: 'hello',
+          run_id: 'pk_run_test',
+        };
       },
       async fetch() {
-        return ok([{ id: 'pk_atom_test', object: 'atom' as const, created_at: new Date().toISOString(), metadata: {}, data: 'hello', run_id: 'pk_run_test' }]);
+        return ok([
+          {
+            id: 'pk_atom_test',
+            object: 'atom' as const,
+            created_at: new Date().toISOString(),
+            metadata: {},
+            data: 'hello',
+            run_id: 'pk_run_test',
+          },
+        ]);
       },
     };
 
@@ -276,9 +292,7 @@ describe('Pipeline.run() — costBudget enforcement (A4 + A5)', () => {
     };
 
     const recorded: string[] = [];
-    const terminal = Pipeline.from(tokenSource)
-      .through(heavyProcess)
-      .to(recordingServe(recorded));
+    const terminal = Pipeline.from(tokenSource).through(heavyProcess).to(recordingServe(recorded));
 
     const r = await terminal.run(undefined, {
       costBudget: [{ metric: 'gen_ai.usage.input_tokens', limit: 500, action: 'abort' }],
@@ -286,8 +300,8 @@ describe('Pipeline.run() — costBudget enforcement (A4 + A5)', () => {
 
     expect(r.error).not.toBeNull();
     expect(r.error?.code).toBe('runtime_budget_exceeded');
-    expect(r.error?.metadata?.['usage']).toBeDefined();
-    const usageSnapshot = r.error?.metadata?.['usage'] as Record<string, number>;
+    expect(r.error?.metadata?.usage).toBeDefined();
+    const usageSnapshot = r.error?.metadata?.usage as Record<string, number>;
     expect(usageSnapshot['gen_ai.usage.input_tokens']).toBe(600);
   });
 });

@@ -1,3 +1,4 @@
+import { type CostBudget, evaluateBudgets } from '../budget.js';
 import { createContext, deriveAtomCtx, type PipelineContext } from '../context.js';
 import type { DisposableRegistry } from '../disposable.js';
 import type { ProcessError } from '../errors/process.js';
@@ -9,7 +10,6 @@ import type { RetryPolicy } from '../policy.js';
 import { err, ok, type Result } from '../result.js';
 import type { Atom } from '../stages/atom.js';
 import type { Source, SourceQuery } from '../stages/source.js';
-import { evaluateBudgets, type CostBudget } from '../budget.js';
 import { cancelledResult, isCancelled } from './cancellation.js';
 import { generateIdempotencyKey, scopedIdempotencyKey } from './idempotency.js';
 import { type StageName, withSpan } from './otel.js';
@@ -363,9 +363,7 @@ function applyBudgets(
   if (verdict.action === 'ok') return null;
   const { budget: b, current } = verdict;
   if (verdict.action === 'warn') {
-    console.warn(
-      `[pipeline-kit] budget warning: ${b.metric} usage ${current} >= limit ${b.limit}`,
-    );
+    console.warn(`[pipeline-kit] budget warning: ${b.metric} usage ${current} >= limit ${b.limit}`);
     return null;
   }
   if (verdict.action === 'abort') {

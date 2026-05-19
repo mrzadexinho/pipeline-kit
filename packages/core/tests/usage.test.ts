@@ -1,7 +1,7 @@
 import * as fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { type CostBudget, createUsageAccumulator } from '../src/usage.js';
 import { createContext } from '../src/context.js';
+import { type CostBudget, createUsageAccumulator } from '../src/usage.js';
 
 describe('UsageAccumulator', () => {
   it('record accumulates values for the same key', () => {
@@ -62,7 +62,10 @@ describe('UsageAccumulator', () => {
   it('merge() additively combines an external snapshot into the accumulator', () => {
     const acc = createUsageAccumulator();
     acc.record('tokens', 100);
-    const other = new Map<string, number>([['tokens', 50], ['cost', 5]]);
+    const other = new Map<string, number>([
+      ['tokens', 50],
+      ['cost', 5],
+    ]);
     acc.merge(other);
     expect(acc.get('tokens')).toBe(150);
     expect(acc.get('cost')).toBe(5);

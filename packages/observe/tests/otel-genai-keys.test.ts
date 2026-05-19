@@ -17,9 +17,9 @@ import {
   GEN_AI_USAGE_OUTPUT_TOKENS,
   GEN_AI_USAGE_OUTPUT_TOKENS_REASONING,
   GEN_AI_USAGE_OUTPUT_TOKENS_TEXT,
-  REASONING_SUB_FIELDS,
   isCacheSubField,
   isReasoningSubField,
+  REASONING_SUB_FIELDS,
 } from '../src/otel-genai-keys.js';
 
 describe('GenAI key constants', () => {

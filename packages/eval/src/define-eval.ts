@@ -1,5 +1,5 @@
-import type { Case, EvalSummary, Scorer } from './types.js';
 import { runEval } from './runner.js';
+import type { Case, EvalSummary, Scorer } from './types.js';
 
 export interface DefineEvalOpts<I, O> {
   name: string;
@@ -29,9 +29,7 @@ export function defineEval<I, O>(opts: DefineEvalOpts<I, O>): DefinedEval<I, O> 
 
   const hasScorers = Object.keys(opts.scorers).length > 0;
   if (!hasScorers && opts.judge === undefined) {
-    throw new Error(
-      'defineEval: at least one scorer or a judge must be configured',
-    );
+    throw new Error('defineEval: at least one scorer or a judge must be configured');
   }
 
   return {

@@ -1,16 +1,16 @@
-import { ROOT_CONTEXT, context, trace } from '@opentelemetry/api';
+import { context, ROOT_CONTEXT, trace } from '@opentelemetry/api';
 import {
   BasicTracerProvider,
-  SimpleSpanProcessor,
   InMemorySpanExporter,
+  SimpleSpanProcessor,
 } from '@opentelemetry/sdk-trace-base';
 import { describe, expect, it } from 'vitest';
 import {
   NDJSONFrame,
-  WireTraceContext,
   parseTraceContext,
   serializeTraceContext,
   unwrapFrame,
+  type WireTraceContext,
   wrapFrame,
 } from '../src/trace-context.js';
 
