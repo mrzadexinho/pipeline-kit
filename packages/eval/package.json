@@ -1,7 +1,7 @@
 {
-  "name": "@idriszade/cli",
-  "version": "0.1.0",
-  "description": "Pipeline-kit CLI — pk dev, pk run, pk inspect",
+  "name": "@idriszade/eval",
+  "version": "0.0.0",
+  "description": "Pipeline-kit eval foundation — defineEval, runEval, case/scorer/score types",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -11,9 +11,6 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     }
-  },
-  "bin": {
-    "pk": "./dist/cli.js"
   },
   "files": [
     "dist",
@@ -26,7 +23,7 @@
   },
   "dependencies": {
     "@idriszade/core": "workspace:*",
-    "@idriszade/observe": "workspace:*"
+    "p-limit": "^7.1.1"
   },
   "publishConfig": {
     "access": "public"

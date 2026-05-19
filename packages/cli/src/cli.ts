@@ -3,6 +3,7 @@
 import { devCommand } from './commands/dev.js';
 import { inspectCommand } from './commands/inspect.js';
 import { runCommand } from './commands/run.js';
+import { traceCommand } from './commands/trace.js';
 
 const USAGE = `Usage: pk <command> [args] [options]
 
@@ -10,6 +11,8 @@ Commands:
   inspect <pipelineId>       Print pipeline definition as JSON
   run <pipelineId> [--input] Execute a pipeline
   dev                        Watch mode with local triggers
+  trace [--file <path>] [--run <id>] [--dir <dir>] [--json]
+                             Display a trace from a JSONL file
 
 Options:
   --input <json>             JSON input for pk run
@@ -46,6 +49,20 @@ export async function main(argv: string[] = process.argv.slice(2)): Promise<void
       const inputIdx = argv.indexOf('--input');
       const input = inputIdx !== -1 ? argv[inputIdx + 1] : undefined;
       await runCommand(pipelineId, { input });
+      break;
+    }
+
+    case 'trace': {
+      const fileIdx = argv.indexOf('--file');
+      const runIdx = argv.indexOf('--run');
+      const dirIdx = argv.indexOf('--dir');
+      const jsonFlag = argv.includes('--json');
+      await traceCommand({
+        file: fileIdx !== -1 ? argv[fileIdx + 1] : undefined,
+        runId: runIdx !== -1 ? argv[runIdx + 1] : undefined,
+        dir: dirIdx !== -1 ? argv[dirIdx + 1] : undefined,
+        json: jsonFlag,
+      });
       break;
     }
 
