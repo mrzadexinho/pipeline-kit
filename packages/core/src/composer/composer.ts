@@ -9,7 +9,7 @@ import type { RetryPolicy } from '../policy.js';
 import { err, ok, type Result } from '../result.js';
 import type { Atom } from '../stages/atom.js';
 import type { Source, SourceQuery } from '../stages/source.js';
-import type { CostBudget } from '../usage.js';
+import { evaluateBudgets, type CostBudget } from '../budget.js';
 import { cancelledResult, isCancelled } from './cancellation.js';
 import { generateIdempotencyKey, scopedIdempotencyKey } from './idempotency.js';
 import { type StageName, withSpan } from './otel.js';
@@ -170,7 +170,7 @@ async function runFanOut(
         }
         currentInput = stageOutcome.data;
 
-        const budgetErr = checkBudgets(opts.costBudget, ctx, ctx.runId);
+        const budgetErr = applyBudgets(opts.costBudget, ctx, ctx.runId);
         if (budgetErr !== null) {
           result = err(budgetErr);
           return result;
@@ -221,7 +221,7 @@ async function runFanOut(
         }
         currentInput = stageOutcome.data;
 
-        const budgetErr = checkBudgets(opts.costBudget, ctx, ctx.runId);
+        const budgetErr = applyBudgets(opts.costBudget, ctx, ctx.runId);
         if (budgetErr !== null) {
           result = err(budgetErr);
           return result;
@@ -292,7 +292,7 @@ async function runSequential(
       currentInput = stageOutcome.data;
       stagesCompleted++;
 
-      const budgetErr = checkBudgets(opts.costBudget, ctx, ctx.runId);
+      const budgetErr = applyBudgets(opts.costBudget, ctx, ctx.runId);
       if (budgetErr !== null) {
         result = err(budgetErr);
         return result;
@@ -354,32 +354,42 @@ async function runStage(
   );
 }
 
-function checkBudgets(
+function applyBudgets(
   budgets: CostBudget[] | undefined,
   ctx: PipelineContext,
   requestId: string,
 ): RunError | null {
-  if (budgets === undefined || budgets.length === 0) return null;
-  for (const b of budgets) {
-    const current = ctx.usage.get(b.metric);
-    if (current >= b.limit) {
-      if (b.action === 'abort') {
-        return {
-          type: 'unknown',
-          code: 'runtime_budget_exceeded',
-          message: `Budget exceeded for ${b.metric}: ${current} >= ${b.limit}`,
-          request_id: requestId,
-        };
-      }
-      if (b.action === 'warn') {
-        console.warn(
-          `[pipeline-kit] budget warning: ${b.metric} usage ${current} >= limit ${b.limit}`,
-        );
-      }
-      // 'review' is a no-op stub for M1; Reviewable composition in M2
-    }
+  const verdict = evaluateBudgets(ctx.usage, budgets);
+  if (verdict.action === 'ok') return null;
+  const { budget: b, current } = verdict;
+  if (verdict.action === 'warn') {
+    console.warn(
+      `[pipeline-kit] budget warning: ${b.metric} usage ${current} >= limit ${b.limit}`,
+    );
+    return null;
   }
-  return null;
+  if (verdict.action === 'abort') {
+    return {
+      type: 'unknown',
+      code: 'runtime_budget_exceeded',
+      message: `Budget exceeded for ${b.metric}: ${current} >= ${b.limit}`,
+      request_id: requestId,
+      metadata: { usage: Object.fromEntries(ctx.usage.getAll()) },
+    };
+  }
+  // 'review'
+  const reviewMsg = `Budget review required for ${b.metric}: ${current} >= ${b.limit}`;
+  return {
+    type: 'review_failed',
+    code: 'runtime_budget_exceeded_review_required',
+    message: reviewMsg,
+    request_id: requestId,
+    cause: {
+      type: 'unknown',
+      code: 'budget_review_required',
+      message: reviewMsg,
+    } as { type: 'unknown'; code: string; message: string },
+  };
 }
 
 function sourceIterError(e: unknown, requestId: string): RunError {

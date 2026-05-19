@@ -252,6 +252,46 @@ describe('Pipeline.run() — Loop α validation', () => {
   });
 });
 
+describe('Pipeline.run() — costBudget enforcement (A4 + A5)', () => {
+  it('returns runtime_budget_exceeded with usage metadata when budget is exceeded', async () => {
+    const tokenSource: Source<string> = {
+      id: srcId(),
+      schema: stringSchema,
+      async *iter(_query, _ctx) {
+        yield { id: 'pk_atom_test', object: 'atom' as const, created_at: new Date().toISOString(), metadata: {}, data: 'hello', run_id: 'pk_run_test' };
+      },
+      async fetch() {
+        return ok([{ id: 'pk_atom_test', object: 'atom' as const, created_at: new Date().toISOString(), metadata: {}, data: 'hello', run_id: 'pk_run_test' }]);
+      },
+    };
+
+    const heavyProcess: Process<string, string> = {
+      id: procId(),
+      inputSchema: stringSchema,
+      outputSchema: stringSchema,
+      async run(input, ctx) {
+        ctx.usage.record('gen_ai.usage.input_tokens', 600);
+        return ok(input.toUpperCase());
+      },
+    };
+
+    const recorded: string[] = [];
+    const terminal = Pipeline.from(tokenSource)
+      .through(heavyProcess)
+      .to(recordingServe(recorded));
+
+    const r = await terminal.run(undefined, {
+      costBudget: [{ metric: 'gen_ai.usage.input_tokens', limit: 500, action: 'abort' }],
+    });
+
+    expect(r.error).not.toBeNull();
+    expect(r.error?.code).toBe('runtime_budget_exceeded');
+    expect(r.error?.metadata?.['usage']).toBeDefined();
+    const usageSnapshot = r.error?.metadata?.['usage'] as Record<string, number>;
+    expect(usageSnapshot['gen_ai.usage.input_tokens']).toBe(600);
+  });
+});
+
 describe('Pipeline.describe()', () => {
   it('returns the same definition structure for SourcePipeline and TerminalPipeline', () => {
     const recorded: string[] = [];

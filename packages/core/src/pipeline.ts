@@ -91,6 +91,7 @@ function makeTerminalPipeline<O>(definition: PipelineDefinition): TerminalPipeli
         signal: options?.signal,
         metadata: options?.metadata,
         idempotencyKey: options?.idempotencyKey,
+        costBudget: options?.costBudget,
       });
 
       if (result.error !== null) {

@@ -154,8 +154,8 @@ describe('Composer v1 — budget warn (sequential)', () => {
   });
 });
 
-describe('Composer v1 — budget review stub (sequential)', () => {
-  it('is a no-op in M1; pipeline completes normally', async () => {
+describe('Composer v1 — budget review (sequential)', () => {
+  it('returns review_failed RunError when review budget is exceeded', async () => {
     const step = usageRecordingStep(procId(), 'tokens', 200, 'done');
 
     const r = await runComposer({
@@ -165,8 +165,9 @@ describe('Composer v1 — budget review stub (sequential)', () => {
       costBudget: [{ metric: 'tokens', limit: 100, action: 'review' }],
     });
 
-    expect(r.error).toBeNull();
-    expect(r.data?.output).toBe('done');
+    expect(r.error).not.toBeNull();
+    expect(r.error?.type).toBe('review_failed');
+    expect(r.error?.code).toBe('runtime_budget_exceeded_review_required');
   });
 });
 

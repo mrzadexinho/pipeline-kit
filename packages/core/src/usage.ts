@@ -2,6 +2,7 @@ export interface UsageAccumulator {
   record(key: string, delta: number): void;
   get(key: string): number;
   getAll(): ReadonlyMap<string, number>;
+  merge(other: ReadonlyMap<string, number>): void;
 }
 
 export function createUsageAccumulator(): UsageAccumulator {
@@ -15,6 +16,11 @@ export function createUsageAccumulator(): UsageAccumulator {
     },
     getAll(): ReadonlyMap<string, number> {
       return new Map(counts);
+    },
+    merge(other: ReadonlyMap<string, number>): void {
+      for (const [key, value] of other) {
+        this.record(key, value);
+      }
     },
   };
 }

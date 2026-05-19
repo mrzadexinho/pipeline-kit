@@ -116,6 +116,7 @@ export type {
   TriggerConfig,
   TriggerHandler,
 } from './trigger.js';
+export { evaluateBudgets } from './budget.js';
 export type { CostBudget, UsageAccumulator } from './usage.js';
 export { createUsageAccumulator } from './usage.js';
 export type {
