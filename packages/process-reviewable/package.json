@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/process-reviewable",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Reviewable<I> HRP gate adapters — GatewerkReviewable + ConsoleReviewable + reviewable-wrapper",
   "type": "module",
   "main": "./src/index.ts",
