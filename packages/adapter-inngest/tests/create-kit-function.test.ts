@@ -211,13 +211,15 @@ describe('buildFunctionConfig', () => {
     expect(cfg.concurrency).toEqual([{ limit: 10 }]);
   });
 
-  it('maps RunGuard.concurrency (reject overflow) to Inngest concurrency array with key', () => {
+  it('maps RunGuard.concurrency (reject overflow) to Inngest singleton primitive (ADR IV-5 shape 4)', () => {
     const cfg = buildFunctionConfig({
       id: 'x',
       trigger: { kind: 'manual' },
       runGuard: { concurrency: { limit: 3, overflow: 'reject' } },
     });
-    expect(cfg.concurrency).toEqual([{ limit: 3, key: 'event.data.pipelineId' }]);
+    // True singleton: skip overlapping runs — uses Inngest singleton, NOT concurrency array
+    expect(cfg.singleton).toEqual({ key: 'event.data.pipelineId', mode: 'skip' });
+    expect(cfg.concurrency).toBeUndefined();
   });
 
   it('maps RunGuard.concurrency (no overflow) without key', () => {
@@ -229,18 +231,25 @@ describe('buildFunctionConfig', () => {
     expect(cfg.concurrency).toEqual([{ limit: 5 }]);
   });
 
-  it('maps RunGuard.dedup to Inngest idempotency expression', () => {
+  it('maps RunGuard.dedup to Inngest idempotency expression + throttle with period (ADR IV-5 shape 5)', () => {
     const cfg = buildFunctionConfig({
       id: 'x',
       trigger: { kind: 'manual' },
       runGuard: { dedup: { period: '24h' } },
     });
     expect(cfg.idempotency).toBe('event.data.dedupKey');
+    expect(cfg.throttle).toEqual({ limit: 1, period: '24h', key: 'event.data.dedupKey' });
   });
 
-  it('omits concurrency and idempotency when no runGuard', () => {
+  it('idempotency is set unconditionally (IV-6: Inngest treats undefined dedupKey as no-op)', () => {
+    const cfg = buildFunctionConfig({ id: 'x', trigger: { kind: 'manual' } });
+    expect(cfg.idempotency).toBe('event.data.dedupKey');
+  });
+
+  it('omits concurrency, singleton, and throttle when no runGuard', () => {
     const cfg = buildFunctionConfig({ id: 'x', trigger: { kind: 'manual' } });
     expect(cfg.concurrency).toBeUndefined();
-    expect(cfg.idempotency).toBeUndefined();
+    expect(cfg.singleton).toBeUndefined();
+    expect(cfg.throttle).toBeUndefined();
   });
 });

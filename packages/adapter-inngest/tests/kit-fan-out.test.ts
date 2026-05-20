@@ -78,12 +78,13 @@ describe('kitFanOut', () => {
     expect(step.run).toHaveBeenCalledWith('fan-out-source', expect.any(Function));
   });
 
-  it('invokes with correct function reference and data', async () => {
+  it('invokes with correct function reference and wraps data in _pk_trace envelope (ADR III-2)', async () => {
     const step = makeStep({ invokeResults: ['out'] });
     await kitFanOut(step, { childFunction: childFn, items: ['item-data'] });
     expect(step.invoke).toHaveBeenCalledWith('fan-out-0', {
       function: childFn,
-      data: 'item-data',
+      // Data is wrapped in the { _pk_trace, payload } envelope for W3C trace propagation.
+      data: { _pk_trace: expect.any(Object), payload: 'item-data' },
     });
   });
 });

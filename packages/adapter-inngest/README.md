@@ -115,3 +115,61 @@ await kitStep(step, 'process', () => process.execute(data, ctx));
 - Any I/O that may return different results over time
 
 Wrap all of these in `step.run()` before using their output in subsequent steps.
+
+## RunGuard → Inngest Primitive Translation (ADR IV-5)
+
+`createKitFunction` accepts an optional `runGuard` on the config object. Each of the 5 RunGuard shapes maps to specific Inngest primitives.
+
+| # | RunGuard shape | Inngest primitive | Notes |
+|---|---------------|-------------------|-------|
+| 1 | `{}` (no runGuard) | _(none)_ | Unbounded parallelism. Inngest default — ALLOW_DUPLICATE behaviour. |
+| 2 | `{ concurrency: { limit: N } }` | `concurrency: [{ limit: N }]` | Bounded parallelism. Extras queue behind the limit. No per-key scoping. |
+| 3 | `{ concurrency: { limit: 1, overflow: 'queue' } }` | `concurrency: [{ limit: 1 }]` | Sequential singleton — never skips. Second trigger waits. |
+| 4 | `{ concurrency: { limit: 1, overflow: 'reject' } }` | `singleton: { key: 'event.data.pipelineId', mode: 'skip' }` | True singleton — skips overlapping runs per pipeline. Uses Inngest `singleton` primitive (v4+), not `concurrency`. |
+| 5 | `{ dedup: { period: '24h' } }` | `throttle: { limit: 1, period, key: 'event.data.dedupKey' }` + `idempotency: 'event.data.dedupKey'` | Dedup window. Period is forwarded. Idempotency expression is always set unconditionally (IV-6). |
+
+**IV-6 note:** `idempotency: 'event.data.dedupKey'` is set on all function configs regardless of whether `runGuard.dedup` is configured. Inngest treats an undefined `dedupKey` expression result as a no-op dedup — this is safe and prevents silent omission when a trigger provides `dedupKey` without an explicit `runGuard.dedup`.
+
+**Shape 4 note:** The `singleton` key is `'event.data.pipelineId'` — scoped per pipeline id. Set `event.data.pipelineId` in your trigger data to enable per-pipeline enforcement.
+
+### Example
+
+```ts
+// Shape 3: sequential singleton (queue, never skip)
+createKitFunction(inngest, {
+  id: 'nightly-etl',
+  trigger: { kind: 'cron', expr: '0 2 * * *' },
+  runGuard: { concurrency: { limit: 1, overflow: 'queue' } },
+}, handler);
+
+// Shape 4: true singleton (skip overlapping)
+createKitFunction(inngest, {
+  id: 'expensive-report',
+  trigger: { kind: 'event', name: 'reports/requested' },
+  runGuard: { concurrency: { limit: 1, overflow: 'reject' } },
+}, handler);
+
+// Shape 5: event dedup window
+createKitFunction(inngest, {
+  id: 'webhook-handler',
+  trigger: { kind: 'webhook', path: '/stripe' },
+  runGuard: { dedup: { period: '24h' } },
+}, handler);
+```
+
+## W3C Trace Propagation in Fan-Out (ADR III-2)
+
+`kitFanOut` injects the parent OTel trace context into each child invocation's data envelope under the `_pk_trace` key. On child entry, `mapInngestContext` extracts the carrier and restores the parent trace context so child spans are correctly parented.
+
+```
+Parent run:
+  kitFanOut(step, { items, traceContext: ctx.trace })
+    → step.invoke({ data: { _pk_trace: { traceparent: '00-...' }, payload: item } })
+
+Child run (via mapInngestContext):
+  event.data = { _pk_trace: { traceparent: '...' }, payload: item }
+  → ctx.trace = propagation.extract(ROOT_CONTEXT, event.data._pk_trace)
+  → spans created under ctx.trace inherit the parent traceId
+```
+
+Pass `ctx.trace` explicitly via the `traceContext` option when calling `kitFanOut` inside a kit handler to ensure correct cross-invocation trace parenting.

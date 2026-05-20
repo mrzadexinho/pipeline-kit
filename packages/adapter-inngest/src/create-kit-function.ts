@@ -104,6 +104,20 @@ export function mapTriggerConfig(trigger: TriggerConfig): { event: string } | { 
 
 /**
  * Build an Inngest function config object from KitFunctionConfig.
+ * Implements the 5-shape RunGuard → Inngest primitive translation (ADR IV-5).
+ *
+ * Shape mapping:
+ *  1. {} (no runGuard)            → no concurrency or singleton config
+ *  2. concurrency: { limit: N }   → concurrency: [{ limit: N }]          (bounded parallelism)
+ *  3. concurrency: { limit: 1, overflow: 'queue' }
+ *                                 → concurrency: [{ limit: 1 }]           (sequential, never skip)
+ *  4. concurrency: { limit: 1, overflow: 'reject' }
+ *                                 → singleton: { key, mode: 'skip' }      (true singleton, skip overlapping)
+ *  5. dedup: { period }           → concurrency unchanged; idempotency set unconditionally
+ *
+ * IV-6: idempotency expression is set UNCONDITIONALLY — Inngest treats an
+ * undefined expression result as no-dedup, so this is always safe.
+ *
  * Exported for unit testing.
  */
 export function buildFunctionConfig(config: KitFunctionConfig): Record<string, unknown> {
@@ -116,14 +130,24 @@ export function buildFunctionConfig(config: KitFunctionConfig): Record<string, u
   if (config.runGuard?.concurrency !== undefined) {
     const { limit, overflow } = config.runGuard.concurrency;
     if (overflow === 'reject') {
-      fnConfig.concurrency = [{ limit, key: 'event.data.pipelineId' }];
+      // Shape 4: true singleton — Inngest `singleton` primitive rejects overlapping runs per key.
+      fnConfig.singleton = { key: 'event.data.pipelineId', mode: 'skip' };
     } else {
+      // Shape 2 + Shape 3: bounded parallelism / sequential queue.
       fnConfig.concurrency = [{ limit }];
     }
   }
 
+  // IV-6: unconditional — Inngest treats undefined dedupKey as a no-op dedup.
+  fnConfig.idempotency = 'event.data.dedupKey';
+
   if (config.runGuard?.dedup !== undefined) {
-    fnConfig.idempotency = 'event.data.dedupKey';
+    // dedup.period: forwarded via throttle to express the time-window constraint.
+    fnConfig.throttle = {
+      limit: 1,
+      period: config.runGuard.dedup.period,
+      key: 'event.data.dedupKey',
+    };
   }
 
   return fnConfig;

@@ -1,7 +1,7 @@
 // @idriszade/adapter-inngest barrel
 
 export type { InngestEventContext, MapContextOptions } from './context-mapping.js';
-export { mapInngestContext } from './context-mapping.js';
+export { mapInngestContext, unwrapFanOutEnvelope } from './context-mapping.js';
 export type { KitFunctionArgs, KitFunctionConfig, StepTools } from './create-kit-function.js';
 export {
   buildFunctionConfig,
