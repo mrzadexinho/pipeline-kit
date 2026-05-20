@@ -251,4 +251,6 @@ See `spec-v1-cross-cutting.md` §X.
 | **Total** | **47 / 55** | — |
 
 ADRs VIII-5 (secrets adapter trio) and VIII-6 (PII redaction) ratified and implemented in M4.
-Closes v1 must-have 3-of-3: eval (M3), local-prod-seam (M2), PII redaction (M4).
+Closes v1 must-have 3-of-3: eval (M3), local-prod-seam (M2 partial), PII redaction (M4).
+
+**M5 audit (2026-05-20):** IV-4, IV-5, IV-6, III-2 marked PARTIAL / NOT-SHIPPED after code-level audit. See `briefs/m5_audit_findings.md`. M5 will close these to full implementation.
