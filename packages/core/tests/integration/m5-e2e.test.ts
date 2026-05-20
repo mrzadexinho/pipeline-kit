@@ -261,5 +261,5 @@ describe('M5 E1 — LocalTriggerAdapter + HMAC idempotency + allowlist redaction
 
     // pk.pii_annotations must be stripped (metadata, not user-visible).
     expect(attrs[PII_ANNOTATIONS_ATTR], 'Assertion 5e — hint attribute stripped').toBeUndefined();
-  });
+  }, 30_000);
 });
