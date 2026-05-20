@@ -63,6 +63,7 @@ export function definePipeline<O>(
         metadata: options?.metadata,
         signal: options?.signal,
         idempotencyKey: options?.idempotencyKey,
+        parentTraceContext: options?.parentTraceContext,
       });
     },
 
