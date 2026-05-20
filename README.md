@@ -65,6 +65,28 @@ factory.
   `GatewerkReviewable`, `ConsoleReviewable`, `reviewableWrapper`,
   `EditableField<T>` + `Field.{unedited, edited, rejected}` helpers.
 
+## Milestones
+
+| Milestone | What shipped | ADRs |
+|-----------|--------------|------|
+| M0 / M0.5 | Composer kernel, `Reviewable<I>`, 15 reference adapters | 23 v0 |
+| M1 | Core v1 foundation: `SecretsResolver`, `MemoryAdapter`, `DisposableRegistry`, `PiiAnnotation` | 29 |
+| M2 | Durable execution (`adapter-inngest`), CLI (`pk trace`) | 11 |
+| M3 | Observability + eval: `observe`, `observe-vercel`, `eval`, `eval-scorers` | 7 |
+| **M4** | **Secrets + Redaction Closure — closes v1 must-have 3-of-3** | **2** |
+
+**M4 packages (v0.1.x / 0.1.0):**
+
+- `@idriszade/core` — `markRedact`/`markSecret`, `walkAnnotations`, `formatRedacted`/`formatSecret` (VIII-6)
+- `@idriszade/observe` — `RedactingProcessor`: default-on PII redaction at SpanProcessor layer; known-sensitive table (`gen_ai.prompt`, `gen_ai.completion`); schema-derived hints via `pk.pii_annotations` (VIII-6)
+- `@idriszade/observe-vercel` — parity exports for RedactingProcessor
+- `@idriszade/secrets-env` — env-var-backed `SecretsResolver`, Zod-validated at construction (VIII-5, T3 Env pattern)
+- `@idriszade/secrets-sops` — SOPS CLI-backed resolver via `node:child_process`; no JS wrapper dep (VIII-5)
+- `@idriszade/secrets-oidc` — workload-identity OIDC resolver: `./gcp`, `./aws`, `./azure` sub-paths; each cloud SDK is an optional peer dep (VIII-5)
+
+**v1 must-haves closed:** eval (M3) · local-prod-seam (M2) · PII redaction (M4).
+**ADR progress: 47/55 v1 ADRs implemented.**
+
 ## Architecture
 
 See [`docs/spec.md`](docs/spec.md) for the full Phase 2 spec — 23 v0

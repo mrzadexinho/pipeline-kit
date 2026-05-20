@@ -236,4 +236,19 @@ See `spec-v1-cross-cutting.md` §X.
 
 ---
 
-*v1 spec locked 2026-05-15. 55 ADRs ratified. Phase 3 (build) may begin.*
+*v1 spec locked 2026-05-15. 55 ADRs ratified. Phase 3 (build) in progress.*
+
+---
+
+## Build progress (Phase 3)
+
+| Milestone | ADRs implemented | Key packages |
+|-----------|-----------------|--------------|
+| M1 | 29 | core (v1 ext), secrets, memory |
+| M2 | 11 | adapter-inngest, cli |
+| M3 | 7 | observe, observe-vercel, eval, eval-scorers |
+| M4 | 2 | secrets-env, secrets-sops, secrets-oidc; core + observe PII redaction |
+| **Total** | **47 / 55** | — |
+
+ADRs VIII-5 (secrets adapter trio) and VIII-6 (PII redaction) ratified and implemented in M4.
+Closes v1 must-have 3-of-3: eval (M3), local-prod-seam (M2), PII redaction (M4).
