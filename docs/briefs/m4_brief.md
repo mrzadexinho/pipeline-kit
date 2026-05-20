@@ -92,12 +92,13 @@ Must-haves from `feedback_pipeline_kit_4tier_no_customer.md`:
 ## Tasks (18 total)
 
 **Phase A — Core PII annotation helpers (serial; unblock phases B + C):**
+Extends existing M1 stub `packages/core/src/pii.ts` (REDACT_TAG/SECRET_TAG already exported).
 
 | # | File | Key constraint | ADR |
 |---|------|---------------|-----|
-| A1 | `packages/core/src/redact.ts` | `markRedact(schema)` + `markSecret(schema)` wrapping `.describe()`; annotation-walker utility (recursive redact, leaf secret); export both from core index | VIII-6.a / VIII-6.e |
-| A2 | `packages/core/src/redact.ts` | `formatRedacted(value: string): string` → `<redacted:N>`; `formatSecret(value: string): string` → `<secret:<8hex>>` via `crypto.createHash('sha256')` | VIII-6.b / VIII-6.c |
-| A3 | `packages/core/src/redact.ts` | Unit tests: tag detection on flat + nested schemas; walker recursion; `@secret` leaf-only enforcement; formatter output shape | VIII-6 |
+| A1 | `packages/core/src/pii.ts` | `markRedact(schema)` + `markSecret(schema)` wrapping `.describe()`; annotation-walker utility (recursive redact, leaf secret); export both from core index | VIII-6.a / VIII-6.e |
+| A2 | `packages/core/src/pii.ts` | `formatRedacted(value: string): string` → `<redacted:N>`; `formatSecret(value: string): string` → `<secret:<8hex>>` via `crypto.createHash('sha256')` | VIII-6.b / VIII-6.c |
+| A3 | `packages/core/src/pii.ts` | Unit tests: tag detection on flat + nested schemas; walker recursion; `@secret` leaf-only enforcement; formatter output shape | VIII-6 |
 
 Acceptance: typecheck + all 824 tests green + ~20 new tests.
 
@@ -169,6 +170,12 @@ Test count target: **890+** (824 baseline + ~30 Phase A + ~20 Phase B + ~20 Phas
 
 VIII-1 (SecretsAdapter placement B), VIII-2 (rotation: invalidate + version-aware resolver), VIII-3 (TTL composition wrapper), and VIII-4 (naming + scoping + deps shape) were ratified by the Cat VIII synthesis (2026-05-09) and implemented in M1's `@idriszade/secrets` package. M4's reference adapters consume the M1-shipped SecretsAdapter contract; they do not re-implement it.
 
+> **Observed M1 contract divergence (informational, non-blocking):** `SecretStats.currentVersion`
+> ships as `?: string` (camelCase, optional) in `packages/secrets/src/types.ts`. Cat VIII
+> synthesis text used `current_version: string` (snake_case, non-optional) notation. The
+> implementation chose TypeScript-idiomatic camelCase; adapters in Phase C consume the
+> as-shipped contract.
+
 ## Out-of-scope (carry to M5+)
 
 - V-6 memory adapter trio (`memory-map` reference impl)
@@ -179,6 +186,11 @@ VIII-1 (SecretsAdapter placement B), VIII-2 (rotation: invalidate + version-awar
 - M2 CLI carry-forwards: stdin `pk run`, webhook trigger, full cron, `pk scaffold`
 - cf-X-4 cross-attempt cumulative budget tracking
 - Allowlist redaction mode (denylist ships first; allowlist is v1.x opt-in per VIII-6.g)
+- M5 audit carry: `createVersionAwareResolver` in `packages/secrets/src/version-aware.ts` does
+  not probe `inner.stats(name).currentVersion` per `resolve()` call as the Cat VIII synthesis
+  text describes — instead caches unconditionally until `invalidate()`. For M4 this is benign
+  (C1b tests pass against the as-shipped invalidate-bumps-version semantic), but flag for the
+  M5 IV-4/5/6 + III-2 audit pass.
 
 M5 brain note: IV-4/5/6 + III-2 audit is the first resolution target — IV-4/5/6 + III-2 audit — M5 brain resolves first (may reduce the remaining 8 unimplemented to fewer than 8 if some of these are already partially shipped).
 
