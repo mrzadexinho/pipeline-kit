@@ -3,6 +3,9 @@ import type { Result } from '../result.js';
 
 export type StageName = 'source' | 'process' | 'serve' | 'store' | 'review' | 'run';
 
+/** OTel span attribute key for JSON-serialised PII annotations (ADR VIII-6.f). */
+export const PII_ANNOTATIONS_ATTR = 'pk.pii_annotations' as const;
+
 export interface SpanAttributes {
   runId: string;
   pipelineId: string;

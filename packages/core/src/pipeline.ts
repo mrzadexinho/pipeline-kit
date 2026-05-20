@@ -1,4 +1,5 @@
 import { type ComposerStep, runComposer } from './composer/composer.js';
+import { precomputeStepPiiAnnotations } from './composer/pii-attach.js';
 import { createTokenBucket } from './composer/rate-limit.js';
 import type { RunError } from './errors/run.js';
 import { atom, pipe } from './ids.js';
@@ -128,10 +129,12 @@ function toComposerStep(step: PipelineStep): ComposerStep {
 }
 
 function makeProcessComposerStep(process: Process<unknown, unknown>): ComposerStep {
+  const piiAnnotations = precomputeStepPiiAnnotations(process.outputSchema);
   return {
     id: process.id,
     kind: 'process',
     retryPolicy: process.retryPolicy,
+    ...(piiAnnotations !== undefined ? { piiAnnotations } : {}),
     run(input, ctx) {
       return process.run(input, ctx);
     },

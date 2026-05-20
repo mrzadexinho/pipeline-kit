@@ -6,13 +6,14 @@ import type { RunError } from '../errors/run.js';
 import type { ServeError } from '../errors/serve.js';
 import type { SourceError } from '../errors/source.js';
 import type { StoreError } from '../errors/store.js';
+import type { PiiAnnotation } from '../pii.js';
 import type { RetryPolicy } from '../policy.js';
 import { err, ok, type Result } from '../result.js';
 import type { Atom } from '../stages/atom.js';
 import type { Source, SourceQuery } from '../stages/source.js';
 import { cancelledResult, isCancelled } from './cancellation.js';
 import { generateIdempotencyKey, scopedIdempotencyKey } from './idempotency.js';
-import { type StageName, withSpan } from './otel.js';
+import { PII_ANNOTATIONS_ATTR, type StageName, withSpan } from './otel.js';
 import type { TokenBucket } from './rate-limit.js';
 import {
   createRetryBudget,
@@ -27,6 +28,8 @@ export interface ComposerStep {
   kind: StageName;
   retryPolicy?: Partial<RetryPolicy>;
   rateLimit?: TokenBucket;
+  /** PII annotations precomputed from outputSchema at build time. */
+  piiAnnotations?: PiiAnnotation[];
   run: (
     input: unknown,
     ctx: PipelineContext,
@@ -327,6 +330,9 @@ async function runStage(
     pipelineId: ctx.pipelineId,
     stageId: step.id,
     ...(atomId !== undefined ? { atomId } : {}),
+    ...(step.piiAnnotations !== undefined
+      ? { [PII_ANNOTATIONS_ATTR]: JSON.stringify(step.piiAnnotations) }
+      : {}),
   };
   return withSpan(step.kind, spanAttrs, () =>
     withRetry(
