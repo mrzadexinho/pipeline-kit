@@ -105,6 +105,7 @@ describe('M5 E1 — LocalTriggerAdapter + HMAC idempotency + allowlist redaction
 
   it('all five hard-gate assertions pass', async () => {
     vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-01-01T00:00:59.000Z'));
 
     // Captured artefacts filled by the pipeline run.
     let capturedScopedKey: string | undefined;
@@ -168,10 +169,12 @@ describe('M5 E1 — LocalTriggerAdapter + HMAC idempotency + allowlist redaction
     await adapter.register({ kind: 'cron', expr: '* * * * *' }, handler);
     await adapter.start();
 
-    // Advance 61 s to cross the first minute boundary and fire the cron.
-    // advanceTimersByTimeAsync progresses fake timers AND flushes microtasks
-    // at each tick, but doesn't wait for async void-dispatched callbacks.
-    await vi.advanceTimersByTimeAsync(61_000);
+    // Cross the next minute boundary with minimal fake-timer churn:
+    // fake time starts at :00:59.000, so 1500 ms advances to :01:00.500,
+    // firing exactly one fake-interval tick at :01:00.000 — the cron's
+    // first match. Smaller advance window → fewer microtask drains inside
+    // advanceTimersByTimeAsync (the previous 61 s burned GHA budget).
+    await vi.advanceTimersByTimeAsync(1_500);
 
     // Wait for the first handler invocation's async pipeline work to settle.
     // Switch to real timers briefly so the promise can resolve without further
