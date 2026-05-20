@@ -29,6 +29,20 @@ const sig = webhooks.sign(payload, secret);
 const evt = webhooks.verify(rawBody, sigHeader, secret);
 ```
 
+## Environment variables
+
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `PK_SIGNING_KEY` | Yes (for idempotency) | HMAC key for `scopedIdempotencyKey`; source for HKDF subkey derivation. |
+
+**`PK_SIGNING_KEY`** must be set to a high-entropy random value before using `scopedIdempotencyKey` (signed serve idempotency keys). Generate one with:
+
+```bash
+openssl rand -hex 32
+```
+
+Treat it as a long-lived production secret. Rotating it invalidates all in-flight idempotency keys for in-progress runs — coordinate rotation with a quiesce window.
+
 ## Reference
 
 Core types and factory: [`docs/spec-api-surface.md`](../../docs/spec-api-surface.md). Adapter list: [`docs/spec-adapters.md`](../../docs/spec-adapters.md).

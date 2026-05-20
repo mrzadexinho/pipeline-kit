@@ -74,6 +74,7 @@ factory.
 | M2 | Durable execution (`adapter-inngest`), CLI (`pk trace`) | 11 |
 | M3 | Observability + eval: `observe`, `observe-vercel`, `eval`, `eval-scorers` | 7 |
 | **M4** | **Secrets + Redaction Closure — closes v1 must-have 3-of-3** | **2** |
+| **M5** | **Audit closure — IV-4, IV-5, IV-6, III-2, VIII-2, VIII-6.f/g** | **2** |
 
 **M4 packages (v0.1.x / 0.1.0):**
 
@@ -85,7 +86,9 @@ factory.
 - `@idriszade/secrets-oidc` — workload-identity OIDC resolver: `./gcp`, `./aws`, `./azure` sub-paths; each cloud SDK is an optional peer dep (VIII-5)
 
 **v1 must-haves closed:** eval (M3) · local-prod-seam (M2) · PII redaction (M4).
-**ADR progress: 47/55 v1 ADRs implemented.**
+**ADR progress: 49/55 v1 ADRs implemented.**
+
+**M5 closes audit gaps** on IV-4 / IV-5 / IV-6 / III-2 / VIII-2 / VIII-6.f / VIII-6.g — see [`docs/briefs/m5_audit_findings.md`](docs/briefs/m5_audit_findings.md) and [`docs/briefs/m5_brief.md`](docs/briefs/m5_brief.md).
 
 ## Architecture
 

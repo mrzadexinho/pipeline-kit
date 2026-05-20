@@ -71,6 +71,14 @@ const resolver = createEnvSecretsResolver(schema, {
 });
 ```
 
+## Kit-level env vars
+
+The following env vars are consumed by `@idriszade/core` itself, not by this adapter. Include them in your env schema if you want Zod-validated startup errors for missing values:
+
+| Variable | Used by | Notes |
+|----------|---------|-------|
+| `PK_SIGNING_KEY` | `scopedIdempotencyKey` (core) | HMAC key + HKDF source. High-entropy; treat as production secret. Generate: `openssl rand -hex 32`. Rotating invalidates in-flight idempotency keys. |
+
 ## Caveats
 
 - **No runtime cache.** Env vars are already in-process memory; there is nothing to cache. The `invalidate` method exists to satisfy the `SecretsResolver` contract and bumps an internal version counter (consumed by `createVersionAwareResolver`).
