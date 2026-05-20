@@ -1,6 +1,14 @@
 // OTel GenAI v1.37 semantic convention keys.
 // Stable, additive top-level keys.
 
+/**
+ * Content keys for GenAI prompt/completion events.
+ * These carry raw LLM prompt/completion text and are treated as secret by default
+ * in the known-sensitive table (see KNOWN_SENSITIVE in known-sensitive.ts).
+ */
+export const GEN_AI_PROMPT = 'gen_ai.prompt' as const;
+export const GEN_AI_COMPLETION = 'gen_ai.completion' as const;
+
 export const GEN_AI_SYSTEM = 'gen_ai.system' as const;
 export const GEN_AI_OPERATION_NAME = 'gen_ai.operation.name' as const;
 export const GEN_AI_REQUEST_MODEL = 'gen_ai.request.model' as const;
@@ -75,6 +83,8 @@ export const GEN_AI_USAGE_OUTPUT_TOKENS_TEXT = 'gen_ai.usage.output_tokens.text'
 
 // Union of all top-level attribute keys for safe use at ctx.usage.record() call sites.
 export type GenAIAttributeKey =
+  | typeof GEN_AI_PROMPT
+  | typeof GEN_AI_COMPLETION
   | typeof GEN_AI_SYSTEM
   | typeof GEN_AI_OPERATION_NAME
   | typeof GEN_AI_REQUEST_MODEL

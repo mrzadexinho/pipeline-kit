@@ -135,6 +135,36 @@ const sink2 = new FileSinkExporter({
 
 If `runId` is omitted the filename falls back to the first record's `traceId`.
 
+## PII Redaction (M4)
+
+`RedactingProcessor` is a `SpanProcessor` that rewrites sensitive span attributes before the span reaches any exporter. It applies two enforcement paths on `onEnd`, in order:
+
+**Path 1 — Known-sensitive table (always applied).** A built-in map of OTel attribute key → PII tag. Initial entries: `gen_ai.prompt → secret`, `gen_ai.completion → secret`. If a span attribute key matches an entry and the value is a string, it is replaced with the appropriate format (`<secret:XXXXXXXX>` or `<redacted:N>`). User-provided entries (via `knownSensitive` option) override built-ins on key collision.
+
+**Path 2 — Schema-derived hints (applied when present).** Spans may carry an internal attribute `pk.pii_annotations` whose value is `JSON.stringify(walkAnnotations(schema))` output. If present, the processor parses it and applies the tag for each matching attribute key (if not already processed by path 1). The hint attribute is always stripped before the span is delegated to the inner processor — it is metadata, not user-visible.
+
+### Usage
+
+```ts
+import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { RedactingProcessor } from '@idriszade/observe';
+
+const inner = new BatchSpanProcessor(new OTLPTraceExporter({ url: '...' }));
+const processor = new RedactingProcessor(inner, {
+  knownSensitive: { 'auth.token': 'secret' },
+});
+// Register `processor` with NodeTracerProvider as usual.
+```
+
+### Defense-in-depth
+
+The kit's `RedactingProcessor` is the application-side enforcement layer. The recommended primary egress enforcement is the [OTel Collector `redactionprocessor`](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/redactionprocessor), which operates on the wire-protocol level after spans leave the application. Use both: kit for in-app guarantees, Collector for boundary enforcement.
+
+### pk.pii_annotations hint
+
+Spans MAY carry a `pk.pii_annotations` attribute holding `JSON.stringify(walkAnnotations(schema))` output. The processor consumes and strips it. Composer integration (auto-attaching annotations from Process schemas) is on the M5 roadmap; consumers can attach manually today.
+
 ## Environment variables
 
 | Variable | Effect |

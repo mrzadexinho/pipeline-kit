@@ -6,10 +6,14 @@ export { KitSpanExporter } from './exporter.js';
 export type { FileSinkOptions } from './file-sink.js';
 // B5 — File sink
 export { FileSinkExporter } from './file-sink.js';
+// M4 — known-sensitive table
+export { KNOWN_SENSITIVE } from './known-sensitive.js';
 export type { GenAIAttributeKey } from './otel-genai-keys.js';
 export {
   CACHE_SUB_FIELDS,
+  GEN_AI_COMPLETION,
   GEN_AI_OPERATION_NAME,
+  GEN_AI_PROMPT,
   GEN_AI_REQUEST_MAX_TOKENS,
   GEN_AI_REQUEST_MODEL,
   GEN_AI_REQUEST_TEMPERATURE,
@@ -28,6 +32,9 @@ export {
   isReasoningSubField,
   REASONING_SUB_FIELDS,
 } from './otel-genai-keys.js';
+// M4 — RedactingProcessor
+export type { RedactingProcessorOptions } from './redacting-processor.js';
+export { PII_ANNOTATIONS_ATTR, RedactingProcessor } from './redacting-processor.js';
 export type { NDJSONFrame, WireTraceContext } from './trace-context.js';
 // B3 — W3C Trace Context serde + NDJSON frame envelope
 export {

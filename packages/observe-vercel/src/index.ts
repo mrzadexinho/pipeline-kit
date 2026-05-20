@@ -1,3 +1,6 @@
+// M4 — re-export RedactingProcessor surface from @idriszade/observe for one-stop import.
+export type { RedactingProcessorOptions } from '@idriszade/observe';
+export { KNOWN_SENSITIVE, PII_ANNOTATIONS_ATTR, RedactingProcessor } from '@idriszade/observe';
 export type {
   VercelInputTokenDetails,
   VercelOutputTokenDetails,
