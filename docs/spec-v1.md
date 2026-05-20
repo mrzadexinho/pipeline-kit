@@ -248,7 +248,7 @@ See `spec-v1-cross-cutting.md` §X.
 | M2 | 11 | adapter-inngest, cli |
 | M3 | 7 | observe, observe-vercel, eval, eval-scorers |
 | M4 | 2 | secrets-env, secrets-sops, secrets-oidc; core + observe PII redaction |
-| M5 | 2 | core, adapter-inngest, secrets, observe, observe-vercel (5 extended, 0 new); closes IV-4, IV-5, IV-6, III-2, VIII-2, VIII-6.f, VIII-6.g — see `briefs/m5_audit_findings.md`; commit: `<m5-tip>` |
+| M5 | 2 | core, adapter-inngest, secrets, observe, observe-vercel (5 extended, 0 new); closes IV-4, IV-5, IV-6, III-2, VIII-2, VIII-6.f, VIII-6.g — see `briefs/m5_audit_findings.md`; commit: `b25be67` |
 | **Total** | **49 / 55** | — |
 
 ADRs VIII-5 (secrets adapter trio) and VIII-6 (PII redaction) ratified and implemented in M4.

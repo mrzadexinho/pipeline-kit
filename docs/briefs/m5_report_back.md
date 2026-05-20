@@ -110,7 +110,7 @@ Coverage: 87.95 / 80.13 / 89.94 / 89.21 (statement / branch / function / line).
 1. **PK_SIGNING_KEY webhook fallback deferred** — brief specified a deprecation-warn fallback to an existing webhook signing key. Investigation found no such key in `packages/core/src/` yet. Fallback simplified to throw on missing `PK_SIGNING_KEY`; add the deprecation-warn path when webhook signing lands. (A2 commit `ba0a17f`.)
 2. **`verifyScopedIdempotencyKey` deferred** — no current caller verifies the HMAC tail (callers only construct). Documented in code comment; add `timingSafeEqual`-based verify export when the first Serve adapter or middleware needs tamper-check.
 3. **Cross-package import in m5-e2e test** — `packages/core/tests/integration/m5-e2e.test.ts` reaches into `../../../observe/src/redacting-processor.js` directly. Matches observe's own test pattern but loosely respects module boundaries. Future option: extract into a separate `tests-integration` workspace package, or move the test into observe (which already depends on core).
-4. **`<m5-tip>` placeholder in `docs/spec-v1.md`** — the M5 build-progress row references a placeholder commit SHA. Replace with actual master tip after FF-merge.
+4. **`b25be67` placeholder in `docs/spec-v1.md`** — the M5 build-progress row references a placeholder commit SHA. Replace with actual master tip after FF-merge.
 5. **LocalTriggerAdapter LOC** — 332 LOC; 32 over soft 300, well under hard 500 and the brief's 400 split-trigger. Inline cron parser kept in-file as a cohesive unit; split into `triggers/cron-parser.ts` if it grows beyond ~400.
 6. **Pre-existing biome warnings (84 total)** — mostly `noNonNullAssertion` in test code (some pre-M5, some in new test files). Out of scope for M5; sweep in a separate `chore(lint)` pass.
 7. **observe-vercel parity is type-only** — `mode: 'allowlist' | 'denylist'` parity ships via `RedactingProcessorOptions` type re-export. If observe-vercel adds Vercel-specific processor logic later, the option must be wired through explicitly.
@@ -125,4 +125,4 @@ Coverage: 87.95 / 80.13 / 89.94 / 89.21 (statement / branch / function / line).
 - Cross-attempt cumulative budget tracking (cf-X-4)
 - HMAC verification API (carry-forward #2 above)
 
-**Note:** master tip `<m5-tip>` — brain fills in after FF-merge.
+**Note:** master tip `b25be67` — brain fills in after FF-merge.
