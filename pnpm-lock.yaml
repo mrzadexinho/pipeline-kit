@@ -194,6 +194,19 @@ importers:
         specifier: workspace:*
         version: link:../core
 
+  packages/secrets-env:
+    dependencies:
+      '@idriszade/core':
+        specifier: workspace:*
+        version: link:../core
+      zod:
+        specifier: ^3.25.28
+        version: 3.25.76
+    devDependencies:
+      '@idriszade/secrets':
+        specifier: workspace:*
+        version: link:../secrets
+
   packages/serve-email:
     dependencies:
       '@idriszade/core':
@@ -3659,6 +3672,9 @@ packages:
     resolution: {integrity: sha512-O/PgfnpT1xKSDeQYSCfRI5Gy3hPf91mKVDuYLUHZJMiDFptvP41MSnWofm8dnCm0256ZNfZIM7DSzuSMAFnjHA==}
     peerDependencies:
       zod: ^3.25.28 || ^4
+
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
   zod@4.4.3:
     resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
@@ -7200,5 +7216,7 @@ snapshots:
   zod-to-json-schema@3.25.2(zod@4.4.3):
     dependencies:
       zod: 4.4.3
+
+  zod@3.25.76: {}
 
   zod@4.4.3: {}
