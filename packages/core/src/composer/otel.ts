@@ -1,4 +1,4 @@
-import { type Attributes, SpanStatusCode, type Tracer, trace } from '@opentelemetry/api';
+import { type Attributes, type Context, SpanStatusCode, type Tracer, context, trace } from '@opentelemetry/api';
 import type { Result } from '../result.js';
 
 export type StageName = 'source' | 'process' | 'serve' | 'store' | 'review' | 'run';
@@ -24,12 +24,15 @@ export function getTracer(): Tracer {
 export function withSpan<T, E extends { type: string; message: string }>(
   stage: StageName,
   attrs: SpanAttributes,
+  parentCtx: Context | undefined,
   fn: () => Promise<Result<T, E>>,
 ): Promise<Result<T, E>> {
   const tracer = getTracer();
+  const parentContext = parentCtx ?? context.active();
   return tracer.startActiveSpan(
     `pipeline.${stage}`,
     { attributes: toAttributes(attrs) },
+    parentContext,
     async (span) => {
       try {
         const r = await fn();

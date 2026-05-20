@@ -1,5 +1,5 @@
 import { type CostBudget, evaluateBudgets } from '../budget.js';
-import { createContext, deriveAtomCtx, type PipelineContext } from '../context.js';
+import { createContext, deriveAtomCtx, type PipelineContext, type TraceContext } from '../context.js';
 import type { DisposableRegistry } from '../disposable.js';
 import type { ProcessError } from '../errors/process.js';
 import type { RunError } from '../errors/run.js';
@@ -54,6 +54,7 @@ export interface ComposerOpts {
   registry?: DisposableRegistry;
   costBudget?: CostBudget[];
   buffer?: { window: { type: 'count' | 'time' | 'all'; n?: number } };
+  parentTraceContext?: TraceContext;
 }
 
 export interface ComposerResult {
@@ -75,6 +76,7 @@ export async function runComposer(opts: ComposerOpts): Promise<Result<ComposerRe
     metadata: opts.metadata,
     signal: opts.signal,
     idempotencyKey: opts.idempotencyKey ?? generateIdempotencyKey(),
+    trace: opts.parentTraceContext,
   });
 
   const startTime = Date.now();
@@ -334,7 +336,7 @@ async function runStage(
       ? { [PII_ANNOTATIONS_ATTR]: JSON.stringify(step.piiAnnotations) }
       : {}),
   };
-  return withSpan(step.kind, spanAttrs, () =>
+  return withSpan(step.kind, spanAttrs, ctx.trace, () =>
     withRetry(
       async (_attempt) => {
         if (isCancelled(ctx.signal)) {

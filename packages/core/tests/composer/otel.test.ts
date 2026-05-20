@@ -17,6 +17,7 @@ describe('withSpan', () => {
     const r = await withSpan<string, StageErr>(
       'process',
       { runId: 'pk_run_x', pipelineId: 'pk_pipe_x' },
+      undefined,
       async () => ok('hi'),
     );
     expect(r.data).toBe('hi');
@@ -27,6 +28,7 @@ describe('withSpan', () => {
     const r = await withSpan<string, StageErr>(
       'serve',
       { runId: 'pk_run_x', pipelineId: 'pk_pipe_x' },
+      undefined,
       async () => err({ type: 'transient', code: 'flap', message: 'transient failure' }),
     );
     expect(r.error?.type).toBe('transient');
@@ -38,6 +40,7 @@ describe('withSpan', () => {
       withSpan<string, StageErr>(
         'source',
         { runId: 'pk_run_x', pipelineId: 'pk_pipe_x' },
+        undefined,
         async () => {
           throw oops;
         },
@@ -49,6 +52,7 @@ describe('withSpan', () => {
     const r: Result<number, StageErr> = await withSpan<number, StageErr>(
       'process',
       { runId: 'pk_run_x', pipelineId: 'pk_pipe_x', attempt: 2, stageId: 'pk_proc_x' },
+      undefined,
       async () => ok(42),
     );
     expect(r.data).toBe(42);
