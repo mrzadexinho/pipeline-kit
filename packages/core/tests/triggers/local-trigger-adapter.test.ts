@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { LocalTriggerAdapter, parseCronExpression } from '../../src/triggers/local-trigger-adapter.js';
 import type { KitTriggerEnvelope } from '../../src/trigger.js';
+import {
+  LocalTriggerAdapter,
+  parseCronExpression,
+} from '../../src/triggers/local-trigger-adapter.js';
 
 // ---------------------------------------------------------------------------
 // Cron parser unit tests
@@ -42,15 +45,21 @@ describe('parseCronExpression', () => {
   });
 
   it('wrong number of fields → throws with error substring', () => {
-    expect(() => parseCronExpression('* * * *')).toThrow('[@idriszade/core] invalid cron expression');
+    expect(() => parseCronExpression('* * * *')).toThrow(
+      '[@idriszade/core] invalid cron expression',
+    );
   });
 
   it('out-of-range value → throws with error substring', () => {
-    expect(() => parseCronExpression('60 * * * *')).toThrow('[@idriszade/core] invalid cron expression');
+    expect(() => parseCronExpression('60 * * * *')).toThrow(
+      '[@idriszade/core] invalid cron expression',
+    );
   });
 
   it('unrecognised token → throws with error substring', () => {
-    expect(() => parseCronExpression('@hourly * * * *')).toThrow('[@idriszade/core] invalid cron expression');
+    expect(() => parseCronExpression('@hourly * * * *')).toThrow(
+      '[@idriszade/core] invalid cron expression',
+    );
   });
 });
 
@@ -137,7 +146,9 @@ describe('LocalTriggerAdapter — event/manual/mcp bus', () => {
   it('manual handler is invoked on fire()', async () => {
     adapter = new LocalTriggerAdapter();
     const called: unknown[] = [];
-    await adapter.register({ kind: 'manual' }, async (env) => { called.push(env.data); });
+    await adapter.register({ kind: 'manual' }, async (env) => {
+      called.push(env.data);
+    });
     await adapter.start();
 
     adapter.fire('manual', { reason: 'test' });
@@ -150,7 +161,9 @@ describe('LocalTriggerAdapter — event/manual/mcp bus', () => {
   it('mcp handler is invoked on fire()', async () => {
     adapter = new LocalTriggerAdapter();
     const called: unknown[] = [];
-    await adapter.register({ kind: 'mcp', toolName: 'analyze-pr' }, async (env) => { called.push(env.data); });
+    await adapter.register({ kind: 'mcp', toolName: 'analyze-pr' }, async (env) => {
+      called.push(env.data);
+    });
     await adapter.start();
 
     adapter.fire('mcp:analyze-pr', { pr: 42 });
@@ -163,8 +176,12 @@ describe('LocalTriggerAdapter — event/manual/mcp bus', () => {
   it('multiple handlers for the same event are all invoked', async () => {
     adapter = new LocalTriggerAdapter();
     const calls: number[] = [];
-    await adapter.register({ kind: 'event', name: 'tick' }, async () => { calls.push(1); });
-    await adapter.register({ kind: 'event', name: 'tick' }, async () => { calls.push(2); });
+    await adapter.register({ kind: 'event', name: 'tick' }, async () => {
+      calls.push(1);
+    });
+    await adapter.register({ kind: 'event', name: 'tick' }, async () => {
+      calls.push(2);
+    });
     await adapter.start();
 
     adapter.fire('event:tick', {});
@@ -210,7 +227,7 @@ describe('LocalTriggerAdapter — webhook', () => {
     });
 
     expect(res.status).toBe(200);
-    const body = await res.json() as { ok: boolean };
+    const body = (await res.json()) as { ok: boolean };
     expect(body.ok).toBe(true);
     expect(received).toHaveLength(1);
     expect(received[0]).toEqual({ x: 1 });
@@ -230,7 +247,7 @@ describe('LocalTriggerAdapter — webhook', () => {
     });
 
     expect(res.status).toBe(400);
-    const body = await res.json() as { error: string };
+    const body = (await res.json()) as { error: string };
     expect(body.error).toBe('invalid_json');
     expect(received).toHaveLength(0);
   });
@@ -268,7 +285,7 @@ describe('LocalTriggerAdapter — webhook', () => {
     });
 
     expect(res.status).toBe(500);
-    const body = await res.json() as { error: string; message: string };
+    const body = (await res.json()) as { error: string; message: string };
     expect(body.error).toBe('handler_failed');
     expect(body.message).toBe('intentional failure');
   });

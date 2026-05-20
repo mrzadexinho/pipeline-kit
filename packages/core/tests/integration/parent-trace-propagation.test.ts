@@ -1,4 +1,4 @@
-import { ROOT_CONTEXT, TraceFlags, context, trace } from '@opentelemetry/api';
+import { context, ROOT_CONTEXT, TraceFlags, trace } from '@opentelemetry/api';
 import {
   BasicTracerProvider,
   InMemorySpanExporter,

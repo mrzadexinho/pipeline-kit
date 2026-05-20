@@ -1,4 +1,11 @@
-import { type Attributes, type Context, SpanStatusCode, type Tracer, context, trace } from '@opentelemetry/api';
+import {
+  type Attributes,
+  type Context,
+  context,
+  SpanStatusCode,
+  type Tracer,
+  trace,
+} from '@opentelemetry/api';
 import type { Result } from '../result.js';
 
 export type StageName = 'source' | 'process' | 'serve' | 'store' | 'review' | 'run';

@@ -1,5 +1,10 @@
 import { type CostBudget, evaluateBudgets } from '../budget.js';
-import { createContext, deriveAtomCtx, type PipelineContext, type TraceContext } from '../context.js';
+import {
+  createContext,
+  deriveAtomCtx,
+  type PipelineContext,
+  type TraceContext,
+} from '../context.js';
 import type { DisposableRegistry } from '../disposable.js';
 import type { ProcessError } from '../errors/process.js';
 import type { RunError } from '../errors/run.js';

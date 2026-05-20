@@ -10,7 +10,12 @@
 import { EventEmitter } from 'node:events';
 import * as http from 'node:http';
 import { ulid } from 'ulid';
-import type { KitTriggerEnvelope, TriggerAdapter, TriggerConfig, TriggerHandler } from '../trigger.js';
+import type {
+  KitTriggerEnvelope,
+  TriggerAdapter,
+  TriggerConfig,
+  TriggerHandler,
+} from '../trigger.js';
 
 // ---------------------------------------------------------------------------
 // Cron parser
@@ -39,7 +44,8 @@ function parseField(raw: string, min: number, max: number, expr: string): CronFi
     if (stepMatch) {
       // Groups 1,2,3,4 are guaranteed by the regex — non-null assertions are safe.
       const step = parseInt(stepMatch[4]!, 10);
-      if (step <= 0) throw new Error(`[@idriszade/core] invalid cron expression: "${expr}" (step <= 0)`);
+      if (step <= 0)
+        throw new Error(`[@idriszade/core] invalid cron expression: "${expr}" (step <= 0)`);
       const rangeMin = stepMatch[1] === '*' ? min : parseInt(stepMatch[2]!, 10);
       const rangeMax = stepMatch[1] === '*' ? max : parseInt(stepMatch[3]!, 10);
       for (let v = rangeMin; v <= rangeMax; v += step) values.add(v);
@@ -51,7 +57,8 @@ function parseField(raw: string, min: number, max: number, expr: string): CronFi
     if (rangeMatch) {
       const lo = parseInt(rangeMatch[1]!, 10);
       const hi = parseInt(rangeMatch[2]!, 10);
-      if (lo > hi) throw new Error(`[@idriszade/core] invalid cron expression: "${expr}" (range lo > hi)`);
+      if (lo > hi)
+        throw new Error(`[@idriszade/core] invalid cron expression: "${expr}" (range lo > hi)`);
       for (let v = lo; v <= hi; v++) values.add(v);
       continue;
     }
@@ -60,13 +67,17 @@ function parseField(raw: string, min: number, max: number, expr: string): CronFi
     if (/^\d+$/.test(part)) {
       const v = parseInt(part, 10);
       if (v < min || v > max) {
-        throw new Error(`[@idriszade/core] invalid cron expression: "${expr}" (value ${v} out of range ${min}-${max})`);
+        throw new Error(
+          `[@idriszade/core] invalid cron expression: "${expr}" (value ${v} out of range ${min}-${max})`,
+        );
       }
       values.add(v);
       continue;
     }
 
-    throw new Error(`[@idriszade/core] invalid cron expression: "${expr}" (unrecognised token "${part}")`);
+    throw new Error(
+      `[@idriszade/core] invalid cron expression: "${expr}" (unrecognised token "${part}")`,
+    );
   }
 
   return { values };
@@ -75,10 +86,18 @@ function parseField(raw: string, min: number, max: number, expr: string): CronFi
 export function parseCronExpression(expr: string): ParsedCron {
   const fields = expr.trim().split(/\s+/);
   if (fields.length !== 5) {
-    throw new Error(`[@idriszade/core] invalid cron expression: "${expr}" (expected 5 fields, got ${fields.length})`);
+    throw new Error(
+      `[@idriszade/core] invalid cron expression: "${expr}" (expected 5 fields, got ${fields.length})`,
+    );
   }
   // fields.length === 5 is guaranteed by the check above.
-  const [minuteRaw, hourRaw, domRaw, monthRaw, dowRaw] = fields as [string, string, string, string, string];
+  const [minuteRaw, hourRaw, domRaw, monthRaw, dowRaw] = fields as [
+    string,
+    string,
+    string,
+    string,
+    string,
+  ];
   return {
     minute: parseField(minuteRaw, 0, 59, expr),
     hour: parseField(hourRaw, 0, 23, expr),
@@ -217,7 +236,9 @@ export class LocalTriggerAdapter implements TriggerAdapter {
     if (this._server !== null) {
       const srv = this._server;
       this._server = null;
-      await new Promise<void>((resolve) => { srv.close(() => resolve()); });
+      await new Promise<void>((resolve) => {
+        srv.close(() => resolve());
+      });
       srv.unref();
     }
 
@@ -245,7 +266,9 @@ export class LocalTriggerAdapter implements TriggerAdapter {
   // ---------------------------------------------------------------------------
 
   private async _startServer(): Promise<void> {
-    const server = http.createServer((req, res) => { void this._handleRequest(req, res); });
+    const server = http.createServer((req, res) => {
+      void this._handleRequest(req, res);
+    });
     await new Promise<void>((resolve) => {
       server.listen(this._options.port, this._options.host, () => resolve());
     });
@@ -309,7 +332,9 @@ export class LocalTriggerAdapter implements TriggerAdapter {
   }
 
   private _startScheduler(): void {
-    this._schedulerInterval = setInterval(() => { void this._schedulerTick(); }, 1000);
+    this._schedulerInterval = setInterval(() => {
+      void this._schedulerTick();
+    }, 1000);
   }
 
   private async _schedulerTick(): Promise<void> {
@@ -326,7 +351,11 @@ export class LocalTriggerAdapter implements TriggerAdapter {
         time: now.toISOString(),
         data: {},
       };
-      try { await reg.handler(envelope); } catch { /* swallow in dev mode */ }
+      try {
+        await reg.handler(envelope);
+      } catch {
+        /* swallow in dev mode */
+      }
     }
   }
 }
