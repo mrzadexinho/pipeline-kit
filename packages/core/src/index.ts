@@ -140,3 +140,8 @@ export type {
   WebhookAlgorithm,
 } from './webhooks/index.js';
 export { sign, verify, webhooks } from './webhooks/index.js';
+export {
+  LocalTriggerAdapter,
+  parseCronExpression,
+} from './triggers/local-trigger-adapter.js';
+export type { LocalTriggerAdapterOptions } from './triggers/local-trigger-adapter.js';
