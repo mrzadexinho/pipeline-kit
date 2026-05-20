@@ -1,0 +1,33 @@
+{
+  "name": "@idriszade/secrets-sops",
+  "version": "0.1.0",
+  "description": "Pipeline-kit SOPS CLI-backed SecretsResolver — spawns sops binary via node:child_process",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@idriszade/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@idriszade/secrets": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
