@@ -62,7 +62,16 @@ export type { StoreError } from './errors/store.js';
 export type { WebhookError } from './errors/webhook.js';
 export { atom, evt, ids, pipe, proc, review, run, serve, src, tev } from './ids.js';
 export type { AgentProcess, Aggregate, Gate } from './patterns.js';
-export { REDACT_TAG, SECRET_TAG } from './pii.js';
+export type { PiiAnnotation, PiiTag } from './pii.js';
+export {
+  formatRedacted,
+  formatSecret,
+  markRedact,
+  markSecret,
+  REDACT_TAG,
+  SECRET_TAG,
+  walkAnnotations,
+} from './pii.js';
 export { Pipeline } from './pipeline.js';
 export type {
   PipelineDefinition,
