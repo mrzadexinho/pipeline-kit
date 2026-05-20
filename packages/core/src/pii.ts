@@ -26,6 +26,8 @@ import type { z } from 'zod';
 
 export const REDACT_TAG = '@redact' as const;
 export const SECRET_TAG = '@secret' as const;
+/** Mark a field as explicitly safe to emit in logs/traces (used by allowlist mode). */
+export const SAFE_TAG = '@safe' as const;
 
 // ─── Annotation markers ───────────────────────────────────────────────────────
 
@@ -50,9 +52,20 @@ export function markSecret<T extends z.ZodTypeAny>(schema: T): T {
   return schema.describe(SECRET_TAG) as T;
 }
 
+/**
+ * Mark a Zod schema field as explicitly safe to emit in logs and traces.
+ * In allowlist mode, only fields carrying this tag are passed through;
+ * all others are redacted. In the default denylist mode this tag has no effect.
+ *
+ * Sugar for `schema.describe(SAFE_TAG)`. Preserves the input generic.
+ */
+export function markSafe<T extends z.ZodTypeAny>(schema: T): T {
+  return schema.describe(SAFE_TAG) as T;
+}
+
 // ─── Walker types ─────────────────────────────────────────────────────────────
 
-export type PiiTag = 'redact' | 'secret';
+export type PiiTag = 'redact' | 'secret' | 'safe';
 
 export interface PiiAnnotation {
   /** Dotted path from schema root, e.g. `['user', 'email']` or `[]` for root. */
@@ -100,6 +113,12 @@ function walkSchema(schema: z.ZodTypeAny, path: string[], out: PiiAnnotation[]):
   }
 
   const desc: string | undefined = schema.description;
+
+  // ── Safe check (any depth, stops descent — mirrors redact behaviour) ─────
+  if (desc === SAFE_TAG) {
+    out.push({ path, tag: 'safe' });
+    return; // do NOT descend into children
+  }
 
   // ── Redact check (any depth, stops descent) ──────────────────────────────
   if (desc === REDACT_TAG) {
@@ -173,6 +192,7 @@ function walkSchema(schema: z.ZodTypeAny, path: string[], out: PiiAnnotation[]):
  * Walk a Zod schema and return all PII annotation sites.
  *
  * Semantics (ADR VIII-6.e):
+ * - `@safe` on any node: records `{ path, tag: 'safe' }`; descent stops (used by allowlist mode).
  * - `@redact` on any node: records `{ path, tag: 'redact' }`; descent stops.
  * - `@secret` on a leaf node: records `{ path, tag: 'secret' }`.
  * - `@secret` on a non-leaf: tag ignored; children still traversed.

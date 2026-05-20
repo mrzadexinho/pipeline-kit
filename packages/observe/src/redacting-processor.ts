@@ -20,6 +20,20 @@ export interface RedactingProcessorOptions {
    * User entries override built-ins on key collision.
    */
   knownSensitive?: Record<string, PiiTag>;
+
+  /**
+   * Redaction mode (ADR VIII-6.g).
+   *
+   * - `'denylist'` (default): attributes listed in knownSensitive or annotated
+   *   with `@redact`/`@secret` are redacted; all others pass through unchanged.
+   * - `'allowlist'`: ONLY attributes annotated with `@safe` (tag `'safe'`) in
+   *   `pk.pii_annotations` pass through unchanged. Every other string attribute
+   *   is redacted with `<redacted:N>`. The known-sensitive table still applies
+   *   (those entries are hashed/redacted per their tag).
+   *
+   * The `knownSensitive` table always takes priority over allowlist pass-through.
+   */
+  mode?: 'denylist' | 'allowlist';
 }
 
 function applyTag(tag: PiiTag, value: string): string {
@@ -32,7 +46,7 @@ function isValidAnnotation(entry: unknown): entry is PiiAnnotation {
   return (
     Array.isArray(e.path) &&
     (e.path as unknown[]).every((seg) => typeof seg === 'string') &&
-    (e.tag === 'redact' || e.tag === 'secret')
+    (e.tag === 'redact' || e.tag === 'secret' || e.tag === 'safe')
   );
 }
 
@@ -51,11 +65,13 @@ function isValidAnnotation(entry: unknown): entry is PiiAnnotation {
 export class RedactingProcessor implements SpanProcessor {
   readonly #inner: SpanProcessor;
   readonly #sensitiveTable: Readonly<Record<string, PiiTag>>;
+  readonly #mode: 'denylist' | 'allowlist';
 
   constructor(inner: SpanProcessor, options?: RedactingProcessorOptions) {
     this.#inner = inner;
     // User entries override built-ins on collision.
     this.#sensitiveTable = { ...KNOWN_SENSITIVE, ...options?.knownSensitive };
+    this.#mode = options?.mode ?? 'denylist';
   }
 
   onStart(span: Span, parentContext: Context): void {
@@ -71,7 +87,7 @@ export class RedactingProcessor implements SpanProcessor {
     const attrs = span.attributes as Record<string, unknown>;
     const processed = new Set<string>();
 
-    // ── Path (1): known-sensitive table (always applied) ──────────────────────
+    // ── Path (1): known-sensitive table (always applied in all modes) ─────────
     for (const [key, tag] of Object.entries(this.#sensitiveTable)) {
       const value = attrs[key];
       if (typeof value === 'string') {
@@ -85,12 +101,17 @@ export class RedactingProcessor implements SpanProcessor {
     // Always strip the hint attribute before delegating (metadata, not user-visible).
     delete attrs[PII_ANNOTATIONS_ATTR];
 
+    // Collect safe-tagged keys for allowlist mode.
+    const safeKeys = new Set<string>();
+
     if (typeof hintsRaw === 'string') {
       let annotations: unknown;
       try {
         annotations = JSON.parse(hintsRaw);
       } catch {
         // Malformed JSON — silently skip path (2); path (1) results are kept.
+        // In allowlist mode, all unresolved string attrs will be redacted below.
+        this.#applyAllowlistFallback(attrs, processed, safeKeys);
         this.#inner.onEnd(span);
         return;
       }
@@ -99,16 +120,50 @@ export class RedactingProcessor implements SpanProcessor {
         for (const entry of annotations) {
           if (!isValidAnnotation(entry)) continue;
           const candidateKey = entry.path.join('.');
+
+          if (entry.tag === 'safe') {
+            // In allowlist mode: mark this key as safe (pass-through).
+            safeKeys.add(candidateKey);
+            continue;
+          }
+
+          // Denylist semantics: apply redact/secret tags.
           if (processed.has(candidateKey)) continue; // path (1) wins
           const value = attrs[candidateKey];
           if (typeof value === 'string') {
             attrs[candidateKey] = applyTag(entry.tag, value);
+            processed.add(candidateKey);
           }
         }
       }
     }
 
+    // ── Path (3): allowlist mode sweep ────────────────────────────────────────
+    // In allowlist mode, redact every string attribute that was NOT processed by
+    // the sensitive table (path 1) and is NOT explicitly marked safe (path 2).
+    this.#applyAllowlistFallback(attrs, processed, safeKeys);
+
     this.#inner.onEnd(span);
+  }
+
+  /**
+   * In allowlist mode: sweep all remaining string attributes and redact those
+   * that are neither in `processed` (path 1) nor in `safeKeys` (path 2 safe tags).
+   * No-op in denylist mode.
+   */
+  #applyAllowlistFallback(
+    attrs: Record<string, unknown>,
+    processed: Set<string>,
+    safeKeys: Set<string>,
+  ): void {
+    if (this.#mode !== 'allowlist') return;
+    for (const key of Object.keys(attrs)) {
+      if (processed.has(key) || safeKeys.has(key)) continue;
+      const value = attrs[key];
+      if (typeof value === 'string') {
+        attrs[key] = formatRedacted(value);
+      }
+    }
   }
 
   forceFlush(): Promise<void> {

@@ -67,8 +67,10 @@ export {
   formatRedacted,
   formatSecret,
   markRedact,
+  markSafe,
   markSecret,
   REDACT_TAG,
+  SAFE_TAG,
   SECRET_TAG,
   walkAnnotations,
 } from './pii.js';
@@ -126,6 +128,11 @@ export type {
   TriggerConfig,
   TriggerHandler,
 } from './trigger.js';
+export type { LocalTriggerAdapterOptions } from './triggers/local-trigger-adapter.js';
+export {
+  LocalTriggerAdapter,
+  parseCronExpression,
+} from './triggers/local-trigger-adapter.js';
 export type { CostBudget, UsageAccumulator } from './usage.js';
 export { createUsageAccumulator } from './usage.js';
 export type {
@@ -140,8 +147,3 @@ export type {
   WebhookAlgorithm,
 } from './webhooks/index.js';
 export { sign, verify, webhooks } from './webhooks/index.js';
-export {
-  LocalTriggerAdapter,
-  parseCronExpression,
-} from './triggers/local-trigger-adapter.js';
-export type { LocalTriggerAdapterOptions } from './triggers/local-trigger-adapter.js';
