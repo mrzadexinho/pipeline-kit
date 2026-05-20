@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/serve-mcp",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Pipeline-kit Serve adapter for exposing pipeline stages as MCP tools and resources",
   "type": "module",
   "main": "./src/index.ts",
