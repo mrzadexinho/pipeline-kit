@@ -8,6 +8,8 @@
  * ADR VIII-6 validated in production-shape flow.
  */
 
+import { formatSecret, markSecret, walkAnnotations } from '@idriszade/core';
+import { createEnvSecretsResolver } from '@idriszade/secrets-env';
 import {
   BasicTracerProvider,
   InMemorySpanExporter,
@@ -15,8 +17,6 @@ import {
 } from '@opentelemetry/sdk-trace-base';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import { formatSecret, markSecret, walkAnnotations } from '@idriszade/core';
-import { createEnvSecretsResolver } from '@idriszade/secrets-env';
 import { PII_ANNOTATIONS_ATTR, RedactingProcessor } from '../src/redacting-processor.js';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -52,10 +52,10 @@ describe('M4 e2e — schema annotation helpers (walkAnnotations + markSecret)', 
 describe('M4 e2e — secrets-env resolver', () => {
   it('resolves DB_PASSWORD from injected source', async () => {
     const envSource: Record<string, string> = { DB_PASSWORD: RAW_SECRET };
-    const resolver = createEnvSecretsResolver(
-      z.object({ DB_PASSWORD: z.string() }),
-      { source: envSource, envVarMap: { db_password: 'DB_PASSWORD' } },
-    );
+    const resolver = createEnvSecretsResolver(z.object({ DB_PASSWORD: z.string() }), {
+      source: envSource,
+      envVarMap: { db_password: 'DB_PASSWORD' },
+    });
 
     const result = await resolver.resolve('db_password');
     expect(result.error).toBeNull();
@@ -74,10 +74,10 @@ describe('M4 e2e — RedactingProcessor hard gate (schema-derived hint path)', (
   it('raw secret MUST NOT appear in emitted span; <secret:8hex> MUST appear instead', async () => {
     // Simulate Process: resolve secret, attach to span with pii hint
     const envSource: Record<string, string> = { DB_PASSWORD: RAW_SECRET };
-    const resolver = createEnvSecretsResolver(
-      z.object({ DB_PASSWORD: z.string() }),
-      { source: envSource, envVarMap: { db_password: 'DB_PASSWORD' } },
-    );
+    const resolver = createEnvSecretsResolver(z.object({ DB_PASSWORD: z.string() }), {
+      source: envSource,
+      envVarMap: { db_password: 'DB_PASSWORD' },
+    });
 
     const result = await resolver.resolve('db_password');
     expect(result.error).toBeNull();
