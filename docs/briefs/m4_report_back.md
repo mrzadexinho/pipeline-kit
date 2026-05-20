@@ -28,10 +28,10 @@
 ### @idriszade/core extension (Phase A)
 
 - `markRedact(schema)` / `markSecret(schema)` — ergonomic helpers wrapping `.describe('@redact')` / `.describe('@secret')`; inverse readable via `schema.description`
-- `walkAnnotations(schema, value)` — recursive annotation walker; `@redact` descends into nested objects/arrays, `@secret` is leaf-only (VIII-6.e enforcement)
+- `walkAnnotations(schema): PiiAnnotation[]` — traverses Zod schema (no value argument); returns annotation sites as `{ path, tag }` records; `@redact` recorded at any depth and stops descent (subtree scope); `@secret` recorded only on leaf nodes (VIII-6.e enforcement)
 - `formatRedacted(value: string): string` — returns `<redacted:N>` where N = original char length (VIII-6.c)
 - `formatSecret(value: string): string` — returns `<secret:<8hex>>` via `crypto.createHash('sha256')` truncated to 8 hex (VIII-6.b/c)
-- `PiiTag` union (`'@redact' | '@secret'`) + `PiiAnnotation` type exported from core index
+- `PiiTag = 'redact' | 'secret'` union (without `@` prefix — the `@` lives on the `REDACT_TAG` / `SECRET_TAG` string constants only) + `PiiAnnotation` type (`{ path: string[]; tag: PiiTag }`) exported from core index
 - Zod v4 `_zod.def.type` introspection used in walker for nested shape detection
 
 ### @idriszade/observe extension (Phase B)
@@ -39,7 +39,7 @@
 - `RedactingProcessor` — custom `SpanProcessor` wrapping `BatchSpanProcessor`; rewrites span attributes before delegating to inner processor; two-path enforcement: known-sensitive table applied first, then annotation walker for schema hints
 - `KNOWN_SENSITIVE` table — `gen_ai.prompt` / `gen_ai.completion` auto-treated as `@secret` out of the box (VIII-6.f); user-supplied `knownSensitive` wins on key collision
 - `PII_ANNOTATIONS_ATTR` constant — key under which schema annotation hints are attached to spans; stripped from attributes before delegating to inner (hint never leaks to exporter)
-- `RedactingProcessorOptions` type — `{ inner, knownSensitive?, piiAnnotationsAttr? }`
+- `RedactingProcessorOptions` type — `{ knownSensitive?: Record<string, PiiTag> }` (the inner `SpanProcessor` is a constructor positional argument, not part of options; `pk.pii_annotations` attribute key is a fixed constant, not configurable in v0)
 - `GEN_AI_PROMPT` / `GEN_AI_COMPLETION` re-exported constants for consumer reference
 
 ### @idriszade/observe-vercel extension (Phase B parity)
