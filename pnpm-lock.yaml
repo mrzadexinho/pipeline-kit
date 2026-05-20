@@ -121,6 +121,13 @@ importers:
       '@opentelemetry/sdk-trace-base':
         specifier: ^2.7.1
         version: 2.7.1(@opentelemetry/api@1.9.1)
+    devDependencies:
+      '@idriszade/secrets-env':
+        specifier: workspace:*
+        version: link:../secrets-env
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
 
   packages/observe-vercel:
     dependencies:
