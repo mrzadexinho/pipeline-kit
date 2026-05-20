@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/eval-scorers",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pipeline-kit eval scorers — exactMatch, numericClose, jsonShape, llmJudge",
   "type": "module",
   "main": "./src/index.ts",
