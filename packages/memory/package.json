@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/memory",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Pipeline-kit MemoryAdapter v1 contract with Listable and Disposable markers",
   "type": "module",
   "main": "./src/index.ts",

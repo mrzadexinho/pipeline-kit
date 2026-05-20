@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/observe",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Pipeline-kit OTel GenAI v1.37 observability — exporter, trace context, file sink",
   "type": "module",
   "main": "./src/index.ts",

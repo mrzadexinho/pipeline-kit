@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/secrets-sops",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Pipeline-kit SOPS CLI-backed SecretsResolver — spawns sops binary via node:child_process",
   "type": "module",
   "main": "./src/index.ts",

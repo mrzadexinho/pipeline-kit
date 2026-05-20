@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/store-sqlite",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Pipeline-kit Store adapter for persisting pipeline atoms to SQLite via Drizzle ORM",
   "type": "module",
   "main": "./src/index.ts",
