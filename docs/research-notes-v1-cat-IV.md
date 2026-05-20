@@ -191,7 +191,9 @@ Cat IV TriggerAdapter). The pattern is now stable enough to document as a kit co
 with 2 atoms processed). Cross-ref Cat V/VIII seam patterns (same `register(config, handler)` shape).
 
 **Consequences:**
-- `TriggerAdapter` interface at Tier 3 (adapter tier). Methods: `register(config: TriggerConfig, handler: (envelope: KitTriggerEnvelope<T>) => Promise<void>): void`.
+- `TriggerAdapter` interface at Tier 3 (adapter tier). Methods: `register(config: TriggerConfig, handler: (envelope: KitTriggerEnvelope<T>) => Promise<void>): Promise<void>`.
+- `start(): Promise<void>` and `stop(): Promise<void>` are required on all `TriggerAdapter` implementations. For production adapters (e.g., `InngestTriggerAdapter`) these are no-ops — lifecycle belongs to the host platform. For `LocalTriggerAdapter` (dev-mode reference impl) `start()` boots the HTTP webhook server and the cron scheduler; `stop()` tears both down idempotently and is safe to call when not started.
+- `LocalTriggerAdapter` additionally exposes `fire(eventName, payload)` as a dev-mode convenience for in-process event/manual/mcp trigger emission. This method is NOT part of the `TriggerAdapter` interface contract — it is local-impl–only.
 - Seam pattern joins MemoryAdapter + SecretsAdapter as a documented kit convention in v1 spec.
 - Resolves: outline Q2 (webhook/cron unification via TriggerConfig), packs §5.2 (local-prod seam).
 
