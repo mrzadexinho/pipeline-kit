@@ -1,7 +1,7 @@
 {
-  "name": "@idriszade/memory",
-  "version": "0.2.0",
-  "description": "Pipeline-kit MemoryAdapter v1 contract with Listable and Disposable markers",
+  "name": "@idriszade/secrets-env",
+  "version": "0.1.0",
+  "description": "Pipeline-kit SecretsResolver adapter — env-var-backed configuration (T3 Env / envalid pattern)",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -22,7 +22,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@idriszade/core": "workspace:*"
+    "@idriszade/core": "workspace:*",
+    "zod": "^3.25.28"
+  },
+  "devDependencies": {
+    "@idriszade/secrets": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

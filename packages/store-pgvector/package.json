@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/store-pgvector",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pipeline-kit Store adapter for vector similarity search via pgvector and Drizzle ORM",
   "type": "module",
   "main": "./src/index.ts",
