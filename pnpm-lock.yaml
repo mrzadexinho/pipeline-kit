@@ -194,6 +194,16 @@ importers:
         specifier: workspace:*
         version: link:../core
 
+  packages/secrets-sops:
+    dependencies:
+      '@idriszade/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@idriszade/secrets':
+        specifier: workspace:*
+        version: link:../secrets
+
   packages/serve-email:
     dependencies:
       '@idriszade/core':
