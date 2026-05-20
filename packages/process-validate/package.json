@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/process-validate",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Pipeline-kit Process adapter for schema-driven validation of pipeline atoms via Zod",
   "type": "module",
   "main": "./src/index.ts",
