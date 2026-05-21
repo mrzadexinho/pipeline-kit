@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/serve-slack",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Pipeline-kit Serve adapter for posting pipeline results to Slack channels and DMs",
   "type": "module",
   "main": "./src/index.ts",

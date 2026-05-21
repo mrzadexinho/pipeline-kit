@@ -1,5 +1,12 @@
 # @idriszade/process-extract
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [7a07c7f]
+  - @idriszade/core@0.5.1
+
 ## 0.1.5
 
 ### Patch Changes
