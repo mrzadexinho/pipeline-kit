@@ -12,19 +12,14 @@ import type { RetryPolicy } from '../policy.js';
 import { err, ok, type Result } from '../result.js';
 import type { Atom } from '../stages/atom.js';
 import type { Source, SourceQuery } from '../stages/source.js';
-import {
-  applyBudgetCeiling,
-  applyBudgets,
-  makeBudget,
-  type StageCause,
-  sourceIterError,
-  toRunError,
-} from './apply-budget-ceiling.js';
+import { applyBudgetCeiling } from './budget-ceiling.js';
+import { applyBudgets, makeBudget } from './budget-helpers.js';
 import { cancelledResult, isCancelled } from './cancellation.js';
 import { generateIdempotencyKey, scopedIdempotencyKey } from './idempotency.js';
 import { PII_ANNOTATIONS_ATTR, type StageName, withSpan } from './otel.js';
 import type { TokenBucket } from './rate-limit.js';
 import { DEFAULT_RETRY_POLICY, mergeRetryPolicy, type RetryBudget, withRetry } from './retry.js';
+import { type StageCause, sourceIterError, toRunError } from './run-errors.js';
 
 export interface ComposerStep {
   id: string;
