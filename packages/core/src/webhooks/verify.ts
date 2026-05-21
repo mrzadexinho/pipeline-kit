@@ -59,6 +59,24 @@ function isPipelineKitEvent(value: unknown): value is PipelineKitEvent {
   return typeof obj.data === 'object' && obj.data !== null;
 }
 
+/**
+ * Domain-typed inbound webhook verifier for pipeline-kit's own events.
+ *
+ * Verifies the HMAC signature, checks timestamp tolerance, parses the body
+ * as JSON, and validates it as a `PipelineKitEvent` — returning the typed
+ * event on success.
+ *
+ * Use this when **receiving** pipeline-kit webhook deliveries (e.g. in a
+ * server route that handles `pipeline.run.completed` events).
+ *
+ * For verifying arbitrary inbound payloads (e.g. from third-party callers
+ * signing with `sign()`), use the raw-primitive `verifyWebhook()` instead.
+ *
+ * @param rawBody   Raw UTF-8 request body string.
+ * @param sigHeader The signature header value (`t=<ts>,v1=<hex>`).
+ * @param secret    Webhook signing secret.
+ * @param options   Optional tolerance and accepted-algorithms overrides.
+ */
 export function verify(
   rawBody: string,
   sigHeader: string,

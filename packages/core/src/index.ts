@@ -143,7 +143,12 @@ export type {
   RunCreatedData,
   RunFailedData,
   SignOptions,
+  VerifyError,
+  VerifyErrorCode,
   VerifyOptions,
+  VerifyWebhookOptions,
   WebhookAlgorithm,
 } from './webhooks/index.js';
-export { sign, verify, webhooks } from './webhooks/index.js';
+export { sign, verify, verifyWebhook, webhooks } from './webhooks/index.js';
+export type { RateLimitResult, RateLimitStore } from './rate-limit/index.js';
+export { InProcessRateLimitStore } from './rate-limit/index.js';
