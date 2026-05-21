@@ -28,7 +28,7 @@ export function parseTraceContext(input: unknown): WireTraceContext | undefined 
   if (typeof input !== 'object' || input === null) return undefined;
 
   const obj = input as Record<string, unknown>;
-  const traceparent = obj['traceparent'];
+  const traceparent = obj.traceparent;
   if (typeof traceparent !== 'string') return undefined;
   if (!TRACEPARENT_RE.test(traceparent)) return undefined;
 
@@ -43,7 +43,7 @@ export function parseTraceContext(input: unknown): WireTraceContext | undefined 
 
   const result: WireTraceContext = { traceparent };
 
-  const tracestate = obj['tracestate'];
+  const tracestate = obj.tracestate;
   if (typeof tracestate === 'string') {
     result.tracestate = tracestate;
   }

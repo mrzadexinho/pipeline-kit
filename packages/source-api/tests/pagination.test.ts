@@ -42,6 +42,7 @@ describe('pagination', () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockImplementation(() => {
+        // biome-ignore lint/style/noNonNullAssertion: responses array is sized to test scenario; call count stays within bounds
         const r = responses[call++]!;
         return Promise.resolve({
           ok: r.ok,

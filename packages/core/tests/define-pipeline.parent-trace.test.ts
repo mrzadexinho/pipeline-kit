@@ -1,4 +1,4 @@
-import { ROOT_CONTEXT, SpanKind, TraceFlags, trace } from '@opentelemetry/api';
+import { ROOT_CONTEXT, TraceFlags, trace } from '@opentelemetry/api';
 import { describe, expect, it, vi } from 'vitest';
 import { definePipeline } from '../src/define-pipeline.js';
 import type { TerminalPipeline } from '../src/pipeline-types.js';

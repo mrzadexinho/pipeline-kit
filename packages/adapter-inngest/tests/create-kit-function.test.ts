@@ -84,6 +84,7 @@ describe('createKitFunction', () => {
       receivedPipelineId = ctx.pipelineId;
     });
 
+    // biome-ignore lint/style/noNonNullAssertion: handler is guaranteed non-null after createKitFunction registers it
     const handler = getHandler()!;
     await handler({ event: makeEvent(), step: makeStep() });
 
@@ -98,6 +99,7 @@ describe('createKitFunction', () => {
       receivedAttempt = ctx.attempt;
     });
 
+    // biome-ignore lint/style/noNonNullAssertion: handler is guaranteed non-null after createKitFunction registers it
     const handler = getHandler()!;
     await handler({ event: makeEvent({ attempt: 3 }), step: makeStep() });
 
@@ -112,6 +114,7 @@ describe('createKitFunction', () => {
       receivedRunId = ctx.runId;
     });
 
+    // biome-ignore lint/style/noNonNullAssertion: handler is guaranteed non-null after createKitFunction registers it
     const handler = getHandler()!;
     await handler({ event: makeEvent(), step: makeStep() });
 
@@ -125,6 +128,7 @@ describe('createKitFunction', () => {
       throw new Error('handler blew up');
     });
 
+    // biome-ignore lint/style/noNonNullAssertion: handler is guaranteed non-null after createKitFunction registers it
     const handler = getHandler()!;
     // Should not suppress the error — just ensure disposal runs.
     await expect(handler({ event: makeEvent(), step: makeStep() })).rejects.toThrow(
@@ -140,6 +144,7 @@ describe('createKitFunction', () => {
       receivedEvent = event;
     });
 
+    // biome-ignore lint/style/noNonNullAssertion: handler is guaranteed non-null after createKitFunction registers it
     const handler = getHandler()!;
     const event = makeEvent({ data: { foo: 'bar' }, attempt: 1 });
     await handler({ event, step: makeStep() });

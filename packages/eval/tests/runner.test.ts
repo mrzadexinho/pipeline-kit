@@ -48,10 +48,10 @@ describe('runEval — error handling', () => {
     expect(summary.results).toHaveLength(1);
     const result = summary.results[0];
     expect(result).toBeDefined();
-    expect(result!.error).toBeDefined();
-    expect(result!.error!.code).toBe('task_error');
-    expect(result!.error!.message).toBe('task failed hard');
-    expect(result!.output).toBeUndefined();
+    expect(result?.error).toBeDefined();
+    expect(result?.error?.code).toBe('task_error');
+    expect(result?.error?.message).toBe('task failed hard');
+    expect(result?.output).toBeUndefined();
   });
 
   it('captures scorer throw as fail score with scorer_error reason', async () => {
@@ -68,7 +68,8 @@ describe('runEval — error handling', () => {
 
     const result = summary.results[0];
     expect(result).toBeDefined();
-    expect(result!.scores).toHaveLength(1);
+    expect(result?.scores).toHaveLength(1);
+    // biome-ignore lint/style/noNonNullAssertion: result asserted by toBeDefined above; scores[0] present since scores has length 1
     const s = result!.scores[0]!;
     expect(s.score.pass).toBe(false);
     expect(s.score.score).toBe(0);

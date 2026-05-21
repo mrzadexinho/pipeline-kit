@@ -22,7 +22,7 @@
  * parent context explicitly via `traceContext` option rather than mocking the
  * runtime environment.
  */
-import { context, propagation, ROOT_CONTEXT, TraceFlags, trace } from '@opentelemetry/api';
+import { propagation, ROOT_CONTEXT, TraceFlags, trace } from '@opentelemetry/api';
 import { W3CTraceContextPropagator } from '@opentelemetry/core';
 import {
   BasicTracerProvider,
@@ -116,7 +116,7 @@ describe('kitFanOut — OTel W3C trace propagation (ADR III-2)', () => {
     });
 
     const envelope = capturedData[0] as { _pk_trace: Record<string, string> };
-    const traceparent = envelope._pk_trace['traceparent'];
+    const traceparent = envelope._pk_trace.traceparent;
     expect(traceparent).toBeDefined();
     // W3C traceparent format: 00-<traceId>-<spanId>-<flags>
     expect(traceparent).toContain(PARENT_TRACE_ID);
@@ -145,7 +145,7 @@ describe('kitFanOut — OTel W3C trace propagation (ADR III-2)', () => {
     // The child's restored trace must carry the parent's traceId
     const restoredSpanCtx = trace.getSpanContext(childCtx.trace);
     expect(restoredSpanCtx).toBeDefined();
-    expect(restoredSpanCtx!.traceId).toBe(PARENT_TRACE_ID);
+    expect(restoredSpanCtx?.traceId).toBe(PARENT_TRACE_ID);
   });
 
   it('child payload is unwrapped to original item shape', async () => {
@@ -163,7 +163,7 @@ describe('kitFanOut — OTel W3C trace propagation (ADR III-2)', () => {
     const envelope = capturedData[0] as Record<string, unknown>;
 
     // envelope.payload must be the original item, not the wrapped shape
-    expect(envelope['payload']).toEqual(originalItem);
+    expect(envelope.payload).toEqual(originalItem);
   });
 
   it('three children each receive the same parent traceId in their envelopes', async () => {
@@ -181,7 +181,7 @@ describe('kitFanOut — OTel W3C trace propagation (ADR III-2)', () => {
 
     for (const envelope of capturedData) {
       const e = envelope as { _pk_trace: Record<string, string> };
-      expect(e._pk_trace['traceparent']).toContain(PARENT_TRACE_ID);
+      expect(e._pk_trace.traceparent).toContain(PARENT_TRACE_ID);
     }
   });
 
@@ -227,6 +227,6 @@ describe('kitFanOut — OTel W3C trace propagation (ADR III-2)', () => {
     const spans = exporter.getFinishedSpans();
     const childSpan = spans.find((s) => s.name === 'child-work');
     expect(childSpan).toBeDefined();
-    expect(childSpan!.spanContext().traceId).toBe(PARENT_TRACE_ID);
+    expect(childSpan?.spanContext().traceId).toBe(PARENT_TRACE_ID);
   });
 });

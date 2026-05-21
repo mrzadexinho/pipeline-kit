@@ -43,10 +43,13 @@ function parseField(raw: string, min: number, max: number, expr: string): CronFi
     const stepMatch = /^(\*|(\d+)-(\d+))\/(\d+)$/.exec(part);
     if (stepMatch) {
       // Groups 1,2,3,4 are guaranteed by the regex — non-null assertions are safe.
+      // biome-ignore lint/style/noNonNullAssertion: stepMatch[4] is capture group 4, guaranteed by regex
       const step = parseInt(stepMatch[4]!, 10);
       if (step <= 0)
         throw new Error(`[@idriszade/core] invalid cron expression: "${expr}" (step <= 0)`);
+      // biome-ignore lint/style/noNonNullAssertion: stepMatch[2] and [3] are capture groups guaranteed by regex
       const rangeMin = stepMatch[1] === '*' ? min : parseInt(stepMatch[2]!, 10);
+      // biome-ignore lint/style/noNonNullAssertion: stepMatch[3] is capture group 3, guaranteed by regex
       const rangeMax = stepMatch[1] === '*' ? max : parseInt(stepMatch[3]!, 10);
       for (let v = rangeMin; v <= rangeMax; v += step) values.add(v);
       continue;
@@ -55,7 +58,9 @@ function parseField(raw: string, min: number, max: number, expr: string): CronFi
     // Range: a-b
     const rangeMatch = /^(\d+)-(\d+)$/.exec(part);
     if (rangeMatch) {
+      // biome-ignore lint/style/noNonNullAssertion: rangeMatch[1] and [2] are capture groups guaranteed by regex
       const lo = parseInt(rangeMatch[1]!, 10);
+      // biome-ignore lint/style/noNonNullAssertion: rangeMatch[2] is capture group 2, guaranteed by regex
       const hi = parseInt(rangeMatch[2]!, 10);
       if (lo > hi)
         throw new Error(`[@idriszade/core] invalid cron expression: "${expr}" (range lo > hi)`);

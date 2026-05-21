@@ -27,11 +27,11 @@ describe('FileSinkExporter', () => {
       tmpdir(),
       `pk-file-sink-test-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     );
-    delete process.env['PK_TRACE_DIR'];
+    delete process.env.PK_TRACE_DIR;
   });
 
   afterEach(async () => {
-    delete process.env['PK_TRACE_DIR'];
+    delete process.env.PK_TRACE_DIR;
     await rm(testDir, { recursive: true, force: true });
   });
 
@@ -54,12 +54,14 @@ describe('FileSinkExporter', () => {
     const content = await readFile(join(testDir, 'run-multi.jsonl'), 'utf8');
     const lines = content.trim().split('\n').filter(Boolean);
     expect(lines).toHaveLength(2);
+    // biome-ignore lint/style/noNonNullAssertion: lines has length 2 (asserted above); indices 0 and 1 are present
     expect((JSON.parse(lines[0]!) as KitSpanRecord).name).toBe('first');
+    // biome-ignore lint/style/noNonNullAssertion: lines has length 2 (asserted above); indices 0 and 1 are present
     expect((JSON.parse(lines[1]!) as KitSpanRecord).name).toBe('second');
   });
 
   it('respects PK_TRACE_DIR env var when no constructor dir provided', async () => {
-    process.env['PK_TRACE_DIR'] = testDir;
+    process.env.PK_TRACE_DIR = testDir;
     const sink = new FileSinkExporter({ runId: 'env-run' });
     await sink.write([makeRecord()]);
 
@@ -69,7 +71,7 @@ describe('FileSinkExporter', () => {
 
   it('constructor dir wins over PK_TRACE_DIR env var', async () => {
     const otherDir = join(tmpdir(), `pk-other-${Date.now()}`);
-    process.env['PK_TRACE_DIR'] = otherDir;
+    process.env.PK_TRACE_DIR = otherDir;
 
     const sink = new FileSinkExporter({ runId: 'priority-run', dir: testDir });
     await sink.write([makeRecord()]);

@@ -1,4 +1,4 @@
-import { context, ROOT_CONTEXT, trace } from '@opentelemetry/api';
+import { ROOT_CONTEXT, trace } from '@opentelemetry/api';
 import {
   BasicTracerProvider,
   InMemorySpanExporter,
@@ -6,7 +6,6 @@ import {
 } from '@opentelemetry/sdk-trace-base';
 import { describe, expect, it } from 'vitest';
 import {
-  NDJSONFrame,
   parseTraceContext,
   serializeTraceContext,
   unwrapFrame,
@@ -23,7 +22,7 @@ describe('parseTraceContext', () => {
   it('returns WireTraceContext for valid traceparent', () => {
     const result = parseTraceContext({ traceparent: VALID_TRACEPARENT });
     expect(result).toBeDefined();
-    expect(result!.traceparent).toBe(VALID_TRACEPARENT);
+    expect(result?.traceparent).toBe(VALID_TRACEPARENT);
   });
 
   it('returns undefined for all-zero traceId', () => {
@@ -56,7 +55,7 @@ describe('parseTraceContext', () => {
       traceparent: VALID_TRACEPARENT,
       tracestate: 'vendor=abc',
     });
-    expect(result!.tracestate).toBe('vendor=abc');
+    expect(result?.tracestate).toBe('vendor=abc');
   });
 });
 
@@ -80,9 +79,10 @@ describe('serializeTraceContext', () => {
     await provider.shutdown();
 
     expect(serialized).toBeDefined();
+    // biome-ignore lint/style/noNonNullAssertion: serialized asserted by toBeDefined above
     const parsed = parseTraceContext(serialized!);
     expect(parsed).toBeDefined();
-    expect(parsed!.traceparent).toBe(serialized!.traceparent);
+    expect(parsed?.traceparent).toBe(serialized?.traceparent);
   });
 });
 

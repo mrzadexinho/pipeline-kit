@@ -25,7 +25,7 @@ function makeSpan(overrides: Partial<KitSpanRecord> & { spanId: string }): KitSp
 
 async function writeJSONL(dir: string, filename: string, spans: KitSpanRecord[]): Promise<string> {
   const path = join(dir, filename);
-  const content = spans.map((s) => JSON.stringify(s)).join('\n') + '\n';
+  const content = `${spans.map((s) => JSON.stringify(s)).join('\n')}\n`;
   await writeFile(path, content, 'utf8');
   return path;
 }
@@ -103,15 +103,15 @@ describe('traceCommand — path resolution', () => {
     const spans = [makeSpan({ spanId: 'span003', name: 'source' })];
     await writeJSONL(testDir, 'envrun.jsonl', spans);
 
-    const prev = process.env['PK_TRACE_DIR'];
-    process.env['PK_TRACE_DIR'] = testDir;
+    const prev = process.env.PK_TRACE_DIR;
+    process.env.PK_TRACE_DIR = testDir;
     try {
       const { stdout } = await captureIO(() => traceCommand({ runId: 'envrun' }));
       expect(process.exitCode).toBeUndefined();
       expect(stdout.join('\n')).toContain('source');
     } finally {
-      if (prev === undefined) delete process.env['PK_TRACE_DIR'];
-      else process.env['PK_TRACE_DIR'] = prev;
+      if (prev === undefined) delete process.env.PK_TRACE_DIR;
+      else process.env.PK_TRACE_DIR = prev;
     }
   });
 

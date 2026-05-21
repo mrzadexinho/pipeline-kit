@@ -79,6 +79,7 @@ describe('createApiSource', () => {
 
     const fetchMock = vi.mocked(fetch);
     expect(fetchMock).toHaveBeenCalledOnce();
+    // biome-ignore lint/style/noNonNullAssertion: fetchMock called once (asserted above); calls[0] is present
     const [, init] = fetchMock.mock.calls[0]!;
     expect((init as RequestInit).method).toBe('POST');
   });
@@ -96,6 +97,7 @@ describe('createApiSource', () => {
     await source.fetch(undefined, makeCtx());
 
     const fetchMock = vi.mocked(fetch);
+    // biome-ignore lint/style/noNonNullAssertion: fetch called once during source.fetch; calls[0] is present
     const [, init] = fetchMock.mock.calls[0]!;
     const headers = (init as RequestInit).headers as Record<string, string>;
     expect(headers.Authorization).toBe('Bearer tok_secret');
@@ -114,6 +116,7 @@ describe('createApiSource', () => {
     await source.fetch(undefined, makeCtx());
 
     const fetchMock = vi.mocked(fetch);
+    // biome-ignore lint/style/noNonNullAssertion: fetch called once during source.fetch; calls[0] is present
     const [, init] = fetchMock.mock.calls[0]!;
     const headers = (init as RequestInit).headers as Record<string, string>;
     expect(headers['X-Api-Key']).toBe('key_abc123');
@@ -192,6 +195,7 @@ describe('createApiSource', () => {
     await source.fetch(undefined, makeCtx());
 
     const fetchMock = vi.mocked(fetch);
+    // biome-ignore lint/style/noNonNullAssertion: fetch called once during source.fetch; calls[0] is present
     const [, init] = fetchMock.mock.calls[0]!;
     const headers = (init as RequestInit).headers as Record<string, string>;
     expect(headers.Authorization).toMatch(/^Basic /);

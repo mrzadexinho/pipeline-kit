@@ -38,7 +38,7 @@ describe('RedactingProcessor — known-sensitive path (path 1)', () => {
 
     const spans = exporter.getFinishedSpans();
     expect(spans).toHaveLength(1);
-    const attrs = spans[0]!.attributes;
+    const attrs = spans[0]?.attributes;
     expect(typeof attrs['gen_ai.prompt']).toBe('string');
     expect(attrs['gen_ai.prompt']).toMatch(/^<secret:[0-9a-f]{8}>$/);
   });
@@ -53,7 +53,7 @@ describe('RedactingProcessor — known-sensitive path (path 1)', () => {
 
     const spans = exporter.getFinishedSpans();
     expect(spans).toHaveLength(1);
-    const attrs = spans[0]!.attributes;
+    const attrs = spans[0]?.attributes;
     expect(attrs['gen_ai.completion']).toMatch(/^<secret:[0-9a-f]{8}>$/);
   });
 
@@ -68,7 +68,7 @@ describe('RedactingProcessor — known-sensitive path (path 1)', () => {
 
     const spans = exporter.getFinishedSpans();
     expect(spans).toHaveLength(1);
-    const attrs = spans[0]!.attributes;
+    const attrs = spans[0]?.attributes;
     expect(attrs['gen_ai.system']).toBe('openai');
     expect(attrs['gen_ai.request.model']).toBe('gpt-4o');
   });
@@ -84,7 +84,7 @@ describe('RedactingProcessor — known-sensitive path (path 1)', () => {
 
     const spans = exporter.getFinishedSpans();
     expect(spans).toHaveLength(1);
-    const attrs = spans[0]!.attributes;
+    const attrs = spans[0]?.attributes;
     expect(attrs['auth.token']).toMatch(/^<secret:[0-9a-f]{8}>$/);
     expect(attrs['gen_ai.prompt']).toMatch(/^<secret:[0-9a-f]{8}>$/);
   });
@@ -100,7 +100,7 @@ describe('RedactingProcessor — known-sensitive path (path 1)', () => {
 
     const spans = exporter.getFinishedSpans();
     expect(spans).toHaveLength(1);
-    const attrs = spans[0]!.attributes;
+    const attrs = spans[0]?.attributes;
     // gen_ai.system is not in KNOWN_SENSITIVE; sanity check no crash.
     // The key point: no crash on a non-string value in a sensitive key slot.
     expect(attrs['gen_ai.system']).toBeDefined();
@@ -122,7 +122,7 @@ describe('RedactingProcessor — schema-derived hints path (path 2)', () => {
 
     const spans = exporter.getFinishedSpans();
     expect(spans).toHaveLength(1);
-    const attrs = spans[0]!.attributes;
+    const attrs = spans[0]?.attributes;
     // redact: <redacted:N> where N = 'alice@example.com'.length = 17
     expect(attrs['user.email']).toBe('<redacted:17>');
     expect(attrs[PII_ANNOTATIONS_ATTR]).toBeUndefined();
@@ -139,8 +139,8 @@ describe('RedactingProcessor — schema-derived hints path (path 2)', () => {
 
     const spans = exporter.getFinishedSpans();
     expect(spans).toHaveLength(1);
-    const attrs = spans[0]!.attributes;
-    expect(attrs['token']).toMatch(/^<secret:[0-9a-f]{8}>$/);
+    const attrs = spans[0]?.attributes;
+    expect(attrs.token).toMatch(/^<secret:[0-9a-f]{8}>$/);
     expect(attrs[PII_ANNOTATIONS_ATTR]).toBeUndefined();
   });
 
@@ -156,7 +156,7 @@ describe('RedactingProcessor — schema-derived hints path (path 2)', () => {
 
     const spans = exporter.getFinishedSpans();
     expect(spans).toHaveLength(1);
-    const attrs = spans[0]!.attributes;
+    const attrs = spans[0]?.attributes;
     // path 1: gen_ai.prompt still redacted
     expect(attrs['gen_ai.prompt']).toMatch(/^<secret:[0-9a-f]{8}>$/);
     // non-sensitive attribute unchanged
@@ -184,7 +184,7 @@ describe('RedactingProcessor — schema-derived hints path (path 2)', () => {
 
     const spans = exporter.getFinishedSpans();
     expect(spans).toHaveLength(1);
-    const attrs = spans[0]!.attributes;
+    const attrs = spans[0]?.attributes;
     // bad entries skipped: user.email unchanged
     expect(attrs['user.email']).toBe('alice@example.com');
     // valid entry applied: user.name redacted
@@ -211,7 +211,7 @@ describe('RedactingProcessor — schema-derived hints path (path 2)', () => {
 
     const spans = exporter.getFinishedSpans();
     expect(spans).toHaveLength(1);
-    const attrs = spans[0]!.attributes;
+    const attrs = spans[0]?.attributes;
     // secret wins: format is <secret:XXXXXXXX>, not <redacted:N>
     expect(attrs['user.email']).toMatch(/^<secret:[0-9a-f]{8}>$/);
     expect(attrs['user.email']).not.toMatch(/^<redacted:/);
@@ -231,7 +231,7 @@ describe('RedactingProcessor — schema-derived hints path (path 2)', () => {
 
     const spans = exporter.getFinishedSpans();
     expect(spans).toHaveLength(1);
-    const attrs = spans[0]!.attributes;
+    const attrs = spans[0]?.attributes;
     expect(attrs[PII_ANNOTATIONS_ATTR]).toBeUndefined();
     expect(attrs['gen_ai.system']).toBe('openai');
   });

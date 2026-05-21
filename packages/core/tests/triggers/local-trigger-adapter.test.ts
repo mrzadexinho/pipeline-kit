@@ -85,7 +85,7 @@ describe('LocalTriggerAdapter — lifecycle', () => {
     await adapter.register({ kind: 'webhook', path: '/probe' }, async () => {});
     await adapter.start();
     expect(adapter.address).not.toBeNull();
-    expect(adapter.address!.port).toBeGreaterThan(0);
+    expect(adapter.address?.port).toBeGreaterThan(0);
   });
 
   it('address is null after stop()', async () => {
@@ -105,10 +105,10 @@ describe('LocalTriggerAdapter — lifecycle', () => {
     adapter = new LocalTriggerAdapter();
     await adapter.register({ kind: 'webhook', path: '/probe' }, async () => {});
     await adapter.start();
-    const firstPort = adapter.address!.port;
+    const firstPort = adapter.address?.port;
     await adapter.stop();
     await adapter.start();
-    const secondPort = adapter.address!.port;
+    const secondPort = adapter.address?.port;
     // Both should be positive (ports may or may not match depending on OS recycling, but both should be valid)
     expect(firstPort).toBeGreaterThan(0);
     expect(secondPort).toBeGreaterThan(0);

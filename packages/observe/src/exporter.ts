@@ -21,7 +21,7 @@ export interface SpanSink {
 // Resolve OTEL_SEMCONV_STABILITY_OPT_IN mode.
 // Returns 'dup' if gen_ai/dup is present, 'v137' otherwise.
 function resolveOptIn(): 'v137' | 'dup' {
-  const raw = process.env['OTEL_SEMCONV_STABILITY_OPT_IN'];
+  const raw = process.env.OTEL_SEMCONV_STABILITY_OPT_IN;
   if (!raw) return 'v137';
   const parts = raw.split(',').map((s) => s.trim());
   if (parts.includes('gen_ai/dup')) return 'dup';

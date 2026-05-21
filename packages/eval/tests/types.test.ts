@@ -23,7 +23,7 @@ describe('Case<I,O> type contracts', () => {
 
   it('metadata is accepted on Case', () => {
     const c: Case<number> = { input: 1, metadata: { tag: 'unit' } };
-    expect(c.metadata?.['tag']).toBe('unit');
+    expect(c.metadata?.tag).toBe('unit');
   });
 });
 

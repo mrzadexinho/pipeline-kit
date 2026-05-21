@@ -13,7 +13,7 @@ export interface TraceCommandOptions {
 function resolvePath(opts: TraceCommandOptions): string | null {
   if (opts.file) return opts.file;
   if (opts.runId) {
-    const base = opts.dir ?? process.env['PK_TRACE_DIR'] ?? '.pk/traces';
+    const base = opts.dir ?? process.env.PK_TRACE_DIR ?? '.pk/traces';
     return join(base, `${opts.runId}.jsonl`);
   }
   return null;
@@ -61,7 +61,7 @@ function buildTree(spans: KitSpanRecord[]): TreeNode[] {
   const roots: TreeNode[] = [];
   for (const node of byId.values()) {
     const pid = node.span.parentSpanId;
-    if (pid && spanIds.has(pid)) byId.get(pid)!.children.push(node);
+    if (pid && spanIds.has(pid)) byId.get(pid)?.children.push(node);
     else roots.push(node);
   }
   return roots;

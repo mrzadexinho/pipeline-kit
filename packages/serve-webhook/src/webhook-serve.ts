@@ -128,6 +128,7 @@ export function createWebhookServe<I>(config: WebhookServeConfig<I>): Serve<I> {
       // 7. Auth header
       switch (authMode) {
         case 'hmac': {
+          // biome-ignore lint/style/noNonNullAssertion: secret presence guarded by factory-level throw at line 74-76
           const sig = sign(body, config.secret!, { timestamp: new Date() });
           headers[config.headerName ?? 'X-Pipeline-Kit-Signature'] = sig;
           break;

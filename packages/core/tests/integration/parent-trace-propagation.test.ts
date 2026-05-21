@@ -1,4 +1,4 @@
-import { context, ROOT_CONTEXT, TraceFlags, trace } from '@opentelemetry/api';
+import { ROOT_CONTEXT, TraceFlags, trace } from '@opentelemetry/api';
 import {
   BasicTracerProvider,
   InMemorySpanExporter,
@@ -61,11 +61,11 @@ describe('parent trace propagation — ADR III-2 end-to-end', () => {
     expect(result.error).toBeNull();
 
     const spans = exporter.getFinishedSpans();
-    const stepSpan = spans.find((s) => s.attributes['stageId'] === 'pk_proc_s1');
+    const stepSpan = spans.find((s) => s.attributes.stageId === 'pk_proc_s1');
     expect(stepSpan).toBeDefined();
 
     // The step span must be under the injected trace, not a fresh one
-    expect(stepSpan!.spanContext().traceId).toBe(FIXED_TRACE_ID);
+    expect(stepSpan?.spanContext().traceId).toBe(FIXED_TRACE_ID);
   });
 
   // ─── Scenario 2: no parent → fresh traceId ─────────────────────────────────
@@ -89,11 +89,11 @@ describe('parent trace propagation — ADR III-2 end-to-end', () => {
     expect(result.error).toBeNull();
 
     const spans = exporter.getFinishedSpans();
-    const stepSpan = spans.find((s) => s.attributes['stageId'] === 'pk_proc_s2');
+    const stepSpan = spans.find((s) => s.attributes.stageId === 'pk_proc_s2');
     expect(stepSpan).toBeDefined();
 
     // Must NOT share the injected trace from scenario 1
-    expect(stepSpan!.spanContext().traceId).not.toBe(FIXED_TRACE_ID);
+    expect(stepSpan?.spanContext().traceId).not.toBe(FIXED_TRACE_ID);
   });
 
   // ─── Scenario 3: parent + idempotency coexist ──────────────────────────────
@@ -122,10 +122,10 @@ describe('parent trace propagation — ADR III-2 end-to-end', () => {
     expect(result.data?.runId).toBeDefined();
 
     const spans = exporter.getFinishedSpans();
-    const stepSpan = spans.find((s) => s.attributes['stageId'] === 'pk_proc_s3');
+    const stepSpan = spans.find((s) => s.attributes.stageId === 'pk_proc_s3');
     expect(stepSpan).toBeDefined();
 
     // Trace parent is still honoured
-    expect(stepSpan!.spanContext().traceId).toBe(FIXED_TRACE_ID);
+    expect(stepSpan?.spanContext().traceId).toBe(FIXED_TRACE_ID);
   });
 });

@@ -81,6 +81,7 @@ describe('M4 e2e — RedactingProcessor hard gate (schema-derived hint path)', (
 
     const result = await resolver.resolve('db_password');
     expect(result.error).toBeNull();
+    // biome-ignore lint/style/noNonNullAssertion: result.error asserted null above so result.data is present
     const secretValue = result.data!;
 
     const annotations = walkAnnotations(InputSchema);
@@ -94,17 +95,17 @@ describe('M4 e2e — RedactingProcessor hard gate (schema-derived hint path)', (
 
     const exported = exporter.getFinishedSpans();
     expect(exported).toHaveLength(1);
-    const attrs = exported[0]!.attributes;
+    const attrs = exported[0]?.attributes;
 
     // Hard gate: raw secret MUST NOT appear in span output
-    expect(attrs['db_password']).not.toBe(RAW_SECRET);
+    expect(attrs.db_password).not.toBe(RAW_SECRET);
     expect(JSON.stringify(attrs)).not.toContain(RAW_SECRET);
 
     // Hard gate: formatted secret hash MUST appear
-    expect(attrs['db_password']).toMatch(/^<secret:[0-9a-f]{8}>$/);
+    expect(attrs.db_password).toMatch(/^<secret:[0-9a-f]{8}>$/);
 
     // Stability: hash must be deterministic
-    expect(attrs['db_password']).toBe(formatSecret(RAW_SECRET));
+    expect(attrs.db_password).toBe(formatSecret(RAW_SECRET));
 
     // Hint attribute MUST be stripped before export
     expect(attrs[PII_ANNOTATIONS_ATTR]).toBeUndefined();
@@ -124,6 +125,7 @@ describe('M4 e2e — gen_ai.prompt known-sensitive table path', () => {
     await provider.forceFlush();
 
     const exported2 = exporter.getFinishedSpans();
+    // biome-ignore lint/style/noNonNullAssertion: exported2 is non-empty after forceFlush; last element is always present
     const lastSpan = exported2[exported2.length - 1]!;
     expect(lastSpan.attributes['gen_ai.prompt']).toMatch(/^<secret:[0-9a-f]{8}>$/);
 
@@ -146,7 +148,7 @@ describe('M4 e2e — negative test (naive provider LEAKS raw secret)', () => {
 
     const leaked = naiveExporter.getFinishedSpans();
     // The raw secret leaks — this proves the RedactingProcessor is load-bearing
-    expect(leaked[0]!.attributes['db_password']).toBe(RAW_SECRET);
+    expect(leaked[0]?.attributes.db_password).toBe(RAW_SECRET);
 
     await naiveProvider.shutdown();
   });

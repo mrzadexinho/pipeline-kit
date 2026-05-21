@@ -58,8 +58,11 @@ describe('M1 cross-module integration', () => {
       'source_timeout',
       'runtime_budget_exceeded',
     ];
+    // biome-ignore lint/style/noNonNullAssertion: literal array with 3 elements; indices 0,1,2 are always present
     expect(isRetryable(codes[0]!)).toBe(true);
+    // biome-ignore lint/style/noNonNullAssertion: literal array with 3 elements; indices 0,1,2 are always present
     expect(isRetryable(codes[1]!)).toBe(true);
+    // biome-ignore lint/style/noNonNullAssertion: literal array with 3 elements; indices 0,1,2 are always present
     expect(isRetryable(codes[2]!)).toBe(false);
   });
 

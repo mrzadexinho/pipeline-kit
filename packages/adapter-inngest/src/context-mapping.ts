@@ -33,12 +33,12 @@ export function unwrapFanOutEnvelope(data: Record<string, unknown> | undefined):
 } {
   if (
     data !== undefined &&
-    typeof data['_pk_trace'] === 'object' &&
-    data['_pk_trace'] !== null &&
+    typeof data._pk_trace === 'object' &&
+    data._pk_trace !== null &&
     'payload' in data
   ) {
-    const carrier = data['_pk_trace'] as Record<string, string>;
-    const payload = data['payload'] as Record<string, unknown> | undefined;
+    const carrier = data._pk_trace as Record<string, string>;
+    const payload = data.payload as Record<string, unknown> | undefined;
     return { payload, traceCarrier: carrier };
   }
   return { payload: data, traceCarrier: undefined };

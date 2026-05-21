@@ -52,7 +52,7 @@ describe('observe-vercel — RedactingProcessor re-export surface', () => {
 
     const spans = exporter.getFinishedSpans();
     expect(spans).toHaveLength(1);
-    const attrs = spans[0]!.attributes;
+    const attrs = spans[0]?.attributes;
     expect(attrs['gen_ai.prompt']).toMatch(/^<secret:[0-9a-f]{8}>$/);
   });
 
@@ -70,7 +70,7 @@ describe('observe-vercel — RedactingProcessor re-export surface', () => {
 
     const spans = exporter.getFinishedSpans();
     expect(spans).toHaveLength(1);
-    const attrs = spans[0]!.attributes;
+    const attrs = spans[0]?.attributes;
     expect(attrs['user.email']).toMatch(/^<redacted:\d+>$/);
     expect(attrs[PII_ANNOTATIONS_ATTR]).toBeUndefined();
   });

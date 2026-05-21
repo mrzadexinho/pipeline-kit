@@ -81,7 +81,7 @@ describe('piiAnnotations → pk.pii_annotations span attribute', () => {
     });
 
     const spans = exporter.getFinishedSpans();
-    const procSpan = spans.find((s) => s.attributes['stageId'] === 'pk_proc_pii_test');
+    const procSpan = spans.find((s) => s.attributes.stageId === 'pk_proc_pii_test');
     expect(procSpan).toBeDefined();
     const attrValue = procSpan?.attributes['pk.pii_annotations'];
     expect(typeof attrValue).toBe('string');
@@ -104,7 +104,7 @@ describe('piiAnnotations → pk.pii_annotations span attribute', () => {
     });
 
     const spans = exporter.getFinishedSpans();
-    const procSpan = spans.find((s) => s.attributes['stageId'] === 'pk_proc_no_pii');
+    const procSpan = spans.find((s) => s.attributes.stageId === 'pk_proc_no_pii');
     expect(procSpan).toBeDefined();
     expect(procSpan?.attributes['pk.pii_annotations']).toBeUndefined();
   });

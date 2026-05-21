@@ -29,7 +29,7 @@ export class FileSinkExporter implements SpanSink {
 
   constructor(options: FileSinkOptions = {}) {
     this.#runId = options.runId;
-    this.#dir = options.dir ?? process.env['PK_TRACE_DIR'] ?? join(process.cwd(), '.pk', 'traces');
+    this.#dir = options.dir ?? process.env.PK_TRACE_DIR ?? join(process.cwd(), '.pk', 'traces');
   }
 
   async write(records: ReadonlyArray<KitSpanRecord>): Promise<void> {
@@ -44,7 +44,7 @@ export class FileSinkExporter implements SpanSink {
     const stem = this.#runId ?? records[0]?.traceId ?? 'unknown';
     const filePath = join(this.#dir, `${stem}.jsonl`);
 
-    const lines = records.map((r) => JSON.stringify(r) + '\n').join('');
+    const lines = records.map((r) => `${JSON.stringify(r)}\n`).join('');
     await appendFile(filePath, lines, 'utf8');
   }
 
