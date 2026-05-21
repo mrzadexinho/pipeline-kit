@@ -1,9 +1,11 @@
 import { sign } from './sign.js';
 import { verify } from './verify.js';
+import { verifyWebhook } from './verify-webhook.js';
 
 export const webhooks = {
   sign,
   verify,
+  verifyWebhook,
 } as const;
 
 export type {
@@ -14,7 +16,10 @@ export type {
   RunCreatedData,
   RunFailedData,
   SignOptions,
+  VerifyError,
+  VerifyErrorCode,
   VerifyOptions,
+  VerifyWebhookOptions,
   WebhookAlgorithm,
 } from './types.js';
-export { sign, verify };
+export { sign, verify, verifyWebhook };

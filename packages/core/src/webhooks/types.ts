@@ -2,6 +2,25 @@ import type { ErrorEnvelope } from '../envelope.js';
 
 export type WebhookAlgorithm = 'v1' | 'v2';
 
+// ---- verifyWebhook types ----
+
+/** Options for the general-purpose {@link verifyWebhook} function. */
+export interface VerifyWebhookOptions {
+  /** Timestamp drift tolerance in milliseconds. Default: 300_000 (300s). */
+  tolerance?: number;
+  /** Signature prefix in the header (e.g. `'v1'`, `'sha256'`). Default: `'v1'`. */
+  prefix?: string;
+}
+
+/** Error code returned by {@link verifyWebhook}. */
+export type VerifyErrorCode = 'signature_mismatch' | 'timestamp_expired' | 'malformed_header';
+
+/** Structured error returned by {@link verifyWebhook} inside `Result.error`. */
+export interface VerifyError {
+  code: VerifyErrorCode;
+  message: string;
+}
+
 export interface SignOptions {
   timestamp?: Date;
   algorithm?: WebhookAlgorithm;
