@@ -1,4 +1,12 @@
-export { evaluateBudgets } from './budget.js';
+export type {
+  BudgetAccumulation,
+  BudgetCeiling,
+  BudgetCeilingVerdict,
+} from './budget.js';
+export {
+  evaluateBudgetCeiling,
+  evaluateBudgets,
+} from './budget.js';
 export type { ClientConfig, PipelineKitClient } from './client.js';
 export { createPipelineKit } from './client.js';
 export type {
@@ -26,6 +34,7 @@ export {
   getTracer,
   isCancelled,
   mergeRetryPolicy,
+  recomputeAccumulation,
   runComposer,
   scopedIdempotencyKey,
   withRetry,

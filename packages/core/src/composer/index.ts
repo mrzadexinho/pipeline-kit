@@ -1,3 +1,4 @@
+export { recomputeAccumulation } from './budget-accumulate.js';
 export {
   CANCELLED_RUN_ERROR,
   cancelledResult,

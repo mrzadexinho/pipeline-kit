@@ -1,4 +1,10 @@
-import { type CostBudget, evaluateBudgets } from '../budget.js';
+import { trace } from '@opentelemetry/api';
+import {
+  type BudgetCeiling,
+  type CostBudget,
+  evaluateBudgetCeiling,
+  evaluateBudgets,
+} from '../budget.js';
 import {
   createContext,
   deriveAtomCtx,
@@ -16,6 +22,7 @@ import type { RetryPolicy } from '../policy.js';
 import { err, ok, type Result } from '../result.js';
 import type { Atom } from '../stages/atom.js';
 import type { Source, SourceQuery } from '../stages/source.js';
+import { recomputeAccumulation } from './budget-accumulate.js';
 import { cancelledResult, isCancelled } from './cancellation.js';
 import { generateIdempotencyKey, scopedIdempotencyKey } from './idempotency.js';
 import { PII_ANNOTATIONS_ATTR, type StageName, withSpan } from './otel.js';
@@ -35,6 +42,21 @@ export interface ComposerStep {
   rateLimit?: TokenBucket;
   /** PII annotations precomputed from outputSchema at build time. */
   piiAnnotations?: PiiAnnotation[];
+  /**
+   * Cost event recorded after this step completed. Populated by adapters that
+   * can report token/dollar usage (e.g. LLM adapters). Steps without cost data
+   * simply omit this field; they contribute 0 to cumulative totals.
+   *
+   * Inline structural type — avoids making `@idriszade/core` depend on
+   * `@idriszade/cost`. The shape mirrors `CostEvent` from that package.
+   */
+  costEvent?: {
+    totalCost: number;
+    inputTokens: number;
+    outputTokens: number;
+    cacheWriteTokens: number;
+    cacheReadTokens: number;
+  };
   run: (
     input: unknown,
     ctx: PipelineContext,
@@ -58,6 +80,21 @@ export interface ComposerOpts {
   };
   registry?: DisposableRegistry;
   costBudget?: CostBudget[];
+  /**
+   * Declares 4-axis ceilings on cumulative spend. Evaluated between every
+   * stage transition by recomputing `BudgetAccumulation` from `run.steps[]`
+   * (pure reducer — Inngest replay-safe; no mutable context field).
+   *
+   * On `warn`: emits a `budget.warn` OTel span event (passive; does not halt).
+   * On `exceeded`: halts immediately with `runtime_budget_exceeded` (non-retriable).
+   *
+   * **Retry compound-spend note:** retries compound spend. A 3-step pipeline
+   * failing at step 2 re-runs steps 0 and 1; their `costEvent` data
+   * reappears in `run.steps[]`. At 20% per-step failure rate, cumulative
+   * spend is ~2.2–2.5× the single-pass baseline. Size `maxDollars`
+   * accordingly.
+   */
+  budgetCeiling?: BudgetCeiling;
   buffer?: { window: { type: 'count' | 'time' | 'all'; n?: number } };
   parentTraceContext?: TraceContext;
 }
@@ -161,7 +198,7 @@ async function runFanOut(
       }
 
       let currentInput: unknown = collected;
-      for (const step of opts.steps) {
+      for (const [si, step] of opts.steps.entries()) {
         if (isCancelled(ctx.signal)) {
           result = cancelledResult();
           return result;
@@ -185,6 +222,16 @@ async function runFanOut(
           result = err(budgetErr);
           return result;
         }
+
+        const ceilingErr = applyBudgetCeiling(
+          opts.budgetCeiling,
+          opts.steps.slice(0, si + 1),
+          ctx.runId,
+        );
+        if (ceilingErr !== null) {
+          result = err(ceilingErr);
+          return result;
+        }
       }
 
       result = ok({
@@ -206,7 +253,7 @@ async function runFanOut(
       }
 
       let currentInput: unknown = atom.data;
-      for (const step of opts.steps) {
+      for (const [si, step] of opts.steps.entries()) {
         if (isCancelled(ctx.signal)) {
           result = cancelledResult();
           return result;
@@ -234,6 +281,16 @@ async function runFanOut(
         const budgetErr = applyBudgets(opts.costBudget, ctx, ctx.runId);
         if (budgetErr !== null) {
           result = err(budgetErr);
+          return result;
+        }
+
+        const ceilingErr = applyBudgetCeiling(
+          opts.budgetCeiling,
+          opts.steps.slice(0, si + 1),
+          ctx.runId,
+        );
+        if (ceilingErr !== null) {
+          result = err(ceilingErr);
           return result;
         }
       }
@@ -282,7 +339,7 @@ async function runSequential(
   let result: Result<ComposerResult, RunError> | undefined;
 
   try {
-    for (const step of opts.steps) {
+    for (const [si, step] of opts.steps.entries()) {
       if (isCancelled(ctx.signal)) {
         result = cancelledResult();
         return result;
@@ -305,6 +362,16 @@ async function runSequential(
       const budgetErr = applyBudgets(opts.costBudget, ctx, ctx.runId);
       if (budgetErr !== null) {
         result = err(budgetErr);
+        return result;
+      }
+
+      const ceilingErr = applyBudgetCeiling(
+        opts.budgetCeiling,
+        opts.steps.slice(0, si + 1),
+        ctx.runId,
+      );
+      if (ceilingErr !== null) {
+        result = err(ceilingErr);
         return result;
       }
     }
@@ -400,6 +467,39 @@ function applyBudgets(
       code: 'budget_review_required',
       message: reviewMsg,
     } as { type: 'unknown'; code: string; message: string },
+  };
+}
+
+function applyBudgetCeiling(
+  ceiling: BudgetCeiling | undefined,
+  steps: readonly ComposerStep[],
+  requestId: string,
+): RunError | null {
+  if (ceiling === undefined) return null;
+  const acc = recomputeAccumulation(steps);
+  const verdict = evaluateBudgetCeiling(acc, ceiling);
+  if (verdict.status === 'ok') return null;
+  if (verdict.status === 'warn') {
+    // Emit on active span if one exists (best-effort: ceiling check runs
+    // between stage spans, so getActiveSpan() may return undefined).
+    const span = trace.getActiveSpan();
+    span?.addEvent('budget.warn', {
+      'budget.fraction': verdict.fraction,
+      'budget.axis': verdict.axis,
+    });
+    return null;
+  }
+  // exceeded
+  return {
+    type: 'unknown',
+    code: 'runtime_budget_exceeded',
+    message: `Budget ceiling exceeded on axis '${verdict.axis}': ${verdict.current} >= ${verdict.limit}`,
+    request_id: requestId,
+    metadata: {
+      budget_axis: verdict.axis,
+      budget_current: verdict.current,
+      budget_limit: verdict.limit,
+    },
   };
 }
 
