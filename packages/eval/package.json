@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/eval",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Pipeline-kit eval foundation — defineEval, runEval, case/scorer/score types",
   "type": "module",
   "main": "./src/index.ts",

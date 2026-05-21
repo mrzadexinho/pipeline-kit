@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/core",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Pipeline-kit orchestration kernel — Source/Store/Process/Serve with Composer + Pipeline factory",
   "type": "module",
   "main": "./src/index.ts",
