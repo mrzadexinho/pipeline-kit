@@ -1,0 +1,41 @@
+{
+  "name": "@idriszade/rate-limit-redis",
+  "version": "0.1.0",
+  "description": "Pipeline-kit RateLimitStore adapter — distributed sliding-window via node-redis v5+ Lua EVAL (ADR X-5)",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@idriszade/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "redis": ">=5.0.0"
+  },
+  "devDependencies": {
+    "@testcontainers/redis": "^10.22.2",
+    "fast-check": "^3.23.2",
+    "redis": "^5.5.0",
+    "testcontainers": "^10.22.2",
+    "vitest": "^3.1.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
