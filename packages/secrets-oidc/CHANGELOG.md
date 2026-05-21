@@ -1,5 +1,12 @@
 # @idriszade/secrets-oidc
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [6875740]
+  - @idriszade/core@0.5.0
+
 ## 0.2.1
 
 ### Patch Changes

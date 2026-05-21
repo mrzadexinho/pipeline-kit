@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/cost",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Pipeline-kit cost pack — bundled pricing snapshot + createCostCalculator factory",
   "type": "module",
   "main": "./src/index.ts",

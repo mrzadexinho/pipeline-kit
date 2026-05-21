@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/store-postgres",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Pipeline-kit Store adapter for persisting pipeline atoms to PostgreSQL via Drizzle ORM",
   "type": "module",
   "main": "./src/index.ts",
