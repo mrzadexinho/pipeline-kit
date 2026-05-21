@@ -15,7 +15,8 @@
       "!**/.changeset",
       "!**/*.md",
       "!research",
-      "!**/spikes"
+      "!**/spikes",
+      "!.claude"
     ]
   },
   "formatter": {
