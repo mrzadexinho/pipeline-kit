@@ -28,15 +28,15 @@
 
 ### Unit 1 — verifyWebhook (M5 cf #2)
 
-General-purpose HMAC-SHA256 webhook verifier exported from `@idriszade/core`. Supports multi-key rotation (primary + up to 9 fallbacks), 300s timestamp tolerance, and returns `Result<true, VerifyError>` with structured error codes (`signature_mismatch`, `timestamp_expired`, `missing_header`). TSDoc added in Wave 1.5 barrel commit (commit 4) due to git-add path list scoping during the Wave 1 dispatch. 59 tests added to core.
+General-purpose HMAC-SHA256 webhook verifier exported from `@idriszade/core`. Supports multi-key rotation via `secret: string | string[]` (no fixed limit; iterates each key, returns ok on first match), 300s timestamp tolerance, and returns `Result<true, VerifyError>` with structured error codes (`signature_mismatch`, `timestamp_expired`, `malformed_header`). TSDoc added in Wave 1.5 barrel commit (commit 4) due to git-add path list scoping during the Wave 1 dispatch. 28 webhook tests added to core (Unit 3 separately added 31 rate-limit tests; combined core delta = 59).
 
 ### Unit 2 — @idriszade/cost pricing pack (ADR X-4)
 
-New package `@idriszade/cost` with a 12-entry bundled PRICES table covering Anthropic (claude-3-5-sonnet, claude-3-5-haiku, claude-3-opus), OpenAI (gpt-4o, gpt-4o-mini, o1), and OSS placeholders. `TokenUsage` is a 4-field struct (inputTokens, outputTokens, cacheWriteTokens, cacheReadTokens) matching Anthropic cache-accurate billing. `createCostCalculator` factory accepts `customPrices` override; Zod boundary validates input; `LAST_UPDATED 2026-05-20` stamped inline. 37 tests. Package set to 0.0.0 in package.json (minor changeset → first publish as 0.1.0 per repo convention).
+New package `@idriszade/cost` with a 12-entry bundled PRICES table covering Anthropic (claude-sonnet-4-7, claude-sonnet-4-6, claude-haiku-4-5, claude-opus-4-7), OpenAI (gpt-5, gpt-5-mini, gpt-4.1, gpt-4o, gpt-4o-mini), and OSS (meta:llama-3.3-70b, deepseek:deepseek-v3, alibaba:qwen-3-235b-a22b). `TokenUsage` is a 4-field struct (inputTokens, outputTokens, cacheWriteTokens, cacheReadTokens) matching Anthropic cache-accurate billing. `createCostCalculator` factory accepts `customPrices` override; Zod boundary validates input; `LAST_UPDATED 2026-05-20` stamped inline. 37 tests. Package set to 0.0.0 in package.json (minor changeset → first publish as 0.1.0 per repo convention).
 
 ### Unit 3 — RateLimitGuard as 6th RunGuard shape (ADR X-5)
 
-`RateLimitGuard` declaration type added to core's `RunGuard` discriminated union (6th shape alongside queue/reject/dedup/idempotency/throttle). `RateLimitStore` interface (in-process only per ADR X-5 in-process scope) + `InProcessRateLimitStore` reference impl with sliding-window log and LRU 1024-key eviction. Distributed Redis adapter deferred to M7 (`@idriszade/rate-limit-redis`). 0 new unit tests beyond the barrel checks (RateLimitGuard shape is declaration-only at this stage; integration tests come with the Redis adapter).
+`RateLimitGuard` declaration type added to core's `RunGuard` discriminated union (6th shape alongside queue/reject/dedup/idempotency/throttle). `RateLimitStore` interface (in-process only per ADR X-5 in-process scope) + `InProcessRateLimitStore` reference impl with sliding-window log and LRU 1024-key eviction. Distributed Redis adapter deferred to M7 (`@idriszade/rate-limit-redis`). 31 new tests added (rate-limit unit tests, fast-check property tests, fake-timer integration tests with ≤ 2_000ms advances per `feedback_fake_timer_gha_flake`). RateLimitGuard declaration-only at kit-core; full distributed integration tests arrive with the Redis adapter in M7.
 
 ### Unit 4 — BudgetCeiling on Composer (cf-X-4)
 
