@@ -56,7 +56,7 @@ Two chore items. `packages/cost/docs/refresh-cadence.md` documents the quarterly
 
 ### Unit 5 — Trusted Publishing re-enable (long-standing post-v0.1.0 TODO)
 
-`release.yml` updated: `id-token: write` permission added to workflow-level `permissions:` block; `NPM_CONFIG_PROVENANCE: true` uncommented (was `TODO(post-v0.1.0)` since M0.5b). Setup guide at `docs/development/trusted-publishing-setup.md` documents the per-package npmjs.com web-UI steps required before the next publish PR merges. Acceptance criterion 5 (provenance attestation visible on npm registry) is a post-merge + post-npmjs-config verification step — out of scope for M7 branch sign-off. RF-5 (per-pkg OIDC pinning to `main` + `release.yml`) documented in the setup guide.
+`release.yml` updated: `id-token: write` and `contents: write` permissions verified already present in the workflow-level `permissions:` block (pre-M7 setup — not added by Unit 5); `NPM_CONFIG_PROVENANCE: true` uncommented — was the `TODO(post-v0.1.0)` comment block since M0.5b, that comment block removed. Setup guide at `docs/development/trusted-publishing-setup.md` documents the per-package npmjs.com web-UI steps required before the next publish PR merges. Acceptance criterion 5 (provenance attestation visible on npm registry) is a post-merge + post-npmjs-config verification step — out of scope for M7 branch sign-off. RF-5 (per-pkg OIDC pinning to `main` + `release.yml`) documented in the setup guide.
 
 ## ADRs implemented
 
