@@ -84,6 +84,8 @@ export type {
   TerminalPipeline,
 } from './pipeline-types.js';
 export type { Jitter, RetryPolicy, TokenBucketConfig } from './policy.js';
+export type { RateLimitResult, RateLimitStore } from './rate-limit/index.js';
+export { InProcessRateLimitStore } from './rate-limit/index.js';
 export type {
   AtomListFilters,
   AtomListResult,
@@ -150,5 +152,3 @@ export type {
   WebhookAlgorithm,
 } from './webhooks/index.js';
 export { sign, verify, verifyWebhook, webhooks } from './webhooks/index.js';
-export type { RateLimitResult, RateLimitStore } from './rate-limit/index.js';
-export { InProcessRateLimitStore } from './rate-limit/index.js';
