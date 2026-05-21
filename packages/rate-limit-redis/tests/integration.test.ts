@@ -158,7 +158,7 @@ describe.skipIf(SKIP)('RedisRateLimitStore [integration] [skip-ci]', () => {
 
     // sha is asserted non-null above; use empty-string fallback to satisfy strict types
     const exists = await client.scriptExists([sha ?? '']);
-    expect(exists).toEqual([true]);
+    expect(exists).toEqual([1]);
   });
 
   // --- AC-6: NOSCRIPT fallback ---
@@ -183,7 +183,7 @@ describe.skipIf(SKIP)('RedisRateLimitStore [integration] [skip-ci]', () => {
     const sha: string | null = (freshStore as unknown as { scriptSha: string | null }).scriptSha;
     if (sha !== null) {
       const exists = await client.scriptExists([sha]);
-      expect(exists).toEqual([true]);
+      expect(exists).toEqual([1]);
     }
   });
 
