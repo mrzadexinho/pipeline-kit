@@ -92,6 +92,12 @@ importers:
         specifier: ^2.7.1
         version: 2.7.1(@opentelemetry/api@1.9.1)
 
+  packages/cost:
+    dependencies:
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+
   packages/eval:
     dependencies:
       '@idriszade/core':
