@@ -30,7 +30,76 @@ and the npm team's GA blog (2025-07-31). Configure at your own pace — when all
 - You must be logged into npmjs.com as `mrzadexinho` (or a team member with
   package admin access).
 
-## Per-Package Configuration Steps
+## CLI Approach (recommended — ~2 min total)
+
+### Patch local npm CLI (npm 11.12.1 only — drop when CLI upstream ships `--allow-publish`)
+
+npm 11.12.1's `npm trust github` is missing the required `permissions` field; the perl one-liner injects it. Safe; reversible.
+
+```bash
+NPM_TRUST=/opt/homebrew/lib/node_modules/npm/lib/trust-cmd.js   # adjust path if not Homebrew
+cp "$NPM_TRUST" "$NPM_TRUST.bak"
+perl -i -pe "s|(const trustConfig = this\.constructor\.optionsToBody\(options\.values\))|\$1\n    trustConfig.permissions = ['createPackage']|" "$NPM_TRUST"
+grep -c "trustConfig.permissions = \['createPackage'\]" "$NPM_TRUST"   # must print 1
+```
+
+To revert: `mv "$NPM_TRUST.bak" "$NPM_TRUST"` or `brew reinstall node`.
+
+### Authenticate
+
+```bash
+npm login   # opens browser
+# Ensure 2FA is enabled at "Authorization and writes" tier on npmjs.com
+# (https://www.npmjs.com/settings/<user>/auth)
+```
+
+### Configure one package interactively to unlock the 5-min 2FA-skip window
+
+```bash
+npm trust github "@idriszade/core" --file release.yml --repo mrzadexinho/pipeline-kit
+# On the 2FA browser prompt, TICK "skip 2FA for the next 5 minutes" before confirming.
+```
+
+### Bulk-loop the rest within the 5-min window
+
+```bash
+for pkg in adapter-inngest cli cost eval eval-scorers \
+           memory memory-map memory-orchestr8 memory-sqlite \
+           observe observe-vercel \
+           process-classify process-extract process-reviewable process-route process-validate \
+           rate-limit-redis \
+           secrets secrets-env secrets-oidc secrets-sops \
+           serve-email serve-mcp serve-slack serve-webhook \
+           source-api source-apify source-mcp source-webhook \
+           store-pgvector store-postgres store-sqlite; do
+  echo ">>> @idriszade/$pkg"
+  npm trust github "@idriszade/$pkg" --file release.yml --repo mrzadexinho/pipeline-kit -y
+  sleep 2
+done
+```
+
+If the 2FA window expires mid-loop (401s start appearing), refresh by running one interactive command (re-ticking the 5-min skip), then re-run the loop. Already-configured packages return 409 — harmless during retry.
+
+### Verify
+
+```bash
+for pkg in adapter-inngest cli core cost eval eval-scorers \
+           memory memory-map memory-orchestr8 memory-sqlite \
+           observe observe-vercel \
+           process-classify process-extract process-reviewable process-route process-validate \
+           rate-limit-redis \
+           secrets secrets-env secrets-oidc secrets-sops \
+           serve-email serve-mcp serve-slack serve-webhook \
+           source-api source-apify source-mcp source-webhook \
+           store-pgvector store-postgres store-sqlite; do
+  r=$(npm trust list "@idriszade/$pkg" 2>&1 | grep -E "github|gitlab|circleci" | head -1)
+  printf "%-40s %s\n" "@idriszade/$pkg" "${r:-NONE}"
+done
+```
+
+**Note on read-after-write lag:** `npm trust list` can show empty for ~minutes after a successful create. If "MISSING" shows up immediately post-loop, wait 2-3 min and re-verify before re-running anything. Re-running `npm trust github` on an already-configured package returns 409 Conflict — that's a positive signal that the config exists.
+
+## Web UI Approach (fallback if CLI patch isn't preferred)
 
 Repeat for **every package** in the [Complete Package List](#complete-package-list-post-m7) below:
 
