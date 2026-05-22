@@ -1,5 +1,4 @@
-// Wire-tier foundation exports — Subunit 1a + 1b
-// TODO: trace-wire re-exports arrive in Subunit 1c.
+// Wire-tier foundation exports — Subunit 1a + 1b + 1c
 
 export { canonicalize, canonicalizeRaw } from './canonical-json.js';
 export type { DecodedResult } from './decode-result.js';
@@ -17,6 +16,7 @@ export {
   encodeNdjsonStream,
 } from './ndjson.js';
 export { encodeTimestamp, validateTimestamp } from './timestamp.js';
+export { attachTraceToFrame, extractTraceFromFrame } from './trace-wire.js';
 export type {
   WireDecodeError,
   WireDecodeErrorCode,

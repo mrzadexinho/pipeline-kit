@@ -161,3 +161,28 @@ export type {
   WebhookAlgorithm,
 } from './webhooks/index.js';
 export { sign, verify, verifyWebhook, webhooks } from './webhooks/index.js';
+export type {
+  DecodedResult,
+  WireDecodeError,
+  WireDecodeErrorCode,
+  WireDecodeFrame,
+  WireFrame,
+  WireMode,
+} from './wire/index.js';
+export {
+  attachTraceToFrame,
+  canonicalize,
+  canonicalizeRaw,
+  decodeLspAsyncIter,
+  decodeLspStream,
+  decodeNdjsonAsyncIter,
+  decodeNdjsonStream,
+  decodeResult,
+  encodeLspFrame,
+  encodeLspStream,
+  encodeNdjsonFrame,
+  encodeNdjsonStream,
+  encodeTimestamp,
+  extractTraceFromFrame,
+  validateTimestamp,
+} from './wire/index.js';
