@@ -1,9 +1,15 @@
 # Trusted Publishing Setup (npm OIDC)
 
-User-action checklist for configuring npm Trusted Publishing per-package before
-the next `release.yml` publish run. `NPM_CONFIG_PROVENANCE: true` is now active
-in the workflow; this config must be completed on npmjs.com or publishes will
-fail with a provenance attestation error.
+**Trusted Publishing is an OPTIONAL upgrade**, not a publish prerequisite. Provenance
+attestations work fine via the existing `NODE_AUTH_TOKEN` + GHA `id-token: write`
+path (proven by M7 publish on 2026-05-22 — all 33 packages published with sigstore
+provenance without any per-package Trusted Publisher config).
+
+The value of configuring Trusted Publishing is dropping the long-lived `NPM_TOKEN`
+secret from GitHub Actions and switching to short-lived OIDC token exchange. This
+is the 2025-current best practice for supply-chain security per OpenSSF Scorecard
+and the npm team's GA blog (2025-07-31). Configure at your own pace — when all
+33 packages have a Trusted Publisher set on npmjs.com, you can remove `NPM_TOKEN`.
 
 **References:**
 - [GitHub Changelog: npm trusted publishing with OIDC (GA 2025-07-31)](https://github.blog/changelog/2025-07-31-npm-trusted-publishing-with-oidc/)
@@ -114,11 +120,13 @@ a `release.yml` run:
 
 ## Rollback / Failure Modes
 
-If a `release.yml` publish run fails with an error like:
+**This section applies AFTER you've migrated to Trusted Publishing.** If a future
+`release.yml` publish run (with `NPM_TOKEN` removed and Trusted Publishers configured)
+fails with an error like:
 ```
 404 / package not configured for Trusted Publishing
 ```
-or similar provenance attestation error, follow these steps:
+follow these steps:
 
 1. **Comment out the provenance line** in `.github/workflows/release.yml`:
    ```yaml
