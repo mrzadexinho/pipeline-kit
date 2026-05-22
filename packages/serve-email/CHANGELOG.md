@@ -1,5 +1,12 @@
 # @idriszade/serve-email
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [4ca032d]
+  - @idriszade/core@0.5.2
+
 ## 0.1.5
 
 ### Patch Changes
