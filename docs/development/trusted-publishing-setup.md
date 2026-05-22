@@ -220,3 +220,20 @@ follow these steps:
 
 4. After diagnosing, fix the npmjs.com configuration and re-enable
    `NPM_CONFIG_PROVENANCE: true` in a follow-up commit.
+
+## Known issue: TP-OIDC 404 on existing-package version updates (2026-05-22)
+
+Attempting a publish run with NODE_AUTH_TOKEN removed (TP-OIDC sole auth path) currently returns 404 on the publish PUT for all 33 @idriszade/* packages despite valid TP configurations and successful provenance signing. The failure pattern is documented in `~/.claude/projects/-Users-zadexinho-Claude-Workspace-pipeline-kit/memory/feedback_npm_tp_oidc_404.md` (local memory).
+
+**Hypothesis (unverified):** The local npm 11.12.1 CLI was patched to inject `permissions: ['createPackage']` into the `npm trust github` request body. This may only cover *new package creation*, not version updates of existing packages.
+
+**Workaround:** Keep `NODE_AUTH_TOKEN` in release.yml until TP-OIDC is fixed. The TP configs on all 33 packages remain valid but unused.
+
+**To diagnose (deferred to M8):**
+1. Refresh OTP elevation: `npm trust github "@idriszade/core" --file release.yml --repo mrzadexinho/pipeline-kit` interactively
+2. Within the 5-min skip window: `npm trust list "@idriszade/core" --json` to inspect full claims
+3. Compare to GHA OIDC token claims from a debug release.yml run
+4. Identify the claim mismatch; revoke (via `npm trust revoke --id <id>`) and recreate with corrected fields
+5. Retest by removing NODE_AUTH_TOKEN
+
+The upstream `npm/cli` main branch ships `--allow-publish` and `--allow-stage-publish` flags that handle this automatically. Once an npm release > 11.12.1 ships these, the perl patch can be reverted and the official flags used.
