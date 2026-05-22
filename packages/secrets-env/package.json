@@ -2,6 +2,15 @@
   "name": "@idriszade/secrets-env",
   "version": "0.2.3",
   "description": "Pipeline-kit SecretsResolver adapter — env-var-backed configuration (T3 Env / envalid pattern)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/secrets-env"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/secrets-env#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

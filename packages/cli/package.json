@@ -2,6 +2,15 @@
   "name": "@idriszade/cli",
   "version": "0.2.4",
   "description": "Pipeline-kit CLI — pk dev, pk run, pk inspect",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/cli#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

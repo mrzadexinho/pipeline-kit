@@ -2,6 +2,15 @@
   "name": "@idriszade/process-validate",
   "version": "0.1.5",
   "description": "Pipeline-kit Process adapter for schema-driven validation of pipeline atoms via Zod",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/process-validate"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/process-validate#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

@@ -2,6 +2,15 @@
   "name": "@idriszade/cost",
   "version": "0.1.0",
   "description": "Pipeline-kit cost pack — bundled pricing snapshot + createCostCalculator factory",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/cost"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/cost#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

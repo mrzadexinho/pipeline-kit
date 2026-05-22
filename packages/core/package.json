@@ -2,6 +2,15 @@
   "name": "@idriszade/core",
   "version": "0.5.1",
   "description": "Pipeline-kit orchestration kernel — Source/Store/Process/Serve with Composer + Pipeline factory",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/core#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

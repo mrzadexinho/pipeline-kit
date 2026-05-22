@@ -2,6 +2,15 @@
   "name": "@idriszade/store-sqlite",
   "version": "0.1.5",
   "description": "Pipeline-kit Store adapter for persisting pipeline atoms to SQLite via Drizzle ORM",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/store-sqlite"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/store-sqlite#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

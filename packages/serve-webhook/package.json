@@ -2,6 +2,15 @@
   "name": "@idriszade/serve-webhook",
   "version": "0.1.5",
   "description": "Pipeline-kit Serve adapter for dispatching HMAC-signed outbound webhook payloads",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/serve-webhook"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/serve-webhook#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

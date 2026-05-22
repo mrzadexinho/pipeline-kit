@@ -2,6 +2,15 @@
   "name": "@idriszade/source-webhook",
   "version": "0.1.5",
   "description": "Pipeline-kit Source adapter for receiving inbound webhooks via Hono",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/source-webhook"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/source-webhook#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

@@ -2,6 +2,15 @@
   "name": "@idriszade/serve-email",
   "version": "0.1.5",
   "description": "Pipeline-kit Serve adapter for delivering pipeline results via email (Nodemailer / Resend)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/serve-email"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/serve-email#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

@@ -2,6 +2,15 @@
   "name": "@idriszade/secrets-sops",
   "version": "0.2.3",
   "description": "Pipeline-kit SOPS CLI-backed SecretsResolver — spawns sops binary via node:child_process",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/secrets-sops"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/secrets-sops#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

@@ -2,6 +2,15 @@
   "name": "@idriszade/secrets-oidc",
   "version": "0.2.3",
   "description": "Pipeline-kit OIDC workload-identity SecretsResolver adapters — GCP WIF, AWS IRSA, Azure WIF",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/secrets-oidc"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/secrets-oidc#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

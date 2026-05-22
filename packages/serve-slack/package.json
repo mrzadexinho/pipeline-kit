@@ -2,6 +2,15 @@
   "name": "@idriszade/serve-slack",
   "version": "0.1.5",
   "description": "Pipeline-kit Serve adapter for posting pipeline results to Slack channels and DMs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/serve-slack"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/serve-slack#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

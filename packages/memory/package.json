@@ -2,6 +2,15 @@
   "name": "@idriszade/memory",
   "version": "0.2.4",
   "description": "Pipeline-kit MemoryAdapter v1 contract with Listable and Disposable markers",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/memory"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/memory#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

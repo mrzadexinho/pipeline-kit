@@ -2,6 +2,15 @@
   "name": "@idriszade/observe",
   "version": "0.3.2",
   "description": "Pipeline-kit OTel GenAI v1.37 observability — exporter, trace context, file sink",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/observe"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/observe#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

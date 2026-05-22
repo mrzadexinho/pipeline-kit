@@ -2,6 +2,15 @@
   "name": "@idriszade/process-classify",
   "version": "0.1.6",
   "description": "Pipeline-kit Process adapter for label classification of pipeline atoms",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/process-classify"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/process-classify#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

@@ -2,6 +2,15 @@
   "name": "@idriszade/memory-map",
   "version": "0.2.0",
   "description": "Pipeline-kit MemoryAdapter — in-memory Map-backed reference fixture (ADR V-6)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/memory-map"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/memory-map#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

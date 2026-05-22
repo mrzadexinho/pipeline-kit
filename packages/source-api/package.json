@@ -2,6 +2,15 @@
   "name": "@idriszade/source-api",
   "version": "0.1.5",
   "description": "Pipeline-kit Source adapter for polling and streaming HTTP/REST APIs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/source-api"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/source-api#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

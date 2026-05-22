@@ -2,6 +2,15 @@
   "name": "@idriszade/eval-scorers",
   "version": "0.1.4",
   "description": "Pipeline-kit eval scorers — exactMatch, numericClose, jsonShape, llmJudge",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "directory": "packages/eval-scorers"
+  },
+  "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/eval-scorers#readme",
+  "bugs": {
+    "url": "https://github.com/mrzadexinho/pipeline-kit/issues"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
