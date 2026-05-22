@@ -1,5 +1,13 @@
 # @idriszade/process-classify
 
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies [4ca032d]
+  - @idriszade/core@0.5.2
+  - @idriszade/process-extract@0.1.7
+
 ## 0.1.6
 
 ### Patch Changes

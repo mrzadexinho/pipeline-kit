@@ -1,5 +1,12 @@
 # @idriszade/observe
 
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies [4ca032d]
+  - @idriszade/core@0.5.2
+
 ## 0.3.2
 
 ### Patch Changes

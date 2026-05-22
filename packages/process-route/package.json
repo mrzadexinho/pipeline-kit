@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/process-route",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Pipeline-kit Process adapter for predicate-based routing of atoms to downstream stages",
   "repository": {
     "type": "git",

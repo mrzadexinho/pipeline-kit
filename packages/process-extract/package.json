@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/process-extract",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Pipeline-kit Process adapter for LLM-powered structured data extraction with Zod schemas",
   "repository": {
     "type": "git",

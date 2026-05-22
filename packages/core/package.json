@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/core",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Pipeline-kit orchestration kernel — Source/Store/Process/Serve with Composer + Pipeline factory",
   "repository": {
     "type": "git",

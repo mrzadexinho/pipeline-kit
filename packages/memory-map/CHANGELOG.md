@@ -1,5 +1,13 @@
 # @idriszade/memory-map
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [4ca032d]
+  - @idriszade/core@0.5.2
+  - @idriszade/memory@0.2.5
+
 ## 0.2.0
 
 ### Minor Changes
