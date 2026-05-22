@@ -45,9 +45,12 @@ jobs:
           title: "chore(release): version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Trusted Publishing (OIDC) is now the sole auth path for npm publish.
-          # All 33 @idriszade/* packages have `npm trust github` configured pointing
-          # at this workflow file. The id-token: write permission (workflow-level)
-          # lets npm CLI mint an OIDC token and exchange it for a short-lived
-          # publish token via npmjs.com — no long-lived NPM_TOKEN needed.
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # NODE_AUTH_TOKEN is what `actions/setup-node` interpolates into the
+          # ~/.npmrc auth line (//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}).
+          # TP-OIDC migration attempted 2026-05-22 — all 33 pkgs have npm trust
+          # configured, but a TP claim mismatch (likely workflow_ref or update-
+          # permission scope) caused a 404 on publish PUT. Keeping NPM_TOKEN as
+          # the sole auth path until the TP-OIDC issue is diagnosed (post-M8).
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
