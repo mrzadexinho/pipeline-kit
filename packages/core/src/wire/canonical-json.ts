@@ -36,7 +36,7 @@ function encodeString(s: string): string {
     } else if (c === '\t') {
       result += '\\t';
     } else if (code < 0x20) {
-      result += '\\u' + code.toString(16).padStart(4, '0');
+      result += `\\u${code.toString(16).padStart(4, '0')}`;
     } else {
       result += c;
     }
@@ -64,7 +64,7 @@ function serializeValue(value: unknown): string {
   }
 
   if (typeof value === 'number') {
-    if (!isFinite(value)) {
+    if (!Number.isFinite(value)) {
       throw new TypeError(
         `canonical-json: non-finite number (${value}) cannot be serialized to JSON`,
       );
@@ -87,7 +87,7 @@ function serializeValue(value: unknown): string {
   if (Array.isArray(value)) {
     if (value.length === 0) return '[]';
     const items = value.map((item) => serializeValue(item));
-    return '[' + items.join(',') + ']';
+    return `[${items.join(',')}]`;
   }
 
   if (typeof value === 'object') {
@@ -96,8 +96,8 @@ function serializeValue(value: unknown): string {
     if (keys.length === 0) return '{}';
     const pairs = keys
       .filter((k) => obj[k] !== undefined)
-      .map((k) => encodeString(k) + ':' + serializeValue(obj[k]));
-    return '{' + pairs.join(',') + '}';
+      .map((k) => `${encodeString(k)}:${serializeValue(obj[k])}`);
+    return `{${pairs.join(',')}}`;
   }
 
   throw new TypeError(`canonical-json: unsupported value type: ${typeof value}`);

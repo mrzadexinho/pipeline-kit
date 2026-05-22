@@ -5,13 +5,10 @@ import type { WireDecodeError } from './types.js';
 /**
  * RFC-3339 millisecond-precision timestamp regex.
  *
- * Groups:
- *   1: year, 2: month, 3: day,
- *   4: hour, 5: minute, 6: second,
- *   7: fractional seconds,
- *   8: timezone (Z or +/-HH:MM)
+ * Named groups: year, month, day, hour, minute, second, fraction, offset.
  */
-const TIMESTAMP_RE = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.(\d+)(Z|[+-]\d{2}:\d{2})$/;
+const TIMESTAMP_RE =
+  /^(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})T(?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2})\.(?<fraction>\d+)(?<offset>Z|[+-]\d{2}:\d{2})$/;
 
 /** Days per month in a non-leap year. */
 const DAYS_IN_MONTH = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -39,7 +36,7 @@ function maxDaysInMonth(year: number, month: number): number {
 export function validateTimestamp(value: string): Result<string, WireDecodeError> {
   const match = TIMESTAMP_RE.exec(value);
 
-  if (!match) {
+  if (!match?.groups) {
     return err({
       code: 'wire/timestamp_format_invalid',
       message: `Timestamp "${value.slice(0, 64)}" does not match RFC-3339 millisecond-precision format`,
@@ -47,7 +44,18 @@ export function validateTimestamp(value: string): Result<string, WireDecodeError
     });
   }
 
-  const fractional = match[7]!;
+  const { year: y, month: m, day: d, hour: h, minute: min, second: sec, fraction } = match.groups;
+
+  // Defensive guard — unreachable when regex matches, but satisfies flow analysis.
+  if (!y || !m || !d || !h || !min || !sec || !fraction) {
+    return err({
+      code: 'wire/timestamp_format_invalid',
+      message: `Timestamp "${value.slice(0, 64)}" does not match RFC-3339 millisecond-precision format`,
+      near: value.slice(0, 64),
+    });
+  }
+
+  const fractional = fraction;
 
   // Fractional digits must be exactly 3 (millisecond precision).
   // More digits = sub-millisecond precision.
@@ -67,12 +75,12 @@ export function validateTimestamp(value: string): Result<string, WireDecodeError
     });
   }
 
-  const year = parseInt(match[1]!, 10);
-  const month = parseInt(match[2]!, 10);
-  const day = parseInt(match[3]!, 10);
-  const hour = parseInt(match[4]!, 10);
-  const minute = parseInt(match[5]!, 10);
-  const second = parseInt(match[6]!, 10);
+  const year = parseInt(y, 10);
+  const month = parseInt(m, 10);
+  const day = parseInt(d, 10);
+  const hour = parseInt(h, 10);
+  const minute = parseInt(min, 10);
+  const second = parseInt(sec, 10);
 
   if (month < 1 || month > 12) {
     return err({
