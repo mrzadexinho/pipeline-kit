@@ -1,5 +1,12 @@
 # @idriszade/serve-webhook
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies [7a07c7f]
+  - @idriszade/core@0.5.1
+
 ## 0.1.4
 
 ### Patch Changes
