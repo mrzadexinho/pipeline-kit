@@ -45,9 +45,9 @@ jobs:
           title: "chore(release): version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          # NODE_AUTH_TOKEN is what `actions/setup-node` interpolates into the
-          # ~/.npmrc auth line (//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}).
-          # Without it, publishes go anonymous → 404 PUT on @idriszade/* scope.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Trusted Publishing (OIDC) is now the sole auth path for npm publish.
+          # All 33 @idriszade/* packages have `npm trust github` configured pointing
+          # at this workflow file. The id-token: write permission (workflow-level)
+          # lets npm CLI mint an OIDC token and exchange it for a short-lived
+          # publish token via npmjs.com — no long-lived NPM_TOKEN needed.
           NPM_CONFIG_PROVENANCE: true
