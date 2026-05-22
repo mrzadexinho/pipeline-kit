@@ -19,3 +19,6 @@ coverage/
 # Claude Code config — selective track
 .claude/settings.local.json
 .claude/cache/
+
+# TP-OIDC diagnostic captures (npm-trust-introspect.sh output)
+tmp/tp-oidc-diagnosis/
