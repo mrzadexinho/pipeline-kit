@@ -1,5 +1,11 @@
 # @idriszade/cli
 
+## 0.3.1
+
+### Patch Changes
+
+- 8b86431: M9: add discriminated-union Zod fixture + Pydantic snapshot for codegen CI gating
+
 ## 0.3.0
 
 ### Minor Changes
