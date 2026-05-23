@@ -15,7 +15,8 @@
     "test": "vitest run --coverage",
     "test:types": "tstyche",
     "build": "pnpm -r build",
-    "gen-py-schema:check": "pnpm --filter @idriszade/cli build && node_modules/.bin/tsx packages/cli/src/cli.ts gen-py-schema --in packages/cli/fixtures/wire-schemas/sample-atom.ts --out packages/cli/fixtures/wire-schemas/__snapshot__/sample-atom.py --check"
+    "gen-py-schema:check": "pnpm --filter @idriszade/cli build && node_modules/.bin/tsx packages/cli/src/cli.ts gen-py-schema --in packages/cli/fixtures/wire-schemas/sample-atom.ts --out packages/cli/fixtures/wire-schemas/__snapshot__/sample-atom.py --check",
+    "gen-py-schema:check-union": "pnpm --filter @idriszade/cli build && node_modules/.bin/tsx --eval \"(async()=>{const{genPySchemaCommand}=await import('./packages/cli/src/commands/gen-py-schema.js');const code=await genPySchemaCommand({inFile:'packages/cli/fixtures/wire-schemas/sample-error-frame.ts',outFile:'packages/cli/fixtures/wire-schemas/__snapshot__/sample-error-frame.py',check:true,strictFeatures:true});if(code!==0)process.exit(code);})().catch((e)=>{process.stderr.write(String(e)+'\\n');process.exit(1);})\""
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.14",

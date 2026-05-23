@@ -3,7 +3,7 @@
  * documents into Pydantic v2 BaseModel classes.
  *
  * Runtime dependency: `uv` must be on PATH. The Python package
- * `datamodel-code-generator[http]>=0.25` is fetched on-demand by `uv run`.
+ * `datamodel-code-generator[http]==0.57.0` is fetched on-demand by `uv run`.
  *
  * Invoked via `child_process.execFile` (not exec/shell) to prevent injection
  * via user-supplied file paths; all user values are passed as separate argv
@@ -70,7 +70,7 @@ export async function runDatamodelCodegen(opts: CodegenOptions): Promise<Codegen
     const args = [
       'run',
       '--with',
-      'datamodel-code-generator[http]>=0.25',
+      'datamodel-code-generator[http]==0.57.0',
       'datamodel-codegen',
       '--input-file-type',
       'jsonschema',
