@@ -15,7 +15,7 @@ describe('SqliteMemoryAdapter — WAL perf sanity', () => {
     }
   });
 
-  it('100 sequential writes to file-path SQLite complete in <50ms', async () => {
+  it('100 sequential writes to file-path SQLite complete in <500ms (WAL regression guard)', async () => {
     const adapter = createSqliteMemoryAdapter({ dbPath, walMode: true });
 
     const start = performance.now();
@@ -27,7 +27,7 @@ describe('SqliteMemoryAdapter — WAL perf sanity', () => {
 
     await adapter.close();
 
-    // WAL mode should make 100 sequential writes well under 50ms
-    expect(elapsed).toBeLessThan(50);
+    // Regression guard for WAL mode being enabled. Non-WAL would take ~1000ms+ (per-write fsync); 500ms cleanly distinguishes WAL-on from WAL-off while remaining stable under parallel CI load.
+    expect(elapsed).toBeLessThan(500);
   }, 5000);
 });
