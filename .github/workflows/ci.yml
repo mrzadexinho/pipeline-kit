@@ -33,6 +33,24 @@ jobs:
       - run: pnpm test
       - run: pnpm test:types
 
+  test-python:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            **/pyproject.toml
+            **/uv.lock
+      - name: Run Python tests
+        working-directory: packages/adapter-python-process
+        run: uv run --frozen pytest
+
   bun:
     name: Bun smoke
     runs-on: ubuntu-latest
