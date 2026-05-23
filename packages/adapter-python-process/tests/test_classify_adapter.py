@@ -36,13 +36,15 @@ def test_happy_path_short_text() -> None:
     """Happy path: short text produces bucket='short', no error."""
     out = _run_adapter({"body": {"text": "hello world", "metadata": {}}})
     assert out["body"]["data"]["bucket"] == "short"
-    assert out["body"].get("error") is None
+    assert "error" in out["body"]
+    assert out["body"]["error"] is None
 
 
 def test_missing_text_field_error() -> None:
     """Missing text field produces process_error with code classify/missing_input."""
     out = _run_adapter({"body": {"metadata": {}}})
-    assert out["body"].get("data") is None
+    assert "data" in out["body"]
+    assert out["body"]["data"] is None
     err = out["body"]["error"]
     assert err["type"] == "process_error"
     assert err["code"] == "classify/missing_input"
@@ -55,7 +57,8 @@ def test_idempotency_key_round_trip() -> None:
         {"body": {"text": "hello", "metadata": {"idempotencyKey": "test-key-123"}}}
     )
     assert out["body"]["data"]["idempotencyKey"] == "test-key-123"
-    assert out["body"].get("error") is None
+    assert "error" in out["body"]
+    assert out["body"]["error"] is None
 
 
 def test_no_traceparent_exits_zero() -> None:
@@ -72,4 +75,5 @@ def test_with_traceparent_exits_zero() -> None:
         {"body": {"text": "traced input", "metadata": {"traceparent": traceparent}}}
     )
     assert out["body"]["data"]["bucket"] in {"short", "medium", "long"}
-    assert out["body"].get("error") is None
+    assert "error" in out["body"]
+    assert out["body"]["error"] is None

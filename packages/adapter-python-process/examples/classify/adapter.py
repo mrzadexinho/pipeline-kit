@@ -100,14 +100,14 @@ def _process_frame(frame: InputFrame) -> OutputFrame:
                 code="classify/missing_input",
                 message="Required field 'text' is missing from input frame body",
             )
-            return OutputFrame(body=OutputBody(error=out_error))
+            return OutputFrame(body=OutputBody(data=None, error=out_error))
 
         bucket = _classify_bucket(text)
         data_kwargs: dict = {"bucket": bucket}
         if idempotency_key is not None:
             data_kwargs["idempotencyKey"] = idempotency_key
         out_data = OutputData(**data_kwargs)  # type: ignore[arg-type]
-        return OutputFrame(body=OutputBody(data=out_data))
+        return OutputFrame(body=OutputBody(data=out_data, error=None))
 
 
 if __name__ == "__main__":
