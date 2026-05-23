@@ -194,9 +194,11 @@ function collectGaps(schema: ZodTypeAny, path: string, gaps: FeatureGap[]): void
   }
 
   // ---- ZodRecord — recurse into value schema ----
+  // Zod v4 stores the value schema under `valueType` (not `valueSchema`).
   if (type === 'record') {
     const def = getDef(schema);
-    const valueSchema = def.valueSchema as ZodTypeAny | undefined;
+    // Zod v4: valueType; Zod v3 fallback: valueSchema
+    const valueSchema = (def.valueType ?? def.valueSchema) as ZodTypeAny | undefined;
     if (valueSchema) collectGaps(valueSchema, `${path}[*]`, gaps);
     return;
   }
