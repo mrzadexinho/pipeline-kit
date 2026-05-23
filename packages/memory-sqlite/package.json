@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/memory-sqlite",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Pipeline-kit MemoryAdapter — better-sqlite3-backed persistent adapter with WAL mode (ADR V-6)",
   "repository": {
     "type": "git",

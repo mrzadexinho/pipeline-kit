@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/source-api",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Pipeline-kit Source adapter for polling and streaming HTTP/REST APIs",
   "repository": {
     "type": "git",

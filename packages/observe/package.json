@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/observe",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Pipeline-kit OTel GenAI v1.37 observability — exporter, trace context, file sink",
   "repository": {
     "type": "git",
