@@ -221,3 +221,80 @@ If provenance fails after the trust config fix:
 ---
 
 *Diagnostic infrastructure landed in M8 Unit 4 — 2026-05-22. Actual fix is M9+ carry-forward.*
+
+---
+
+## Phase 1 findings (M9 U6, captured 2026-05-23)
+
+### Run details
+
+- Workflow: `.github/workflows/oidc-token-debug.yml`
+- Run ID: `26326199840`
+- SHA at trigger: `764060371b8137a65e24961e5e45e05ed6bfd4f2` (master tip)
+- Conclusion: success (9s)
+- Audience requested: `npm:registry.npmjs.org`
+
+### Captured OIDC token claims (diagnostic fields only)
+
+```json
+{
+  "sub": "repo:mrzadexinho/pipeline-kit:ref:refs/heads/master",
+  "aud": "npm:registry.npmjs.org",
+  "ref": "refs/heads/master",
+  "repository": "mrzadexinho/pipeline-kit",
+  "workflow_ref": "mrzadexinho/pipeline-kit/.github/workflows/oidc-token-debug.yml@refs/heads/master",
+  "workflow": "OIDC Token Debug (manual)",
+  "event_name": "workflow_dispatch",
+  "runner_environment": "github-hosted"
+}
+```
+
+Notes:
+- `workflow_ref` and `workflow` above are from `oidc-token-debug.yml`. For the actual
+  release run, `workflow_ref` will be
+  `mrzadexinho/pipeline-kit/.github/workflows/release.yml@refs/heads/master`
+  and `workflow` will be `Release`.
+- `ref` is `refs/heads/master` (not `refs/heads/main`). Hypothesis C is NOT the root
+  cause — the ref matches what any trust config registered without `--ref` would default
+  to on a master-branch repo.
+
+### Matched hypothesis
+
+**Hypothesis A + B (compound):**
+
+1. **A (primary — createPackage missing updatePackage):** The perl-patched npm CLI
+   11.12.1 injected `permissions: ['createPackage']` only. Version-update PUTs require
+   `updatePackage` (or the combined flag that `--allow-publish` sets in the stock CLI).
+   This is the definitive root cause for version-bump 404s.
+
+2. **B (secondary — workflow_ref short path):** If `npm trust github --file release.yml`
+   was used during original registration, the trust config stores a condition on the
+   short filename `release.yml`. The actual OIDC token presents the full path
+   `mrzadexinho/pipeline-kit/.github/workflows/release.yml@refs/heads/master`. The
+   registry matches on the full path; a short-path trust entry would be rejected even
+   if permissions were correct.
+
+   **Use `--file .github/workflows/release.yml` (full path) in Phase 2.**
+
+**Hypothesis C eliminated** — `ref` is `refs/heads/master`; no `refs/heads/main`
+mismatch.
+
+### Recommended Phase 2 command shape
+
+Per hypotheses A+B, re-run trust registration with the stock (unpatched) npm CLI
+using the full workflow file path:
+
+```bash
+npm trust github "@idriszade/<pkg>" \
+  --file .github/workflows/release.yml \
+  --repo mrzadexinho/pipeline-kit \
+  --allow-publish
+```
+
+`--allow-publish` in the stock upstream CLI sets both `createPackage` + `updatePackage`.
+`--file .github/workflows/release.yml` anchors the `workflow_ref` condition to the
+full relative path that the OIDC token presents.
+
+Do NOT use the perl-patched CLI for Phase 2 — the patch only adds `createPackage`.
+If only the patched CLI is available, extend the permissions array to include both
+`createPackage` and `updatePackage` before running.
