@@ -64,6 +64,21 @@ export async function withRetry<
   E extends { type: string; retry_after_ms?: number; message: string },
 >(fn: (attempt: number) => Promise<Result<T, E>>, opts: WithRetryOpts): Promise<Result<T, E>> {
   const { policy, signal, globalBudget, onRetry } = opts;
+
+  if (signal?.aborted) {
+    // Synthesize the same cancelled response shape as the post-pRetry catch
+    // branch. Without this, Bun's microtask ordering lets pRetry invoke the
+    // wrapped fn once before the signal check fires, bypassing the cancelled
+    // branch. Node coincidentally short-circuits, but the contract should
+    // be deterministic across runtimes.
+    const synthetic = {
+      type: 'cancelled',
+      code: 'cancelled',
+      message: 'aborted before first attempt',
+    };
+    return { data: null, error: synthetic as unknown as E };
+  }
+
   let last: Result<T, E> | null = null;
 
   const wrapped = async (attempt: number): Promise<T> => {
