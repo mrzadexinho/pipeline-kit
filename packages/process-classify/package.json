@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/process-classify",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Pipeline-kit Process adapter for label classification of pipeline atoms",
   "repository": {
     "type": "git",

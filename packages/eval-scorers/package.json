@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/eval-scorers",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Pipeline-kit eval scorers — exactMatch, numericClose, jsonShape, llmJudge",
   "repository": {
     "type": "git",
