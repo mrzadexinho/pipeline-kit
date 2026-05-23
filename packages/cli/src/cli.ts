@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { devCommand } from './commands/dev.js';
+import { GEN_PY_SCHEMA_HELP, genPySchemaCommand } from './commands/gen-py-schema.js';
 import { inspectCommand } from './commands/inspect.js';
 import { runCommand } from './commands/run.js';
 import { traceCommand } from './commands/trace.js';
@@ -13,6 +14,8 @@ Commands:
   dev                        Watch mode with local triggers
   trace [--file <path>] [--run <id>] [--dir <dir>] [--json]
                              Display a trace from a JSONL file
+  gen-py-schema --in <ts-file> --out <py-file> [--check] [--no-strict-features]
+                             Generate Pydantic v2 models from Zod schemas
 
 Options:
   --input <json>             JSON input for pk run
@@ -77,6 +80,33 @@ export async function main(argv: string[] = process.argv.slice(2)): Promise<void
         stop();
         process.exit(0);
       });
+      break;
+    }
+
+    case 'gen-py-schema': {
+      if (argv.includes('--help')) {
+        console.log(GEN_PY_SCHEMA_HELP);
+        return;
+      }
+      const inIdx = argv.indexOf('--in');
+      const outIdx = argv.indexOf('--out');
+      const inFile = inIdx !== -1 ? argv[inIdx + 1] : undefined;
+      const outFile = outIdx !== -1 ? argv[outIdx + 1] : undefined;
+
+      if (!inFile || !outFile) {
+        console.error(
+          'Usage: pk gen-py-schema --in <ts-file> --out <py-file> [--check] [--no-strict-features]',
+        );
+        process.exitCode = 1;
+        return;
+      }
+
+      const check = argv.includes('--check');
+      // --strict-features is ON by default; --no-strict-features opts out
+      const strictFeatures = !argv.includes('--no-strict-features');
+
+      const code = await genPySchemaCommand({ inFile, outFile, check, strictFeatures });
+      if (code !== 0) process.exitCode = code;
       break;
     }
 
