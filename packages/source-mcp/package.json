@@ -4,7 +4,7 @@
   "description": "Pipeline-kit Source adapter for consuming MCP tool and resource outputs",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "url": "https://github.com/mrzadexinho/pipeline-kit.git",
     "directory": "packages/source-mcp"
   },
   "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/source-mcp#readme",

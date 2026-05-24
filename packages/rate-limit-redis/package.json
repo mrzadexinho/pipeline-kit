@@ -4,7 +4,7 @@
   "description": "Pipeline-kit RateLimitStore adapter — distributed sliding-window via node-redis v5+ Lua EVAL (ADR X-5)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mrzadexinho/pipeline-kit.git",
+    "url": "https://github.com/mrzadexinho/pipeline-kit.git",
     "directory": "packages/rate-limit-redis"
   },
   "homepage": "https://github.com/mrzadexinho/pipeline-kit/tree/master/packages/rate-limit-redis#readme",
