@@ -15,6 +15,7 @@ coverage/
 .cache/
 *.tsbuildinfo
 .pnpm-store/
+tmp/
 
 # Claude Code config — selective track
 .claude/settings.local.json
