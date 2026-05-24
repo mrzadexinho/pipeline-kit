@@ -1,5 +1,13 @@
 # @idriszade/memory-orchestr8
 
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [62c7446]
+  - @idriszade/core@0.6.1
+  - @idriszade/memory@0.2.7
+
 ## 0.2.2
 
 ### Patch Changes

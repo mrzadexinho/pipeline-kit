@@ -1,5 +1,13 @@
 # @idriszade/cli
 
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies [62c7446]
+  - @idriszade/core@0.6.1
+  - @idriszade/observe@0.3.5
+
 ## 0.3.1
 
 ### Patch Changes

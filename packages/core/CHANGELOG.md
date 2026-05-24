@@ -1,5 +1,11 @@
 # @idriszade/core
 
+## 0.6.1
+
+### Patch Changes
+
+- 62c7446: M10: verify OIDC-only npm publish (no-op patch).
+
 ## 0.6.0
 
 ### Minor Changes

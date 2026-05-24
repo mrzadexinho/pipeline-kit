@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/process-reviewable",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Reviewable<I> HRP gate adapters — GatewerkReviewable + ConsoleReviewable + reviewable-wrapper",
   "repository": {
     "type": "git",

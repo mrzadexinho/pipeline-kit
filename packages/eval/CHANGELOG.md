@@ -1,5 +1,12 @@
 # @idriszade/eval
 
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies [62c7446]
+  - @idriszade/core@0.6.1
+
 ## 0.1.6
 
 ### Patch Changes
