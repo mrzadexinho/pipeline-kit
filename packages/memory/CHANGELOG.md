@@ -1,5 +1,12 @@
 # @idriszade/memory
 
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies [62c7446]
+  - @idriszade/core@0.6.1
+
 ## 0.2.6
 
 ### Patch Changes

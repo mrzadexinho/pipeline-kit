@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/source-apify",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Pipeline-kit Source adapter for ingesting Apify Actor run results",
   "repository": {
     "type": "git",

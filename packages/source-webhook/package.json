@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/source-webhook",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Pipeline-kit Source adapter for receiving inbound webhooks via Hono",
   "repository": {
     "type": "git",
