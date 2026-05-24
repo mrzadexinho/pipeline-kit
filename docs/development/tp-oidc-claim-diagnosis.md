@@ -21,6 +21,37 @@ setting `NPM_CONFIG_PROVENANCE=true` causes the publish step to:
 The provenance path succeeds; the registry PUT itself fails. This is a trust claim
 mismatch, not a network or auth-token issue.
 
+## Falsified hypotheses (M10 attempts, evidence)
+
+The following hypotheses from M8-M9 were disproved during M10 publish attempts:
+
+### Hyp A — `updatePackage` permission missing (FALSIFIED)
+
+The M9 framing assumed the perl-patched npm CLI 11.12.1 was missing an `updatePackage`
+permission alongside `createPackage`. M10 source inspection of npm CLI revealed there is
+**no `updatePackage` permission at all** — `createPackage` is the sole publish permission
+in the registry contract. The compound `createPackage + updatePackage` assumption was false.
+
+Cite: https://github.com/npm/cli/issues/8730
+
+### Hyp B — `workflow_ref` full-path required (FALSIFIED)
+
+The M9 framing called for `--file` with the full path `.github/workflows/release.yml` in
+`npm trust github`. M10 attempts revealed npm CLI **rejects `--file` with a path**,
+returning: `GitHub Actions workflow must be just a file not a path`. The CLI enforces
+basename only (e.g., `release.yml`, never the full `.github/workflows/` prefix).
+
+### Hyp C — `ref` claim mismatch (CONFIRMED NOT ROOT CAUSE)
+
+OIDC token claims captured in M9 (Phase 1 findings below) confirmed `ref: refs/heads/master`.
+No `refs/heads/main` default mismatch. Not the root cause.
+
+### Hyp D — `git+` prefix in `package.json` repository URL (FALSIFIED)
+
+M10 U1 stripped `git+https://github.com/...` → `https://github.com/...` from `package.json`
+`repository.url` fields on the assumption this affected OIDC subject claim matching. The
+404 persisted after the strip. Necessary-but-not-sufficient if related at all.
+
 ## Diagnosis steps
 
 ### Step 1 — Capture GitHub OIDC token claims
@@ -153,10 +184,10 @@ The trust config's `workflow_ref` condition must exactly match the OIDC token's
 Re-run shape:
 ```bash
 npm trust github "@idriszade/<pkg>" \
-  --file .github/workflows/release.yml \
+  --file release.yml \
   --repo mrzadexinho/pipeline-kit \
   --allow-publish
-# Note: `--file` should be the full relative path, not just the filename.
+# Note: npm CLI rejects --file with a path; use basename only. Hyp B is falsified (see top of doc).
 ```
 
 ### Hypothesis C — explicit ref claim for master
@@ -209,7 +240,7 @@ If provenance fails after the trust config fix:
    names to the introspect output for those packages.
 4. Per-package remediation (OTP-gated):
    ```bash
-   npm trust delete "@idriszade/<pkg>"   # revoke the bad config
+   npm trust revoke --id <id>            # revoke the bad config (look up <id> via `npm trust list --json`)
    # Wait for trust list to clear (feedback_npm_trust_list_lag)
    npm trust github "@idriszade/<pkg>" \
      --file release.yml \
@@ -258,43 +289,74 @@ Notes:
   cause — the ref matches what any trust config registered without `--ref` would default
   to on a master-branch repo.
 
-### Matched hypothesis
+> M10 attempts falsified the matched-hypothesis conclusion above. See `docs/briefs/m11_executor_brief.md` U1 for confirmed root causes + community working pattern. The M11 sections below (`## Confirmed root causes` + `## Working pattern`) summarise the canonical answer; the brief carries the full bare-shell publish script.
 
-**Hypothesis A + B (compound):**
+## Confirmed root causes (M11 community evidence)
 
-1. **A (primary — createPackage missing updatePackage):** The perl-patched npm CLI
-   11.12.1 injected `permissions: ['createPackage']` only. Version-update PUTs require
-   `updatePackage` (or the combined flag that `--allow-publish` sets in the stock CLI).
-   This is the definitive root cause for version-bump 404s.
+Three structural barriers prevent TP-OIDC publish in changesets-based workflows. All three
+must be removed simultaneously; partial fixes leave the OIDC path broken.
 
-2. **B (secondary — workflow_ref short path):** If `npm trust github --file release.yml`
-   was used during original registration, the trust config stores a condition on the
-   short filename `release.yml`. The actual OIDC token presents the full path
-   `mrzadexinho/pipeline-kit/.github/workflows/release.yml@refs/heads/master`. The
-   registry matches on the full path; a short-path trust entry would be rejected even
-   if permissions were correct.
+### Cause 1 — `actions/setup-node` `registry-url` writes `_authToken` to `.npmrc`
 
-   **Use `--file .github/workflows/release.yml` (full path) in Phase 2.**
+When `actions/setup-node` is invoked with `registry-url: 'https://registry.npmjs.org'`,
+the action writes `//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}` to a generated
+`.npmrc`. npm CLI prioritises `_authToken` lookup **even when `NODE_AUTH_TOKEN` env is
+unset** — the placeholder string itself is treated as an auth attempt, suppressing OIDC.
 
-**Hypothesis C eliminated** — `ref` is `refs/heads/master`; no `refs/heads/main`
-mismatch.
+URL: https://github.com/npm/cli/issues/8730
 
-### Recommended Phase 2 command shape
+### Cause 2 — `changesets/action` `publish:` subprocess loses OIDC env
 
-Per hypotheses A+B, re-run trust registration with the stock (unpatched) npm CLI
-using the full workflow file path:
+The `changesets/action` `publish:` parameter spawns a subprocess to run `pnpm changeset
+publish`. That subprocess **does not inherit** the `ACTIONS_ID_TOKEN_REQUEST_TOKEN` and
+`ACTIONS_ID_TOKEN_REQUEST_URL` env vars from the GitHub Actions runner. OIDC context is
+lost in the publish subprocess; npm CLI falls back to non-OIDC auth (which is now absent
+per Cause 1's revoked classic tokens), 404ing the registry PUT.
 
-```bash
-npm trust github "@idriszade/<pkg>" \
-  --file .github/workflows/release.yml \
-  --repo mrzadexinho/pipeline-kit \
-  --allow-publish
-```
+URL: https://github.com/npm/cli/issues/8976
 
-`--allow-publish` in the stock upstream CLI sets both `createPackage` + `updatePackage`.
-`--file .github/workflows/release.yml` anchors the `workflow_ref` condition to the
-full relative path that the OIDC token presents.
+### Cause 3 — upstream `actions/setup-node` fix unmerged
 
-Do NOT use the perl-patched CLI for Phase 2 — the patch only adds `createPackage`.
-If only the patched CLI is available, extend the permissions array to include both
-`createPackage` and `updatePackage` before running.
+A community PR removing the `_authToken=${VAR}` placeholder injection has been open since
+2025 without merge. Until shipped, every workflow using `setup-node` + `registry-url` hits
+Cause 1.
+
+URL: https://github.com/actions/setup-node/pull/1477
+
+## Working pattern (npm/cli #8976 jovicheng comment)
+
+The community working pattern (verified by multiple OSS publishers in npm/cli #8976
+follow-up comments) drops all three structural barriers:
+
+````yaml
+# 1. Drop registry-url from setup-node (prevents _authToken injection into .npmrc).
+- uses: actions/setup-node@<sha> # v6.4.0
+  with:
+    node-version: 24
+
+# 2. Strip publish: from changesets/action (prevents OIDC-losing subprocess).
+#    The action now only opens the Version PR; publish is a separate bare-shell step.
+- uses: changesets/action@<sha>
+  id: changesets
+  with:
+    version: "pnpm changeset version"
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# 3. Add bare-shell `npm publish` step with id-token: write at workflow level
+#    (inherits full OIDC context; no subprocess env loss).
+- name: Publish to npm via OIDC
+  if: steps.changesets.outputs.hasChangesets == 'false'
+  run: |
+    for pkg_dir in packages/*/; do
+      # ... (see docs/briefs/m11_executor_brief_units.md U1 for full script)
+    done
+  env:
+    NPM_CONFIG_PROVENANCE: true
+````
+
+The `id: changesets` field is REQUIRED for the bare-shell step's
+`steps.changesets.outputs.hasChangesets` gate. `id-token: write` permission must be set
+at workflow level (already present in pipeline-kit's `release.yml` line 12).
+
+This pattern is implemented in pipeline-kit M11 Unit 1.
