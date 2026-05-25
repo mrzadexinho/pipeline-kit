@@ -1,5 +1,13 @@
 # @idriszade/eval-scorers
 
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies [102c627]
+  - @idriszade/core@0.6.2
+  - @idriszade/eval@0.1.8
+
 ## 0.1.7
 
 ### Patch Changes

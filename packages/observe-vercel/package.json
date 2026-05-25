@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/observe-vercel",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "Vercel AI SDK v7 nested-usage shim into pipeline-kit UsageAccumulator",
   "repository": {
     "type": "git",

@@ -1,5 +1,13 @@
 # @idriszade/observe-vercel
 
+## 0.3.6
+
+### Patch Changes
+
+- Updated dependencies [102c627]
+  - @idriszade/core@0.6.2
+  - @idriszade/observe@0.3.6
+
 ## 0.3.5
 
 ### Patch Changes

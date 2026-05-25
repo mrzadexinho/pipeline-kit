@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/cli",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Pipeline-kit CLI — pk dev, pk run, pk inspect",
   "repository": {
     "type": "git",

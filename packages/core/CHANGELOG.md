@@ -1,5 +1,11 @@
 # @idriszade/core
 
+## 0.6.2
+
+### Patch Changes
+
+- 102c627: M11: verify TP-OIDC publish via plumbing fix (no-op patch)
+
 ## 0.6.1
 
 ### Patch Changes
