@@ -68,6 +68,7 @@ Any of these conditions REQUIRES re-evaluating this ADR:
 - `docs/development/tp-oidc-claim-diagnosis.md` — Phase 1 findings + falsified hypotheses (M9-M10) + confirmed root causes (M11).
 - `docs/briefs/m11_executor_brief.md` + `docs/briefs/m11_executor_brief_units.md` — M11 unit briefs.
 - `docs/development/pypi-publisher-setup.md` — sister doc for PyPI publisher setup (M9 reference, unrelated to npm OIDC).
+- `docs/development/release-auth-posture-pypi.md` — ADR M12-1, Python sister to this ADR (Trusted Publishing + PEP 740 attestations for PyPI).
 - `.github/workflows/release.yml` — current implementation reference.
 - npm Trusted Publishers docs: https://docs.npmjs.com/trusted-publishers/
 - M11 verification run: https://github.com/mrzadexinho/pipeline-kit/actions/runs/26381462292

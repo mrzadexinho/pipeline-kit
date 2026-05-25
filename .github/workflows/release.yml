@@ -79,9 +79,12 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
-      - name: Build
+      - name: Build sdist + wheel
         run: uv build
         working-directory: packages/adapter-python-process
-      - name: Publish to PyPI
-        run: uv publish
-        working-directory: packages/adapter-python-process
+      - name: Publish to PyPI with PEP 740 attestations
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
+        with:
+          packages-dir: packages/adapter-python-process/dist
+          attestations: true
+          skip-existing: true
