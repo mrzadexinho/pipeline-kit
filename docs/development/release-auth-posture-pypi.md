@@ -1,7 +1,7 @@
 # ADR M12-1: PyPI publish auth posture (Trusted Publishing + PEP 740 attestations)
 
 ## Status
-Proposed — 2026-05-25 (M12 U3 implementation). Update to Accepted after Gate 13 verified.
+Accepted — 2026-05-25 (M12 U3 verification successful at release.yml run 26385747939; sigstore transparency log entry at rekor logIndex 1628344184).
 
 ## Decision
 pipeline-kit publishes `pkit-process` (and any future PyPI packages under `packages/*-python*`)
@@ -52,7 +52,8 @@ PyPI Provenance tab + transparency log entry.
 - pypa/gh-action-pypi-publish — https://github.com/pypa/gh-action-pypi-publish
 
 ## Authoring + history
-- Authored: 2026-05-25 (M12 U3 brief).
+- Authored: 2026-05-25 (M12 U3 brief). Status: Accepted (2026-05-25, M12 close).
 - Status track: ADR M11-1 (npm) → M12 audits Python publish path → uv publish lacks
   attestations → swap to pypa-action with attestations:true → verification publish at
-  run ID <run ID TBD post-publish>.
+  run ID 26385747939.
+- Verification: release.yml run 26385747939 (publish at commit dced333) successfully uploaded pkit_process-0.1.1 to PyPI with PEP 740 sigstore attestation; rekor transparency log entry at logIndex 1628344184; second run 26385946827 (commit 76b5723) confirmed idempotency via skip-existing.
