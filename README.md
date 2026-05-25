@@ -1,5 +1,7 @@
 # pipeline-kit
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/mrzadexinho/pipeline-kit/badge)](https://scorecard.dev/viewer/?uri=github.com/mrzadexinho/pipeline-kit)
+
 > Typed-stage TypeScript automation library. Wire
 > `Source<O> → Store<T> → Process<I,O> → Serve<I>` with retry, rate-limit,
 > idempotency, observability, and HRP-review checkpoints baked in.
