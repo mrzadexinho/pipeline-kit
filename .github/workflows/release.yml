@@ -49,6 +49,7 @@ jobs:
       - name: Publish to npm via OIDC
         if: steps.changesets.outputs.hasChangesets == 'false'
         run: |
+          set -euo pipefail
           for pkg_dir in packages/*/; do
             if [ ! -f "${pkg_dir}package.json" ]; then continue; fi
             PKG_NAME=$(node -p "require('./${pkg_dir}package.json').name")
