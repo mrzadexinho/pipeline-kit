@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/memory-orchestr8",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Pipeline-kit MemoryAdapter — orchestr8-mcp SQLiteBackend adapter with LWW wrap (ADR V-6)",
   "repository": {
     "type": "git",

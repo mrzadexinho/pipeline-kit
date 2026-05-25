@@ -1,5 +1,12 @@
 # @idriszade/process-validate
 
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies [dced333]
+  - @idriszade/core@0.6.3
+
 ## 0.1.9
 
 ### Patch Changes

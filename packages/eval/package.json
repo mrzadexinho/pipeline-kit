@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/eval",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Pipeline-kit eval foundation — defineEval, runEval, case/scorer/score types",
   "repository": {
     "type": "git",
