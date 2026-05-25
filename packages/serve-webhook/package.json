@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/serve-webhook",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Pipeline-kit Serve adapter for dispatching HMAC-signed outbound webhook payloads",
   "repository": {
     "type": "git",

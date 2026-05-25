@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/serve-email",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Pipeline-kit Serve adapter for delivering pipeline results via email (Nodemailer / Resend)",
   "repository": {
     "type": "git",

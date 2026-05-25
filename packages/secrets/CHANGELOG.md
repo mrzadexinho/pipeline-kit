@@ -1,5 +1,12 @@
 # @idriszade/secrets
 
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies [dced333]
+  - @idriszade/core@0.6.3
+
 ## 0.2.8
 
 ### Patch Changes

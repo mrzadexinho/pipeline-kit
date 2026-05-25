@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/memory",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "Pipeline-kit MemoryAdapter v1 contract with Listable and Disposable markers",
   "repository": {
     "type": "git",

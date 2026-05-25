@@ -1,5 +1,12 @@
 # @idriszade/rate-limit-redis
 
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [dced333]
+  - @idriszade/core@0.6.3
+
 ## 0.2.4
 
 ### Patch Changes

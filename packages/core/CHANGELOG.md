@@ -1,5 +1,14 @@
 # @idriszade/core
 
+## 0.6.3
+
+### Patch Changes
+
+- dced333: Refactor: split `wire/lsp-frame.ts` (462 LOC) into 5 cohesive modules
+  (encode, decode, async-iter decode, shared header parser, barrel re-export).
+  Dedups header-validation logic via new `parseFrameHeader()` helper.
+  Public API unchanged.
+
 ## 0.6.2
 
 ### Patch Changes

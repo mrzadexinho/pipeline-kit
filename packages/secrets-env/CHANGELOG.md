@@ -1,5 +1,12 @@
 # @idriszade/secrets-env
 
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies [dced333]
+  - @idriszade/core@0.6.3
+
 ## 0.2.7
 
 ### Patch Changes
