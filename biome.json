@@ -17,6 +17,7 @@
       "!research",
       "!**/spikes",
       "!.claude",
+      "!.clone",
       "!**/.venv",
       "!**/__pycache__",
       "!**/.pytest_cache",
