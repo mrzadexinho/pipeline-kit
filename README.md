@@ -1,6 +1,7 @@
 # pipeline-kit
 
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/mrzadexinho/pipeline-kit/badge)](https://scorecard.dev/viewer/?uri=github.com/mrzadexinho/pipeline-kit)
+[![CodeQL](https://github.com/mrzadexinho/pipeline-kit/actions/workflows/codeql.yml/badge.svg?branch=master)](https://github.com/mrzadexinho/pipeline-kit/actions/workflows/codeql.yml)
 
 > Typed-stage TypeScript automation library. Wire
 > `Source<O> → Store<T> → Process<I,O> → Serve<I>` with retry, rate-limit,
