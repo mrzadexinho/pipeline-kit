@@ -19,15 +19,15 @@
     "gen-py-schema:check-union": "pnpm --filter @idriszade/cli build && node_modules/.bin/tsx --eval \"(async()=>{const{genPySchemaCommand}=await import('./packages/cli/src/commands/gen-py-schema.js');const code=await genPySchemaCommand({inFile:'packages/cli/fixtures/wire-schemas/sample-error-frame.ts',outFile:'packages/cli/fixtures/wire-schemas/__snapshot__/sample-error-frame.py',check:true,strictFeatures:true});if(code!==0)process.exit(code);})().catch((e)=>{process.stderr.write(String(e)+'\\n');process.exit(1);})\""
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.14",
+    "@biomejs/biome": "^2.4.15",
     "@changesets/cli": "^2.31.0",
     "@opentelemetry/api": "^1.9.1",
     "@opentelemetry/sdk-trace-base": "^2.7.1",
-    "@types/node": "^25.6.0",
-    "@vitest/coverage-v8": "^4.1.5",
+    "@types/node": "^25.8.0",
+    "@vitest/coverage-v8": "^4.1.7",
     "fast-check": "^4.7.0",
     "tstyche": "^7.1.0",
-    "tsx": "^4.0.0",
+    "tsx": "^4.22.1",
     "typescript": "^6.0.3",
     "vitest": "^4.1.5"
   }
