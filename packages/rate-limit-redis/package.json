@@ -41,7 +41,7 @@
     "@testcontainers/redis": "^11.14.0",
     "fast-check": "^3.23.2",
     "redis": "^5.5.0",
-    "testcontainers": "^10.22.2",
+    "testcontainers": "^11.14.0",
     "vitest": "^3.1.4"
   },
   "publishConfig": {
