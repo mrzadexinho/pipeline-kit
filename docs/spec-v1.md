@@ -74,15 +74,16 @@ v1 adds 13 new packages, 8 new PipelineContext fields, and 10 new top-level type
 
 ---
 
-## ADR index (55 candidates → ratified)
+## ADR index (56 candidates → ratified)
 
-### Cat IX — Cross-Runtime (5 ADRs)
+### Cat IX — Cross-Runtime (6 ADRs, Cat IX: 5 → 6 in M13 U4)
 See `spec-v1-cross-cutting.md` §IX.
 - IX-1: NDJSON+LSP Content-Length framing as kit wire protocol
 - IX-2: Zod→JSON-Schema→Pydantic build-time codegen; no runtime coupling
 - IX-3: decode_result helper + per-frame Result\<T,E\> at boundary
 - IX-4: W3C Trace Context propagated out-of-band (header/env, not payload)
 - IX-5: Kit owns wire-spec; MCP+A2A delegated to adapter-tier
+- IX-6: idempotencyKey wire-shape canonical (SerializableContext; gate relaxed to 2nd adapter any language — ratified M13 2026-05-25)
 
 ### Cat VIII — Identity/Secrets (6 ADRs)
 See `spec-v1-cross-cutting.md` §VIII.

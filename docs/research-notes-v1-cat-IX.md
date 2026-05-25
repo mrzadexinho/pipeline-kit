@@ -269,8 +269,49 @@ These adapters use MCP's / A2A's JSON-RPC 2.0 framing internally. They do NOT re
 - Auto-MCP codegen (`pk gen-mcp`) remains an open question; not blocked by ADR-v1-IX-5.
 - Kit's cross-runtime adapter packages MUST declare which mode they use (NDJSON | LSP | MCP-via-source-mcp | A2A-via-serve-a2a) in their `package.json` `pipeline_kit.wire` field — single source of truth for operators.
 
+### ADR IX-6 — idempotencyKey wire-shape (cross-adapter canonical)
+
+**Status:** Accepted 2026-05-25 (Wave 2 U4 ratification).
+
+**Context:**
+M9 (2026-05-23) shipped the idempotencyKey wire convention informally when the Python `process-classify` adapter began consuming it. At that time the ratification gate was phrased as "2nd JS adapter consumes the wire shape" — deferred through M9 → M12 because no 2nd JS adapter materialized.
+
+M13 U3 adds `process-extract` Python (a 2nd Python adapter). With `process-classify` Python (M9) + `process-extract` Python (M13) = 2 adapter consumers of the wire shape.
+
+Gate relaxed at M13 to "2nd adapter (any language)" — rationale: the wire shape is language-neutral by design (NDJSON envelope + LSP Content-Length framing per ADR IX-1); cross-adapter consensus is what the gate was probing for, not language-specific shape divergence. Two Python consumers exercising the spec without divergence is sufficient evidence the contract is well-formed.
+
+**Decision:**
+- `SerializableContext` interface (defined at `packages/core/src/serializable-context.ts:8-12`) is the canonical wire shape for cross-adapter idempotency.
+- LSP header: `x-pipeline-idempotency-key`.
+- NDJSON body field: `body.metadata.idempotencyKey`.
+- Wire shape is language-neutral by design (NDJSON + LSP framing inherited from ADR IX-1).
+
+**Alternatives considered:**
+- *Wait for a 2nd JS adapter.* Rejected at M13 — the original gate was probing cross-adapter consensus, not language enforcement; two Python consumers without divergence meets that bar.
+- *Embed idempotencyKey in Atom data shape.* Rejected — idempotencyKey is infra-cross-cut, not user-domain data; same reasoning as W3C Trace Context out-of-band per ADR IX-4.
+- *Separate idempotency header per-framing-mode.* Rejected — single `SerializableContext` field is framing-mode-neutral; both NDJSON and LSP modes derive their representation from the same contract.
+
+**Consequences:**
+- Positive: formal spec for cross-runtime idempotency; one less informal-spec carry-forward; the M9 wire convention becomes load-bearing rather than provisional.
+- Negative: codifies the language-neutral assumption — revisit if a JS-specific wire concern surfaces (e.g., a future JS adapter discovers a TC39 stream behavior that diverges from Python's NDJSON parser).
+- No code changes required — `SerializableContext` already exists as canonical TS interface.
+
+**Revisit triggers:**
+1. Future Source/Serve adapter discovers idempotency edge cases not covered by `SerializableContext`.
+2. A 2nd JS adapter materializes and surfaces a JS-specific divergence in wire-shape interpretation.
+3. The LSP framing or NDJSON envelope ADRs (IX-1 / IX-2) get revised.
+
+**Cross-references:**
+- ADR IX-1 — wire framing (NDJSON + LSP Content-Length)
+- ADR IX-2 — Zod → JSON Schema → Pydantic build-time
+- ADR IX-3 — decode_result helper + per-frame Result
+- ADR IX-4 — W3C Trace Context out-of-band
+- ADR IX-5 — kit owns wire-spec; MCP+A2A delegated to adapter-tier
+- `packages/core/src/serializable-context.ts:8-12` — canonical TS interface
+- M9 executor brief — where informal convention was first shipped
+
 ---
 
-*End of v1 Cat IX research notes. 5 ADR candidates locked direction; 5 carry-forwards; epistemic-hygiene falsification preserved. Next-next-session candidate: Cat VIII synthesis (anchoring cleared by this synthesis); next: brain decides.*
+*End of v1 Cat IX research notes. 6 ADR candidates locked direction (IX-6 ratified M13 U4 2026-05-25); 5 carry-forwards; epistemic-hygiene falsification preserved. Next-next-session candidate: Cat VIII synthesis (anchoring cleared by this synthesis); next: brain decides.*
 
-*Author: Brain — 2026-05-09. Inputs: spike #1 `fc2b287` / spike #2 `6f5329d` / spike #3 `26f98de`. Branch: `v1-cat-IX-synthesis-notes`. Master tip at synthesis: `f6c0695`.*
+*Author: Brain — 2026-05-09. Inputs: spike #1 `fc2b287` / spike #2 `6f5329d` / spike #3 `26f98de`. Branch: `v1-cat-IX-synthesis-notes`. Master tip at synthesis: `f6c0695`. ADR IX-6 appended 2026-05-25 by M13 U4 executor.*
