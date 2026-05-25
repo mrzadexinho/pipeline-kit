@@ -118,11 +118,24 @@ warrants a publish:
 4. `.github/workflows/release.yml` auto-runs changesets/action — bumps
    versions, generates CHANGELOGs, publishes to npm
 
-Workflow auth requires both `NPM_TOKEN` AND `NODE_AUTH_TOKEN` env vars
-(setup-node interpolates the latter into `~/.npmrc`). Both already wired
-in `release.yml`; do NOT remove either.
+Workflow auth runs via **npm Trusted Publishing (OIDC) + sigstore provenance**
+(ratified in `docs/development/release-auth-posture.md` ADR M11-1, locked
+2026-05-25). The publish step is a bare-shell `npm publish --access public
+--provenance` loop gated on `steps.changesets.outputs.hasChangesets ==
+'false'`, inheriting workflow-level `id-token: write` permission. No
+`NPM_TOKEN` or `NODE_AUTH_TOKEN` is wired into `release.yml`.
 
-**Trusted Publishing (SLSA provenance)** queued for v0.2.0+ — configure
-per-package on npmjs.com after v0.1.0 packages exist on registry. Then
-re-enable `NPM_CONFIG_PROVENANCE: true` in release.yml (currently
-commented out with `TODO(post-v0.1.0)`).
+`secrets.NPM_TOKEN` is retained in repo settings as a 6-month bridge
+fallback (auto-removal trigger: 6 clean TP-OIDC publishes observed;
+counter at 1/6 as of M11 close). Do NOT remove the secret before then;
+do NOT add it back into `release.yml` without explicit ADR M11-1 'Bridge'
+ratification.
+
+**SLSA Build L2 attestation** ships per-package via sigstore transparency
+log entries on every TP-OIDC publish (`search.sigstore.dev/?logIndex=<N>`).
+
+For CI workflows that consume workspace packages: `pnpm -r build` MUST
+run before `pnpm typecheck` / `pnpm test` / `bun test` steps, because
+package `exports` point at `./dist/*` (Node 26 ESM strictness). Locally
+dist persists; CI starts fresh and breaks without the explicit build
+step. See `74a82f0` for the canonical fix.
