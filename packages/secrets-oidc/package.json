@@ -54,13 +54,13 @@
     "@idriszade/secrets": "workspace:*",
     "@aws-sdk/credential-provider-node": "^3.972.44",
     "@azure/identity": "^4.0.0",
-    "google-auth-library": "^9.0.0",
+    "google-auth-library": "^10.6.2",
     "vitest": "^3.0.0"
   },
   "peerDependencies": {
     "@aws-sdk/credential-provider-node": "^3.972.44",
     "@azure/identity": "^4.0.0",
-    "google-auth-library": "^9.0.0"
+    "google-auth-library": "^10.6.2"
   },
   "peerDependenciesMeta": {
     "google-auth-library": {
