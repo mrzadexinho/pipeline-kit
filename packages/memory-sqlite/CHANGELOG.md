@@ -1,5 +1,13 @@
 # @idriszade/memory-sqlite
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [102c627]
+  - @idriszade/core@0.6.2
+  - @idriszade/memory@0.2.8
+
 ## 0.2.3
 
 ### Patch Changes

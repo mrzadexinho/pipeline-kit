@@ -1,5 +1,12 @@
 # @idriszade/source-api
 
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies [102c627]
+  - @idriszade/core@0.6.2
+
 ## 0.1.8
 
 ### Patch Changes

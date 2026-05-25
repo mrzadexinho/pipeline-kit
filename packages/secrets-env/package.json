@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/secrets-env",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Pipeline-kit SecretsResolver adapter — env-var-backed configuration (T3 Env / envalid pattern)",
   "repository": {
     "type": "git",

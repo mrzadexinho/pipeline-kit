@@ -1,6 +1,6 @@
 {
   "name": "@idriszade/secrets-oidc",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Pipeline-kit OIDC workload-identity SecretsResolver adapters — GCP WIF, AWS IRSA, Azure WIF",
   "repository": {
     "type": "git",
