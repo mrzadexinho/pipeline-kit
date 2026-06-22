@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "@idriszade/core": "workspace:*",
-    "apify-client": "^2.23.3",
+    "apify-client": "^2.23.4",
     "zod": "^4.4.3"
   },
   "license": "MIT",

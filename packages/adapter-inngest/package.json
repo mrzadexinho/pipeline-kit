@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@opentelemetry/core": "^2.7.1",
-    "@opentelemetry/sdk-trace-base": "^2.7.1",
+    "@opentelemetry/sdk-trace-base": "^2.8.0",
     "inngest": "^4.4.0"
   },
   "publishConfig": {

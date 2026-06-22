@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "@idriszade/core": "workspace:*",
-    "@slack/web-api": "^7.16.0",
+    "@slack/web-api": "^7.17.0",
     "zod": "^4.4.3"
   },
   "license": "MIT",
