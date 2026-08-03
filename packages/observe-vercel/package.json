@@ -35,7 +35,7 @@
     "@idriszade/observe": "workspace:*"
   },
   "devDependencies": {
-    "@opentelemetry/sdk-trace-base": "^2.7.1"
+    "@opentelemetry/sdk-trace-base": "^2.10.0"
   },
   "publishConfig": {
     "access": "public"
