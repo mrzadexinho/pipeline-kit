@@ -52,13 +52,13 @@
   },
   "devDependencies": {
     "@idriszade/secrets": "workspace:*",
-    "@aws-sdk/credential-provider-node": "^3.972.44",
+    "@aws-sdk/credential-provider-node": "^3.972.79",
     "@azure/identity": "^4.0.0",
     "google-auth-library": "^10.6.2",
     "vitest": "^3.0.0"
   },
   "peerDependencies": {
-    "@aws-sdk/credential-provider-node": "^3.972.44",
+    "@aws-sdk/credential-provider-node": "^3.972.79",
     "@azure/identity": "^4.0.0",
     "google-auth-library": "^10.6.2"
   },
