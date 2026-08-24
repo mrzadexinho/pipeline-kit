@@ -52,14 +52,14 @@
   },
   "devDependencies": {
     "@idriszade/secrets": "workspace:*",
-    "@aws-sdk/credential-provider-node": "^3.972.44",
-    "@azure/identity": "^4.0.0",
+    "@aws-sdk/credential-provider-node": "^3.972.80",
+    "@azure/identity": "^4.13.2",
     "google-auth-library": "^10.6.2",
     "vitest": "^3.0.0"
   },
   "peerDependencies": {
-    "@aws-sdk/credential-provider-node": "^3.972.44",
-    "@azure/identity": "^4.0.0",
+    "@aws-sdk/credential-provider-node": "^3.972.80",
+    "@azure/identity": "^4.13.2",
     "google-auth-library": "^10.6.2"
   },
   "peerDependenciesMeta": {
